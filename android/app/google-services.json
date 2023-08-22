@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "889512449351",
+    "project_id": "read-ludhiana-read",
+    "storage_bucket": "read-ludhiana-read.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:889512449351:android:2050e067dff12f9f452862",
+        "android_client_info": {
+          "package_name": "com.auribises.rlr"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "889512449351-hbquks85m56c1fcdmng6mneuov8la8ft.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.auribises.rlr",
+            "certificate_hash": "c3be5477d58f859de830ac9c7f627aae8c292162"
+          }
+        },
+        {
+          "client_id": "889512449351-3r7i62ftjpt0otdj1fvc0bppio9c3iq9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCrXzjbHaIhGqa0oGKs0-Ml_rMnoWlzpwQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "889512449351-3r7i62ftjpt0otdj1fvc0bppio9c3iq9.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "889512449351-4q7nn1bolmo3kpafp97df6ncgoshr046.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.auribises.rlr"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
