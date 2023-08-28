@@ -37,6 +37,7 @@ class _HomePageState extends State<NavPage> {
       bottomNavigationBar: Padding(
         padding: EdgeInsets.all(8),
         child: Container(
+          padding: EdgeInsets.all(8),
           child: Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(180),
@@ -44,7 +45,7 @@ class _HomePageState extends State<NavPage> {
             ),
 
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 15),
               child: GNav(
                 backgroundColor: Color(0xFFFFDBD1),
                 color: Color(0xFF3B0900),

@@ -2,6 +2,7 @@ import 'package:rlr/pages/activity_page.dart';
 import 'package:rlr/pages/authentication/phone_screen.dart';
 import 'package:rlr/pages/authentication/googlesignin.dart';
 import 'package:rlr/pages/edit_profile.dart';
+import 'package:rlr/pages/home_screen.dart';
 import 'package:rlr/pages/mybooks_page.dart';
 import 'package:rlr/pages/notifications_page.dart';
 import 'package:rlr/pages/profile_page.dart';
@@ -47,8 +48,8 @@ class MyApp extends StatelessWidget {
           '/membership':(context)=>Membership(),
           '/google':(context)=>const SignIn(),
           '/search': (context) => const SearchPage(),
-          '/home': (context) => const NavPage(),
-          'nav' : (context) => NavPage(),
+          '/home': (context) => const HomeScreen(),
+          '/nav' : (context) => NavPage(),
           '/splash': (context) => const SplashScreen(),
           '/search': (context) => const SearchPage(),
           '/profile': (context) => const ProfilePage(),
