@@ -1,14 +1,24 @@
+import 'package:rlr/pages/activity_page.dart';
 import 'package:rlr/pages/authentication/phone_screen.dart';
+import 'package:rlr/pages/authentication/googlesignin.dart';
+import 'package:rlr/pages/edit_profile.dart';
+import 'package:rlr/pages/mybooks_page.dart';
+import 'package:rlr/pages/notifications_page.dart';
+import 'package:rlr/pages/profile_page.dart';
+import 'package:rlr/pages/settings_page.dart';
 import 'firebase_options.dart';
+import 'package:rlr/pages/edit_profile.dart';
 import 'package:rlr/pages/splash_screen.dart';
 import 'package:rlr/provider/DbProvider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:rlr/pages/Home_page.dart';
+import 'package:rlr/pages/nav_page.dart';
+import 'package:rlr/pages/membership.dart';
 import 'package:rlr/helper/color_schemes.g.dart';
-
+import 'package:rlr/pages/search_page.dart';
+import 'package:rlr/pages/menu_drawer.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
@@ -32,6 +42,24 @@ class MyApp extends StatelessWidget {
         darkTheme: ThemeData(useMaterial3: true, colorScheme: darkColorScheme),
         debugShowCheckedModeBanner: false,
         home: const MyHomePage(),
+        routes: {
+          '/phone':(context)=>PhoneScreen(),
+          '/membership':(context)=>Membership(),
+          '/google':(context)=>const SignIn(),
+          '/search': (context) => const SearchPage(),
+          '/home': (context) => const NavPage(),
+          'nav' : (context) => NavPage(),
+          '/splash': (context) => const SplashScreen(),
+          '/search': (context) => const SearchPage(),
+          '/profile': (context) => const ProfilePage(),
+          '/settings': (context) => const SettingsPage(),
+          '/mybooks': (context) => const MyBooksPage(),
+          '/activity': (context) => const ActivityPage(),
+          '/notifications': (context) => const NotificationsPage(),
+          '/edit_profile' : (context) => const EditProfilePage(),
+
+
+        },
       ),
     );
   }
@@ -61,7 +89,7 @@ class _MyHomePageState extends State<MyHomePage> {
         initialScreen = PhoneScreen();
       } else {
         await context.read<DbProvider>().getUserFromFirestore(user: user, bContent: bContext);
-        initialScreen = const HomePage();
+        initialScreen = const NavPage();
       }
       setState(() {});
     });

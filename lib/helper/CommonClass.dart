@@ -459,7 +459,7 @@ class CommonClass {
                     return;
                   }
 
-                  if(age.text.isEmpty || age.text == '0' ) {
+                  if(age.text.isEmpty || age.text == 0 ) {
                     CommonClass.openErrorDialog(context: context, message: "Please enter a valid Age");
                     return;
                   }
@@ -503,7 +503,7 @@ class CommonClass {
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   width: MediaQuery.of(context).size.width,
                   decoration: BoxDecoration(
-                      color: UIConstants.colorPrimary.withOpacity(0.8),
+                      color: Colors.blue,
                       borderRadius: BorderRadius.circular(8)
                   ),
                   child: Row(

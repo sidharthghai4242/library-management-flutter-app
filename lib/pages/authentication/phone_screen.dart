@@ -32,7 +32,7 @@ class PhoneScreen extends StatelessWidget {
           child: ConstrainedBox(
             constraints: BoxConstraints(minHeight: constraint.minHeight),
             child: Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(16.0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 // crossAxisAlignment: CrossAxisAlignment.center,
@@ -77,7 +77,7 @@ class PhoneScreen extends StatelessWidget {
                         hintText: "+91 99999 ****",
                         counterText: "",
                         border: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.grey.shade500, width: 1),
+                          borderSide: BorderSide(color: Colors.blue, width: 1),
                           borderRadius: BorderRadius.circular(8)
                         ),
                         focusColor: UIConstants.colorPrimary.withOpacity(0.8),
@@ -112,7 +112,7 @@ class PhoneScreen extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                       width: MediaQuery.of(context).size.width,
                       decoration: BoxDecoration(
-                        color: Colors.green,
+                        color: Colors.blue,
                         borderRadius: BorderRadius.circular(8)
                       ),
                       child: Row(
@@ -133,7 +133,38 @@ class PhoneScreen extends StatelessWidget {
                         ],
                       ),
                     ),
-                  )
+                  ),
+                  InkWell(
+                    onTap: () async{
+                      Navigator.pushReplacementNamed(context, '/google');
+                    },
+                    child: Container(
+                      margin: const EdgeInsets.only(top: 16),
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      width: MediaQuery.of(context).size.width,
+                      decoration: BoxDecoration(
+                          color: Colors.blue,
+                          borderRadius: BorderRadius.circular(8)
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Sign-In with Other Options",
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.openSans(
+                                fontSize: 16,
+                                color: Colors.white,
+                                fontWeight: FontWeight.w600
+                            ),
+                          ),
+                          // const SizedBox(width: 4),
+                          // const Icon(Icons.keyboard_double_arrow_right, color: Colors.white,)
+                        ],
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),

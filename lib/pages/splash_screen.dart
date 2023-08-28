@@ -20,7 +20,7 @@ class SplashScreen extends StatelessWidget {
               style: GoogleFonts.openSans(
                 fontSize: 32,
                 fontWeight: FontWeight.bold,
-                color: UIConstants.colorPrimary
+                color: Colors.blue
               ),
             ),
             Text(
