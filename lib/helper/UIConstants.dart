@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 class UIConstants {
-  static const Color colorPrimary = Color(0xB2A4FF);
-  static const Color colorsecondary = Color(0xFFB4B4);
-  static const Color colortertiary = Color(0xFFDEB4);
-  static const Color colorneutral = Color(0xFDF7C3);
+  static const Color colorPrimary = Color(0xFFB2A4FF);
+  static const Color colorsecondary = Color(0xFFFFB4B4);
+  static const Color colortertiary = Color(0xFFFFDEB4);
+  static const Color colorneutral = Color(0xFFFDF7C3);
 
   static const double borderRadius12 = 12.0;
   static const double borderRadius16 = 16.0;

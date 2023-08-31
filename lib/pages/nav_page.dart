@@ -29,18 +29,22 @@ class _HomePageState extends State<NavPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
       body: IndexedStack(
         index: _currentIndex,
         children: _screens,
       ),
       bottomNavigationBar: Padding(
-        padding: EdgeInsets.all(8),
+        padding: EdgeInsets.symmetric(vertical: 0),
         child: Container(
-          padding: EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: Colors.transparent
+          ),
           child: Container(
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(180),
+              borderRadius: BorderRadius.only(
+                topRight: Radius.circular(10),
+                topLeft: Radius.circular(10),
+              ),
               color: Color(0xFFFFDBD1),
             ),
 
