@@ -477,7 +477,7 @@ class _MembershipState extends State<Membership> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               InkWell(
-                                onTap: ()=>Navigator.pushReplacementNamed(context, '/home'),
+                                onTap: ()=>Navigator.pushNamed(context, '/home'),
                                 child: Container(
                                   margin: const EdgeInsets.only(top: 16),
                                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),

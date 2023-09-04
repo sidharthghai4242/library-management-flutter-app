@@ -53,7 +53,7 @@ class _SearchPageState extends State<SearchPage> {
           ),
         ),
         leading: IconButton(
-          onPressed: () => Navigator.pushReplacementNamed(context, '/home'),
+          onPressed: () => Navigator.pushNamed(context, '/home'),
           icon: const Icon(Icons.keyboard_arrow_left, color: Colors.black, size: 32,),
         ),
       ),
