@@ -1,10 +1,11 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:rlr/pages/book_page.dart';
 
 class CataloguePage extends StatefulWidget {
-  String name;
-  String id;
+  final String name;
+  final String id;
+
   CataloguePage({required this.name, required this.id});
 
   @override
@@ -19,14 +20,15 @@ class _CataloguePageState extends State<CataloguePage> {
         .get();
 
     if (ratingQuerySnapshot.docs.isNotEmpty) {
-      final ratingData = ratingQuerySnapshot.docs.first.data() as Map<String, dynamic>;
+      final ratingData =
+      ratingQuerySnapshot.docs.first.data() as Map<String, dynamic>;
       return ratingData['rating']?.toDouble() ?? 0.0;
     }
 
     return 0.0; // Default rating if not found
   }
 
-  fetchBooksByName(String value) {
+  Stream<QuerySnapshot> fetchBooksByName(String value) {
     return FirebaseFirestore.instance
         .collection("Books")
         .where('type.catalogueId', isEqualTo: value)
@@ -50,13 +52,11 @@ class _CataloguePageState extends State<CataloguePage> {
         backgroundColor: Colors.transparent,
         iconTheme: IconThemeData(color: Colors.deepOrangeAccent),
       ),
-      body: StreamBuilder(
+      body: StreamBuilder<QuerySnapshot>(
         stream: fetchBooksByName(widget.id),
-        builder: (BuildContext context, AsyncSnapshot booksSnapshot) {
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> booksSnapshot) {
           if (booksSnapshot.connectionState == ConnectionState.waiting) {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
+            return CircularProgressIndicator();
           }
 
           if (!booksSnapshot.hasData || booksSnapshot.data == null) {
@@ -66,7 +66,7 @@ class _CataloguePageState extends State<CataloguePage> {
           }
 
           // Extract the list of documents
-          final bookDocuments = booksSnapshot.data.docs;
+          final bookDocuments = booksSnapshot.data!.docs;
 
           return Container(
             padding: EdgeInsets.all(16),
@@ -80,7 +80,7 @@ class _CataloguePageState extends State<CataloguePage> {
                           crossAxisCount: 2, // 2 columns
                           crossAxisSpacing: 10.0,
                           mainAxisSpacing: 10.0,
-                          childAspectRatio: 0.75,
+                          childAspectRatio: 0.5,
                         ),
                         delegate: SliverChildBuilderDelegate(
                               (BuildContext context, int index) {
@@ -103,13 +103,14 @@ class _CataloguePageState extends State<CataloguePage> {
                                 double bookRating = ratingSnapshot.data ?? 0.0;
 
                                 return Material(
+                                  elevation: 2, // Add elevation for a shadow effect
+                                  borderRadius: BorderRadius.circular(10),
                                   child: Container(
                                     padding: EdgeInsets.all(8),
                                     decoration: BoxDecoration(
-                                      color: Colors.deepOrangeAccent,
+                                      border: Border.all(color: Colors.grey), // Add border for separation
                                       borderRadius: BorderRadius.circular(10),
                                     ),
-                                    width: 150, // Set a fixed width
                                     child: Column(
                                       mainAxisAlignment: MainAxisAlignment.start,
                                       children: [
@@ -143,24 +144,48 @@ class _CataloguePageState extends State<CataloguePage> {
                                         ),
                                         Container(
                                           padding: EdgeInsets.symmetric(horizontal: 4),
-                                          child: Row(
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
-                                              Flexible(
-                                                child: Container(
-                                                  child: Text(
-                                                    title,
-                                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                                                    overflow: TextOverflow.ellipsis,
-                                                    maxLines: 2,
-                                                  ),
+                                              Text(
+                                                title,
+                                                style: TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.bold,
                                                 ),
+                                                overflow: TextOverflow.ellipsis,
+                                                maxLines: 2,
                                               ),
-                                              if (bookRating != null) ...[
-                                                SizedBox(width: 10,),
-                                                Text(bookRating.toStringAsFixed(1)), // Display rating with 1 decimal place
-                                                Icon(Icons.star),
+                                              SizedBox(height: 4),
+                                              Text(
+                                                "By $author",
+                                                style: TextStyle(
+                                                  fontSize: 14,
+                                                  color: Colors.grey,
+                                                ),
+                                                overflow: TextOverflow.ellipsis,
+                                                maxLines: 1,
+                                              ),
+                                              SizedBox(height: 4),
+                                              // if (bookRating > 0.0) ...[
+                                                Row(
+                                                  children: [
+                                                    Text(
+                                                      bookRating.toStringAsFixed(1),
+                                                      style: TextStyle(
+                                                        fontSize: 14,
+                                                        fontWeight: FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                    Icon(
+                                                      Icons.star,
+                                                      color: Colors.amber,
+                                                      size: 16,
+                                                    ),
+                                                  ],
+                                                ),
                                               ],
-                                            ],
+                                            // ],
                                           ),
                                         ),
                                       ],

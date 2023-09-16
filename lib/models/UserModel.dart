@@ -8,6 +8,8 @@ class UserModel {
   String address = "";
   String phone = "";
   String token = "";
+  String subscription = "";
+  String password = "";
   int age = 0;
   Timestamp createdOn = Timestamp.now();
 
@@ -26,6 +28,8 @@ class UserModel {
     user.age = doc["age"];
     user.userId = doc["userId"];
     user.token = doc["token"];
+    user.subscription = doc["subscription"];
+    user.password = doc["password"];
     return user;
   }
 
@@ -40,6 +44,25 @@ class UserModel {
     map["age"] = age ?? 0;
     map["userId"] = userId ?? "";
     map["token"] = token ?? "";
+    map["subscription"] = subscription ?? "";
+    map["password"] = password ?? "";
+    return map;
+  }
+  Map<String, dynamic> toMap() {
+    Map<String, dynamic> map = <String, dynamic>{};
+    map["phone"] = phone ?? "";
+    map["authId"] = authId ?? "";
+    map["createdOn"] = createdOn ?? Timestamp.now();
+    map["name"] = name ?? "";
+    map["email"] = email ?? "";
+    map["address"] = address ?? "";
+    map["age"] = age ?? 0;
+    map["userId"] = userId ?? "";
+    map["token"] = token ?? "";
+    map["subscription"] = subscription ?? "";
+    map["password"] = password ?? "";
     return map;
   }
 }
+
+

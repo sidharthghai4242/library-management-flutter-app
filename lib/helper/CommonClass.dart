@@ -242,6 +242,12 @@ class CommonClass {
     final RegExp emailRegExp = RegExp(r'^[\w-]+(\.[\w-]+)*@([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,7}$');
     return emailRegExp.hasMatch(email);
   }
+  static bool isValidPhoneNumber(String phoneNumber) {
+    // Regular expression for basic phone number validation
+    final RegExp phoneRegExp = RegExp(r'^[0-9]{10}$'); // Assumes 10-digit format
+    return phoneRegExp.hasMatch(phoneNumber);
+  }
+
 
   static Future<dynamic> askedUserInfoViaModalBottomSheet(BuildContext context, {
     User? firebaseUser,
@@ -250,11 +256,12 @@ class CommonClass {
     bool isRegistrationProcess = true
   }) {
     debugPrint(">>> Firebase User: ${firebaseUser.toString()}");
-    TextEditingController name = TextEditingController(text: user!.name ?? "");
-    TextEditingController email = TextEditingController(text: user.email ?? "");
-    TextEditingController age = TextEditingController(text: user.age.toString() ?? "");
-    TextEditingController address = TextEditingController(text: user.address ?? "");
-    
+    TextEditingController name = TextEditingController(text: user?.name ?? "");
+    TextEditingController phone = TextEditingController(text: user?.phone ?? "");
+    TextEditingController email = TextEditingController(text: firebaseUser?.email ?? "");
+    TextEditingController age = TextEditingController(text: user?.age.toString() ?? "");
+    TextEditingController address = TextEditingController(text: user?.address ?? "");
+
     StatefulBuilder content = StatefulBuilder(
       builder: (context, setState) {
         return Container(
@@ -350,18 +357,16 @@ class CommonClass {
                   ),
                 ),
               ),
-
-              // User EMail
               Text(
-                "${isEditable ? 'Enter your' : ''} email:",
+                "${isEditable ? 'Enter your' : ''} phone:",
                 style: GoogleFonts.openSans(fontSize: 14),
               ),
               Container(
                 margin: const EdgeInsets.only(top: 10, bottom: 16),
                 child: TextFormField(
-                  controller: email,
+                  controller: phone,
                   readOnly: !isEditable,
-                  keyboardType: TextInputType.emailAddress,
+                  keyboardType: TextInputType.name,
                   style: GoogleFonts.roboto(
                     fontWeight: FontWeight.w700,
                   ),
@@ -381,7 +386,40 @@ class CommonClass {
                   ),
                 ),
               ),
-
+              // User EMail
+              Text(
+                "${isEditable ? 'Enter your' : ''} email:",
+                style: GoogleFonts.openSans(fontSize: 14),
+              ),
+            Container(
+              margin: const EdgeInsets.only(top: 10, bottom: 16),
+              child: TextFormField(
+                controller: email,
+                readOnly: true,
+                keyboardType: TextInputType.emailAddress,
+                style: GoogleFonts.roboto(
+                  fontWeight: FontWeight.w700,
+                ),
+                decoration: InputDecoration(
+                  counterText: "",
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.grey.shade500, width: 1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  focusColor: UIConstants.colorPrimary.withOpacity(0.8),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: UIConstants.colorPrimary.withOpacity(0.8), width: 1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  hintStyle: GoogleFonts.roboto(),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  prefixIcon: Icon(
+                    Icons.lock,
+                    color: Colors.grey, // You can customize the lock icon color here
+                  ),
+                ),
+              ),
+            ),
               // User age
               Text(
                 "${isEditable ? 'Enter your' : ''} age:",
@@ -412,7 +450,6 @@ class CommonClass {
                   ),
                 ),
               ),
-
               Text(
                 "${isEditable ? 'Enter your' : ''} address:",
                 style: GoogleFonts.openSans(fontSize: 14),
@@ -443,7 +480,6 @@ class CommonClass {
                   ),
                 ),
               ),
-
               InkWell(
                 onTap: () async {
                   if(name.text.isEmpty) {
@@ -458,6 +494,14 @@ class CommonClass {
                     CommonClass.openErrorDialog(context: context, message: "Email badly formatted");
                     return;
                   }
+                  if(phone.text.isEmpty) {
+                    CommonClass.openErrorDialog(context: context, message: "Email is Required");
+                    return;
+                  }
+                  if (phone.text.isNotEmpty &&!CommonClass.isValidPhoneNumber(phone.text)) {
+                    CommonClass.openErrorDialog(context: context, message: "Invalid phone number format");
+                    return;
+                  }
 
                   if(age.text.isEmpty || age.text == 0 ) {
                     CommonClass.openErrorDialog(context: context, message: "Please enter a valid Age");
@@ -467,31 +511,33 @@ class CommonClass {
                     CommonClass.openErrorDialog(context: context, message: "Address is Required");
                     return;
                   }
-
                   if(!isEditable) {
                     Navigator.pop(context, user);
                   } else {
                     UserModel? userModel;
+                    debugPrint('isRegistrationProcess: $isRegistrationProcess');
+                    debugPrint('firebaseUser: $firebaseUser');
+
                     if(isRegistrationProcess) {
                       UserModel newUser = UserModel();
                       newUser.token = "";
-                      newUser.phone = firebaseUser!.phoneNumber!;
-                      newUser.name =  name.text.toString() ?? "";
-                      newUser.email = email.text.toString() ?? "";
-                      newUser.age = int.parse(age.text.toString()) ?? 0;
-                      newUser.address = address.text.toString() ?? "";
-                      newUser.authId = firebaseUser.uid;
+                      newUser.phone = phone.text.toString();
+                      newUser.name =  name.text.toString();
+                      newUser.email = email.text.toString();
+                      newUser.age = int.parse(age.text.toString());
+                      newUser.address = address.text.toString();
+                      newUser.authId = firebaseUser!.uid;
                       newUser.userId = FirebaseFirestore.instance.collection(Constants.userCollection).doc().id;
                       userModel = newUser;
                       await context.read<DbProvider>().saveUserInFirestore(context: context, userModel: newUser);
                       Navigator.pop(context, userModel);
                     } else {
                       userModel = user;
-                      userModel.name =  name.text.toString() ?? "";
-                      userModel.email = email.text.toString() ?? "";
-                      userModel.age = int.parse(age.text.toString()) ?? 0;
-                      userModel.address = address.text.toString() ?? "";
-                      userModel.userId = user.userId;
+                      userModel!.name =  name.text.toString();
+                      userModel.email = email.text.toString();
+                      userModel.age = int.parse(age.text.toString());
+                      userModel.address = address.text.toString();
+                      userModel.userId = user!.userId;
                       await context.read<DbProvider>().saveUserInFirestore(context: context, userModel: userModel);
                       CommonClass.showSnackBar(context, "Profile Updated Successfully");
                       Navigator.pop(context, userModel);

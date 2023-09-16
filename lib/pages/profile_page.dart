@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 import 'package:rlr/models/UserModel.dart';
+import 'package:rlr/pages/edit_profile.dart';
 import 'package:rlr/provider/DbProvider.dart';
-
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:rlr/helper/color_schemes.g.dart';
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
 
@@ -15,33 +15,49 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  bool isDark = false; // Initialize with the light theme
   UserModel? userModel;
+  bool loggingOut = false; // Track whether log out process is in progress
+
   @override
   Widget build(BuildContext context) {
-    userModel = context.read<DbProvider>().userModel;
+    userModel = context.watch<DbProvider>().userModel;
+    String name = userModel?.name ?? "name";
+    String email = userModel?.email ?? "email";
+    int age = userModel?.age ?? 18;
+    String phone = userModel?.phone ?? "+910000000000";
+    String address = userModel?.address ?? "address";
+    String userId = userModel?.userId ?? " ";
     var isDark = MediaQuery.of(context).platformBrightness == Brightness.dark;
+
     return Scaffold(
       appBar: AppBar(
-          backgroundColor: Color(0xFFFFFFFF),
-          elevation: 0.0,
-          title: const Text(
-            "My Profile",
-            style: TextStyle(
-              color: Color(0xFF3B0900),
-              fontSize: 22.0,
-              fontWeight: FontWeight.bold,
-            ),
+        backgroundColor: Color(0xFFFFFFFF),
+        elevation: 0.0,
+        title: const Text(
+          "My Profile",
+          style: TextStyle(
+            color: Color(0xFF3B0900),
+            fontSize: 22.0,
+            fontWeight: FontWeight.bold,
           ),
+        ),
           actions: [
             IconButton(
-                onPressed: () {},
-                icon: Icon(isDark ? Icons.wb_sunny : Icons.dark_mode),
-                color: isDark ? Color(0xFFFFDBD1) : Color(0xFF9B442B))
-          ]),
+              onPressed: () {
+                setState(() {
+                  isDark = !isDark; // Toggle the theme
+                });
+              },
+              icon: Icon(isDark ? Icons.wb_sunny : Icons.dark_mode),
+              color: isDark ? Color(0xFFFFDBD1) : Color(0xFF9B442B),
+            )
+          ],
+      ),
       body: SingleChildScrollView(
         child: Container(
-          color:Color(0xFFFFFFFF) ,
-          padding: const EdgeInsets.all(20.0),
+          color: Color(0xFFFFFFFF),
+          padding: const EdgeInsets.all(10.0),
           child: Column(
             children: [
               Stack(
@@ -63,8 +79,9 @@ class _ProfilePageState extends State<ProfilePage> {
                       width: 35,
                       height: 35,
                       decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(100),
-                          color: Color(0xFFBA1A1A)),
+                        borderRadius: BorderRadius.circular(100),
+                        color: Color(0xFFBA1A1A),
+                      ),
                       child: const Icon(
                         CupertinoIcons.pencil,
                         color: Color(0xFFFFDBD1),
@@ -76,7 +93,7 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
               const SizedBox(height: 10),
               Text(
-                userModel!.name ?? 'Guest User',
+                userModel?.name ?? 'Guest User',
                 style: TextStyle(
                   color: Color(0xFF3B0900),
                   fontSize: 22.0,
@@ -84,7 +101,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ),
               Text(
-                userModel!.email ?? '',
+                userModel?.email ?? '',
                 style: TextStyle(
                   color: Color(0xFF3B0900),
                   fontSize: 15.0,
@@ -96,12 +113,19 @@ class _ProfilePageState extends State<ProfilePage> {
                 width: 200,
                 child: ElevatedButton(
                   onPressed: () {
-                    Navigator.pushNamed(context, '/edit_profile');
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => EditProfilePage(
+                          userModel: userModel,
+                        ),
+                      ),
+                    );
                   },
                   style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFFFFDBD1),
-                      side: BorderSide.none,
-                      shape: const StadiumBorder()),
+                    backgroundColor: Color(0xFFFFDBD1),
+                    side: BorderSide.none,
+                    shape: const StadiumBorder(),
+                  ),
                   child: const Text(
                     "Edit Profile",
                     style: TextStyle(
@@ -321,10 +345,22 @@ class _ProfilePageState extends State<ProfilePage> {
                       color: Color(0xFF3B0900),
                     )),
               ),
+
+              // Other list items...
               ListTile(
-                onTap: () {
-                  FirebaseAuth.instance.signOut();
-                  Navigator.pushReplacementNamed(context, '/phone');
+                onTap: () async {
+                  if (!loggingOut) {
+                    setState(() {
+                      loggingOut = true; // Start the log out process
+                    });
+
+                    final googleSignIn = GoogleSignIn();
+                    await googleSignIn.disconnect(); // Sign out from Google
+                    await FirebaseAuth.instance.signOut(); // Sign out from Firebase
+
+                    // Navigate to '/phone' when log out is complete
+                    Navigator.pushReplacementNamed(context, '/phone');
+                  }
                 },
                 leading: Container(
                   width: 40,
@@ -333,15 +369,15 @@ class _ProfilePageState extends State<ProfilePage> {
                     borderRadius: BorderRadius.circular(100),
                     color: Color(0xFFFFDBD1).withOpacity(0.1),
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.exit_to_app,
-                    color: Colors.red,
+                    color: loggingOut ? Colors.grey : Colors.red, // Change color based on log out state
                   ),
                 ),
-                title: const Text(
+                title: Text(
                   "Log Out",
                   style: TextStyle(
-                    color: Colors.red,
+                    color: loggingOut ? Colors.grey : Colors.red, // Change color based on log out state
                     fontSize: 15.0,
                   ),
                 ),
@@ -359,6 +395,11 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ),
               ),
+              // Circular Progress Indicator shown when logging out
+              if (loggingOut) ...[
+                SizedBox(height: 30),
+                CircularProgressIndicator(),
+              ],
             ],
           ),
         ),

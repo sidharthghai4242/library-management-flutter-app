@@ -1,6 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:rlr/pages/all_books.dart';
 import 'package:rlr/pages/book_page.dart';
 import 'package:rlr/pages/catalogue_page.dart';
 
@@ -11,7 +12,64 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with RouteAware {
+  final navigatorKey = GlobalKey<NavigatorState>();
+  bool shouldRefreshRatings = false;
+  bool isCategoryDropdownOpen = false;
+  void toggleCategoryDropdown() {
+    setState(() {
+      isCategoryDropdownOpen = !isCategoryDropdownOpen;
+    });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Add a listener to the Navigator to detect page transitions
+    navigatorKey.currentState?.widget.observers.add(NavigatorObserver(this));
+  }
+
+
+  Future<double> fetchRatingByDocId(String docId) async {
+    final ratingQuerySnapshot = await FirebaseFirestore.instance
+        .collection("ratings")
+        .where('docId', isEqualTo: docId)
+        .get();
+
+    if (ratingQuerySnapshot.docs.isNotEmpty) {
+      final ratingData =
+      ratingQuerySnapshot.docs.first.data() as Map<String, dynamic>;
+      return ratingData['rating']?.toDouble() ?? 0.0;
+    }
+
+    return 0.0; // Default rating if not found
+  }
+
+  @override
+  void didPush() {
+    // This method is called when a new route has been pushed.
+    // You can add additional logic here if needed.
+  }
+
+  @override
+  void didPopNext() {
+    // This method is called when the current route has been popped off,
+    // and the previous route (i.e., the home page) is now visible again.
+    // You can refresh ratings or perform any other necessary updates here.
+    if (shouldRefreshRatings) {
+      refreshRatings();
+    }
+  }
+
+  // Function to refresh ratings
+  void refreshRatings() {
+    // Implement the logic to refresh ratings here
+    // You may need to update the state of your widgets to reflect the changes
+    setState(() {
+      shouldRefreshRatings = false; // Reset the flag
+    });
+  }
+
   fetchCatalogue() {
     return FirebaseFirestore.instance.collection("Catalogue").snapshots();
   }
@@ -21,21 +79,94 @@ class _HomeScreenState extends State<HomeScreen> {
         .where('type.catalogueId', isEqualTo: value)
         .snapshots();
   }
+  showCategoriesPopup(BuildContext context, List<DocumentSnapshot> data) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Stack(
+          alignment: Alignment.center,
+          children: [
+            // Background with some transparency
+            Container(
+              color: Colors.black.withOpacity(0.5), // Adjust opacity as needed
+            ),
+            // Popup content
+            Dialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              child: Container(
+                padding: EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
 
-  // Function to fetch the rating based on DocId from the "ratings" collection
-  Future<double> fetchRatingByDocId(String docId) async {
-    final ratingQuerySnapshot = await FirebaseFirestore.instance
-        .collection("ratings")
-        .where('docId', isEqualTo: docId)
-        .get();
+                    Text("Categories",textAlign: TextAlign.center,style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20),),
+                    Divider(),
+                    ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: data.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        Map<String, dynamic> map =
+                        data[index].data() as Map<String, dynamic>;
+                        String name = map['name'].toString();
+                        String id = map['catalogueId'].toString();
+                        return ElevatedButton(
+                          onPressed: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    CataloguePage(name: name, id: id),
+                              ),
+                            );
+                          },
+                          child: Text(name),
+                        );
+                      },
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => Allbooks(),
+                          ),
+                        );
+                      },
+                      child: Text("All"),
+                    ),
+                    SizedBox(height: 5,),
+                    RawMaterialButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      shape: CircleBorder(),
+                      fillColor: Colors.white, // Change the button background color as needed
+                      elevation: 0, // No elevation
+                      constraints: BoxConstraints(
+                        minWidth: 36.0, // Adjust the size as needed
+                        minHeight: 36.0, // Adjust the size as needed
+                      ),
+                      child: Icon(
+                        Icons.close,
+                        color: Colors.black, // Change the icon color as needed
+                      ),
+                    ),
 
-    if (ratingQuerySnapshot.docs.isNotEmpty) {
-      final ratingData = ratingQuerySnapshot.docs.first.data() as Map<String, dynamic>;
-      return ratingData['rating']?.toDouble() ?? 0.0;
-    }
 
-    return 0.0; // Default rating if not found
+                  ],
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -74,53 +205,55 @@ class _HomeScreenState extends State<HomeScreen> {
                 );
               }
               return Container(
-                padding: EdgeInsets.all(18),
-                height: 100,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: snapshot.data.docs.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    Map<String, dynamic> map =
-                    snapshot.data.docs[index].data() as Map<String, dynamic>;
-                    String name = map['name'].toString();
-                    String id = map['catalogueId'].toString();
-                    return Row(
-                      children: [
-                        InkWell(
-                          onTap: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    CataloguePage(name: name, id: id),
+
+                padding: EdgeInsets.symmetric(horizontal: 8), // Adjust padding as needed
+                height: 50,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: [
+                            for (int index = 0; index < 2 && index < snapshot.data.docs.length; index++)
+                              Row(
+                                children: [
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (context) => CataloguePage(
+                                            name: snapshot.data.docs[index]['name'].toString(),
+                                            id: snapshot.data.docs[index]['catalogueId'].toString(),
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                    child: Text(snapshot.data.docs[index]['name'].toString()),
+                                  ),
+                                  SizedBox(width: 10),
+                                ],
                               ),
-                            );
-                          },
-                          child: Material(
-                            elevation: 5,
-                            borderRadius: BorderRadius.circular(180),
-                            child: Row(
-                              children: [
-                                Container(
-                                  padding: EdgeInsets.all(8),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(180),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Text(map['name'].toString()),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
+                            if (snapshot.data.docs.length > 2)
+                              ElevatedButton.icon(
+                                onPressed: () {
+                                  showCategoriesPopup(context, snapshot.data.docs.sublist(2));
+                                },
+                                label: Text("Categories"),
+                                icon: Icon(Icons.arrow_drop_down),
+                              ),
+                          ],
                         ),
-                        SizedBox(width: 10),
-                      ],
-                    );
-                  },
+                      ),
+                    ),
+                  ],
                 ),
               );
+
+
+
+
+
             },
           ),
           StreamBuilder(
@@ -148,11 +281,14 @@ class _HomeScreenState extends State<HomeScreen> {
                         }
 
                         // Filter out books with null 'url'
-                        final booksWithUrls = booksSnapshot.data.docs.where((bookDocument) {
-                          Map<String, dynamic> bookMap = bookDocument.data() as Map<String, dynamic>;
+                        final booksWithUrls = booksSnapshot.data.docs
+                            .where((bookDocument) {
+                          Map<String, dynamic> bookMap =
+                          bookDocument.data() as Map<String, dynamic>;
                           String url = bookMap['url'];
                           return url != null;
-                        }).toList();
+                        })
+                            .toList();
 
                         // Don't display the category if no books are found
                         if (booksWithUrls.isEmpty) {
@@ -169,17 +305,22 @@ class _HomeScreenState extends State<HomeScreen> {
                                 children: [
                                   Text("$value"),
                                   Container(
-                                    width: value.length * 8, // Specify the width you want
+                                    width: value.length *
+                                        8, // Specify the width you want
                                     child: Divider(),
                                   ),
                                   Container(
-                                    height: 265,
+
+                                    height: 320,
                                     padding: EdgeInsets.all(4),
                                     child: SingleChildScrollView(
                                       scrollDirection: Axis.horizontal,
                                       child: Row(
-                                        children: booksWithUrls.map<Widget>((bookDocument) {
-                                          Map<String, dynamic> bookMap = bookDocument.data() as Map<String, dynamic>;
+                                        children: booksWithUrls
+                                            .map<Widget>((bookDocument) {
+                                          Map<String, dynamic> bookMap =
+                                          bookDocument.data()
+                                          as Map<String, dynamic>;
                                           String author = bookMap['author'];
                                           String title = bookMap['title'];
                                           String url = bookMap['url'];
@@ -195,7 +336,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                     child: Container(
                                                       padding: EdgeInsets.all(8),
                                                       decoration: BoxDecoration(
-                                                        color: Colors.deepOrangeAccent,
+
                                                         borderRadius: BorderRadius.circular(10),
                                                       ),
                                                       width: 150, // Set a fixed width
@@ -209,18 +350,19 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                 // Navigate to the book page with details
                                                                 Navigator.of(context).push(
                                                                   MaterialPageRoute(
-                                                                    builder: (context) => BookPage(
-                                                                      author: author,
-                                                                      title: title,
-                                                                      url: url,
-                                                                      id: id,
-                                                                      DocId: docId,
-                                                                    ),
+                                                                    builder: (context) =>
+                                                                        BookPage(
+                                                                          author: author,
+                                                                          title: title,
+                                                                          url: url,
+                                                                          id: id,
+                                                                          DocId: docId,
+                                                                        ),
                                                                   ),
                                                                 );
                                                               },
                                                               child: ClipRRect(
-                                                                borderRadius: BorderRadius.circular(12),
+                                                                borderRadius: BorderRadius.circular(15),
                                                                 child: Image.network(
                                                                   url,
                                                                   errorBuilder: (context, error, stackTrace) {
@@ -232,38 +374,61 @@ class _HomeScreenState extends State<HomeScreen> {
                                                           ),
                                                           Container(
                                                             padding: EdgeInsets.symmetric(horizontal: 4),
-                                                            child: Row(
+                                                            child: Column(
+                                                              crossAxisAlignment: CrossAxisAlignment.start,
                                                               children: [
-                                                                Flexible(
-                                                                  child: Container(
-                                                                    child: Text(
-                                                                      title,
-                                                                      style: TextStyle(fontSize: 14,fontWeight: FontWeight.bold),
-                                                                      overflow: TextOverflow.ellipsis,
-                                                                      maxLines: 2,
-                                                                    ),
+                                                                Text(
+                                                                  title,
+                                                                  style: TextStyle(
+                                                                    fontSize: 16,
+                                                                    fontWeight: FontWeight.bold,
                                                                   ),
+                                                                  overflow: TextOverflow.ellipsis,
+                                                                  maxLines: 2,
                                                                 ),
-
-                                                                if (bookRating != null) ...[
-                                                                  SizedBox(width: 10,),
-                                                                  Text(bookRating.toStringAsFixed(1)), // Display rating with 1 decimal place
-                                                                  Icon(Icons.star),
-
-                                                                ],
+                                                                SizedBox(height: 4),
+                                                                Text(
+                                                                  "By $author",
+                                                                  style: TextStyle(
+                                                                    fontSize: 14,
+                                                                    color: Colors.grey,
+                                                                  ),
+                                                                  overflow: TextOverflow.ellipsis,
+                                                                  maxLines: 1,
+                                                                ),
+                                                                SizedBox(height: 4),
+                                                                // if (bookRating > 0.0) ...[
+                                                                Row(
+                                                                  children: [
+                                                                    Text(
+                                                                      bookRating.toStringAsFixed(1),
+                                                                      style: TextStyle(
+                                                                        fontSize: 14,
+                                                                        fontWeight: FontWeight.bold,
+                                                                      ),
+                                                                    ),
+                                                                    Icon(
+                                                                      Icons.star,
+                                                                      color: Colors.amber,
+                                                                      size: 16,
+                                                                    ),
+                                                                  ],
+                                                                ),
                                                               ],
+                                                              // ],
                                                             ),
                                                           ),
                                                         ],
                                                       ),
                                                     ),
                                                   ),
-                                                  SizedBox(width: 10),
+
                                                 ],
                                               );
                                             },
                                           );
-                                        }).toList(),
+                                        })
+                                            .toList(),
                                       ),
                                     ),
                                   ),
@@ -282,5 +447,23 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
     );
+  }
+}
+
+class NavigatorObserver extends RouteObserver<PageRoute<dynamic>> {
+  final _homeScreenState;
+
+  NavigatorObserver(this._homeScreenState);
+
+  @override
+  void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    super.didPop(route, previousRoute);
+
+    if (previousRoute is PageRoute && previousRoute.settings.name == '/') {
+      // Detect when returning to the home page and set the refresh flag
+      _homeScreenState.setState(() {
+        _homeScreenState.shouldRefreshRatings = true;
+      });
+    }
   }
 }

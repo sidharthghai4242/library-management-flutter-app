@@ -41,10 +41,7 @@ class _HomePageState extends State<NavPage> {
           ),
           child: Container(
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.only(
-                topRight: Radius.circular(10),
-                topLeft: Radius.circular(10),
-              ),
+
               color: Color(0xFFFFDBD1),
             ),
 
@@ -53,7 +50,7 @@ class _HomePageState extends State<NavPage> {
               child: GNav(
                 backgroundColor: Color(0xFFFFDBD1),
                 color: Color(0xFF3B0900),
-                activeColor: Color(0xFF3B0900),
+                activeColor: Color(0xFFFFDBD1),
                 tabBackgroundColor: Color(0xFF9B442B),
                 gap: 8,
                 padding: EdgeInsets.all(10),

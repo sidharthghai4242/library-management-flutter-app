@@ -16,6 +16,7 @@ class DbProvider extends ChangeNotifier {
 
   void setUserModel(UserModel userModel) {
     userModel = userModel;
+    print(">>>> "+ userModel.toString());
     notifyListeners();
   }
 

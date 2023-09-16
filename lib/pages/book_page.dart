@@ -1,5 +1,5 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 class BookPage extends StatefulWidget {
@@ -24,6 +24,8 @@ class BookPage extends StatefulWidget {
 class _BookPageState extends State<BookPage> {
   double userRating = 0.0; // Track user's rating
   bool isFavorite = false; // Track favorite status
+  double bookRating = 0.0; // Book's average rating
+  int readByCount = 0; // Count of users who have read the book
 
   fetchBooksByName(String value, String? title) {
     return FirebaseFirestore.instance
@@ -49,6 +51,7 @@ class _BookPageState extends State<BookPage> {
       final ratingsSnapshot = await ratingsQuery.get();
 
       if (ratingsSnapshot.docs.isNotEmpty) {
+        // Document exists, update its fields
         final ratingsDocRef = ratingsSnapshot.docs.first.reference;
         final currentRating = ratingsSnapshot.docs.first.data()['rating'];
         final currentReadBy = ratingsSnapshot.docs.first.data()['readBy'];
@@ -64,47 +67,97 @@ class _BookPageState extends State<BookPage> {
 
         print("Rating and readBy updated successfully!");
       } else {
-        print("Document with docId $docId not found in the 'ratings' collection.");
+        // Document doesn't exist, create a new one
+        await FirebaseFirestore.instance.collection("ratings").add({
+          'docId': docId,
+          'rating': newRating,
+          'readBy': 1, // Initialize readBy to 1 for the new document
+        });
+        print("New document created in 'ratings' collection.");
       }
+
+      // Fetch the updated specific book rating and readBy count
+      await fetchSpecificBookRating();
     } catch (e) {
       print("Error updating rating and readBy: $e");
     }
   }
 
 
-  // Fetch the user's rating from Firestore
-  Future<void> fetchUserRating() async {
+  // Fetch the book's average rating and readBy count from Firestore
+  // Fetch the book's average rating and readBy count from Firestore
+  Future<void> fetchBookRating() async {
     try {
-      final bookQuery = FirebaseFirestore.instance.collection("ratings")
-          .where('docId', isEqualTo: widget.DocId); // Get the query
+      final ratingsQuery = FirebaseFirestore.instance
+          .collection("ratings")
+          .where('docId', isEqualTo: widget.DocId);
 
-      final bookSnapshot = await bookQuery.get(); // Execute the query
+      final ratingsSnapshot = await ratingsQuery.get();
 
-      if (bookSnapshot.docs.isNotEmpty) {
-        final bookData = bookSnapshot.docs.first.data() as Map<String, dynamic>;
-        final rating = bookData['rating'];
+      // Initialize totalRatings and sumRatings
+      int totalRatings = 0;
+      double sumRatings = 0.0;
 
-        // Check if rating is an integer and convert it to a double
-        if (rating is int) {
-          setState(() {
-            userRating = rating.toDouble();
-          });
-        } else if (rating is double) {
-          setState(() {
-            userRating = rating;
-          });
+      if (ratingsSnapshot.docs.isNotEmpty) {
+        totalRatings = ratingsSnapshot.docs.length;
+
+        for (final doc in ratingsSnapshot.docs) {
+          final rating = doc.data()['rating'];
+          sumRatings += rating.toDouble();
         }
       }
+
+      setState(() {
+        bookRating = totalRatings > 0 ? sumRatings / totalRatings : 0.0;
+        readByCount = totalRatings;
+      });
     } catch (e) {
-      print("Error fetching user rating: $e");
+      print("Error fetching book rating: $e");
     }
   }
+  // Fetch the book's specific rating and readBy count from Firestore
+// Fetch the book's specific rating and readBy count from Firestore
+  Future<void> fetchSpecificBookRating() async {
+    try {
+      final specificBookQuery = FirebaseFirestore.instance
+          .collection("ratings")
+          .where('docId', isEqualTo: widget.DocId);
 
+      final specificBookSnapshot = await specificBookQuery.get();
+
+      if (specificBookSnapshot.docs.isNotEmpty) {
+        final specificBookData = specificBookSnapshot.docs.first.data() as Map<String, dynamic>;
+        final specificBookRating = specificBookData['rating'];
+        final specificBookReadBy = specificBookData['readBy'];
+
+        // Check if the rating is an integer and convert it to a double
+        if (specificBookRating is int) {
+          setState(() {
+            userRating = specificBookRating.toDouble();
+            readByCount = specificBookReadBy;
+          });
+        } else if (specificBookRating is double) {
+          setState(() {
+            userRating = specificBookRating;
+            readByCount = specificBookReadBy;
+          });
+        }
+      } else {
+        // If there are no ratings for this book yet, initialize readByCount to 0.
+        setState(() {
+          readByCount = 0;
+        });
+      }
+    } catch (e) {
+      print("Error fetching specific book rating: $e");
+    }
+  }
   @override
   void initState() {
     super.initState();
-    // Fetch the user's rating when the page is initialized
-    fetchUserRating();
+    // Fetch the user's rating, book's average rating, and specific book rating when the page is initialized
+    fetchSpecificBookRating();
+    fetchBookRating();
   }
 
   @override
@@ -120,7 +173,7 @@ class _BookPageState extends State<BookPage> {
           style: TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.bold,
-            color: Color.fromRGBO(0, 0, 128, 1),
+            color: Colors.orange,
           ),
         ),
         actions: [
@@ -137,86 +190,43 @@ class _BookPageState extends State<BookPage> {
                 Container(
                   padding: EdgeInsets.all(16),
                   height: 270,
+                  width: 175,
                   child: Image.network('${widget.url}'),
                 ),
                 SizedBox(width: 5),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    Container(
+                      width: 158,
+                      child: Text(
+                        '${widget.title}',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2,
+                      ),
+                    ),
+                    SizedBox(height: 5),
                     Text(
-                      "By:- ${widget.author}",
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                      "${widget.author}",
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.orange),
+                    ),
+                    SizedBox(height: 5), // Add a SizedBox with a height of 5
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        // Handle the "Add to Cart" button click here
+                        // You can implement the cart functionality here, such as adding the book to the user's cart.
+                        // You may also want to display a confirmation message.
+                      },
+                      icon: Icon(Icons.add_shopping_cart), // Add an icon to the button
+                      label: Text("Add to Cart"), // Add text to the button
                     ),
                   ],
                 )
-              ],
-            ),
-            SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                // Favorite icon moved here
-                IconButton(
-                  icon: Icon(
-                    isFavorite ? Icons.favorite : Icons.favorite_border,
-                    color: isFavorite ? Colors.red : null,
-                  ),
-                  onPressed: toggleFavorite,
-                ),
-                IconButton(
-                  icon: Icon(Icons.share),
-                  onPressed: () {
-                    // Handle share action here
-                  },
-                ),
-                IconButton(
-                  icon: Icon(Icons.bookmark_added_outlined), // Change to the "Read" icon
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        double rating = 0; // Initialize the rating
 
-                        return AlertDialog(
-                          title: Text("Read it? Then please rate it"),
-                          content: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: <Widget>[
-                              RatingBar.builder(
-                                initialRating: rating,
-                                minRating: 1,
-                                direction: Axis.horizontal,
-                                allowHalfRating: false,
-                                itemCount: 5,
-                                itemSize: 40.0,
-                                itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
-                                itemBuilder: (context, _) => Icon(
-                                  Icons.star,
-                                  color: Colors.amber,
-                                ),
-                                onRatingUpdate: (newRating) {
-                                  rating = newRating; // Update the rating when the user selects stars
-                                },
-                              ),
-                              SizedBox(height: 16.0), // Add spacing
-                              ElevatedButton(
-                                onPressed: () async {
-                                  // Handle the submit action here
-                                  Navigator.of(context).pop(); // Close the dialog
-
-                                  // Use the captured DocId to update the rating in Firestore
-                                  await updateRatingAndReadByInFirestore(rating, widget.DocId);
-                                },
-                                child: Text("Submit"),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                    );
-                  },
-                ),
               ],
             ),
             SizedBox(height: 10),
@@ -226,20 +236,131 @@ class _BookPageState extends State<BookPage> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text("Rating"),
-                  Row(
+                  Text("Rating",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 16),),
+                  Container(
+                    width: 90,
+                    child: Divider(),
+                  ),
+                  SizedBox(height: 5,),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                    Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: List.generate(5, (index) {
-                      return Icon(
-                        Icons.star,
-                        color: index < userRating ? Colors.amber : Colors.grey,
+                      return Row(
+                        children: [
+                          Icon(
+                            index < userRating.floor()
+                                ? Icons.star
+                                : (index < userRating.ceil()
+                                ? Icons.star_half
+                                : Icons.star_border),
+                            color: Colors.amber,
+                            size: 40.0,
+                          ),
+                        ],
                       );
                     }),
+                  ),
+                      SizedBox(height: 5),
+                      Text('('+readByCount.toString()+')',style: TextStyle(fontSize: 14,fontWeight: FontWeight.bold),)
+                    ],
                   )
                 ],
               ),
             ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                // Favorite icon moved here
+                Column(
+                  children: [
+                    IconButton(
+                      icon: Icon(
+                        isFavorite ? Icons.favorite : Icons.favorite_border,
+                        color: isFavorite ? Colors.red : null,
+                      ),
+                      onPressed: toggleFavorite,
+                    ),
+                    Row(children: [
+                      Text("Wishlist"),
+                    ],),
+                  ],
+                ),
+                Column(
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.share),
+                      onPressed: () {
+                        // Handle share action here
+                      },
+                    ),
+                    Row(children: [
+                      SizedBox(width: 4,),
+                      Text("Share"),
+                    ],),
+                  ],
+                ),
+                Column(
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.bookmark_added_outlined), // Change to the "Read" icon
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            double rating = 0; // Initialize the rating
 
-            SizedBox(height: 10),
+                            return AlertDialog(
+                              title: Text("Read it? Then please rate it"),
+                              content: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  RatingBar.builder(
+                                    initialRating: 0, // Use the user's specific book rating
+                                    minRating: 1,
+                                    direction: Axis.horizontal,
+                                    allowHalfRating: false,
+                                    itemCount: 5,
+                                    itemSize: 35.0,
+                                    itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
+                                    itemBuilder: (context, _) => Icon(
+                                      Icons.star,
+                                      color: Colors.amber,
+                                    ),
+                                    onRatingUpdate: (newRating) {
+                                      rating = newRating; // Update the rating when the user selects stars
+                                    },
+                                  ),
+                                  SizedBox(height: 16.0), // Add spacing
+                                  ElevatedButton(
+                                    onPressed: () async {
+                                      // Handle the submit action here
+                                      Navigator.of(context).pop(); // Close the dialog
+
+                                      // Use the captured DocId to update the rating in Firestore
+                                      await updateRatingAndReadByInFirestore(rating, widget.DocId);
+                                    },
+                                    child: Text("Submit"),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    ),
+                    Row(children: [
+                      SizedBox(width: 4,),
+                      Text("Review"),
+                    ],),
+                  ],
+                ),
+              ],
+            ),
+            SizedBox(height: 20),
             Text("Similar Publications"),
             Container(
               width: 150,
@@ -278,7 +399,7 @@ class _BookPageState extends State<BookPage> {
                           String author = bookMap['author'];
                           String title = bookMap['title'];
                           String url = bookMap['url'];
-                          String DocId=bookMap['docId']??'';
+                          String DocId = bookMap['docId'] ?? '';
 
                           return Row(
                             children: [
@@ -286,7 +407,7 @@ class _BookPageState extends State<BookPage> {
                                 child: Container(
                                   padding: EdgeInsets.all(8),
                                   decoration: BoxDecoration(
-                                    color: Colors.deepOrangeAccent,
+
                                     borderRadius: BorderRadius.circular(10),
                                   ),
                                   width: 150, // Set a fixed width
@@ -300,18 +421,19 @@ class _BookPageState extends State<BookPage> {
                                             // Navigate to the book page with details
                                             Navigator.of(context).push(
                                               MaterialPageRoute(
-                                                builder: (context) => BookPage(
-                                                  author: author,
-                                                  title: title,
-                                                  url: url,
-                                                  id: widget.id,
-                                                  DocId: DocId,
-                                                ),
+                                                builder: (context) =>
+                                                    BookPage(
+                                                      author: author,
+                                                      title: title,
+                                                      url: url,
+                                                      id: widget.id,
+                                                      DocId: DocId,
+                                                    ),
                                               ),
                                             );
                                           },
                                           child: ClipRRect(
-                                            borderRadius: BorderRadius.circular(12),
+                                            borderRadius: BorderRadius.circular(15),
                                             child: Image.network(
                                               url,
                                               errorBuilder: (context, error, stackTrace) {
@@ -322,25 +444,49 @@ class _BookPageState extends State<BookPage> {
                                         ),
                                       ),
                                       Container(
-                                        padding:EdgeInsets.symmetric(horizontal: 4),
-                                        child:  Row(
+                                        padding: EdgeInsets.symmetric(horizontal: 4),
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
-                                            if (bookMap['rating'] != null) ...[
-                                              Text(bookMap['rating'].toString()), // Convert int to string
-                                              Icon(Icons.star),
-                                              SizedBox(width: 10,),
-                                            ],
-                                            Flexible(
-                                              child: Container(
-                                                child: Text(
-                                                  bookMap['title'],
-                                                  style: TextStyle(fontSize: 12),
-                                                  overflow: TextOverflow.ellipsis,
-                                                  maxLines: 2,
-                                                ),
+                                            Text(
+                                              title,
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold,
                                               ),
+                                              overflow: TextOverflow.ellipsis,
+                                              maxLines: 2,
+                                            ),
+                                            SizedBox(height: 4),
+                                            Text(
+                                              "By $author",
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                color: Colors.grey,
+                                              ),
+                                              overflow: TextOverflow.ellipsis,
+                                              maxLines: 1,
+                                            ),
+                                            SizedBox(height: 4),
+                                            // if (bookRating > 0.0) ...[
+                                            Row(
+                                              children: [
+                                                Text(
+                                                  bookRating.toStringAsFixed(1),
+                                                  style: TextStyle(
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                                Icon(
+                                                  Icons.star,
+                                                  color: Colors.amber,
+                                                  size: 16,
+                                                ),
+                                              ],
                                             ),
                                           ],
+                                          // ],
                                         ),
                                       ),
                                     ],

@@ -1,14 +1,12 @@
 import 'package:rlr/pages/activity_page.dart';
+import 'package:rlr/pages/all_books.dart';
 import 'package:rlr/pages/authentication/phone_screen.dart';
-import 'package:rlr/pages/authentication/googlesignin.dart';
 import 'package:rlr/pages/edit_profile.dart';
 import 'package:rlr/pages/home_screen.dart';
 import 'package:rlr/pages/mybooks_page.dart';
 import 'package:rlr/pages/notifications_page.dart';
 import 'package:rlr/pages/profile_page.dart';
 import 'package:rlr/pages/settings_page.dart';
-import 'firebase_options.dart';
-import 'package:rlr/pages/edit_profile.dart';
 import 'package:rlr/pages/splash_screen.dart';
 import 'package:rlr/provider/DbProvider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -19,7 +17,9 @@ import 'package:rlr/pages/nav_page.dart';
 import 'package:rlr/pages/membership.dart';
 import 'package:rlr/helper/color_schemes.g.dart';
 import 'package:rlr/pages/search_page.dart';
-import 'package:rlr/pages/menu_drawer.dart';
+
+import 'pages/authentication/signin_with_email.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
@@ -46,21 +46,21 @@ class MyApp extends StatelessWidget {
         routes: {
           '/phone':(context)=>PhoneScreen(),
           '/membership':(context)=>Membership(),
-          '/google':(context)=>const SignIn(),
+          '/google':(context)=>const GoogleSignInPage(),
           '/search': (context) => const SearchPage(),
           '/home': (context) => const HomeScreen(),
           '/nav' : (context) => NavPage(),
           '/splash': (context) => const SplashScreen(),
-          '/search': (context) => const SearchPage(),
           '/profile': (context) => const ProfilePage(),
           '/settings': (context) => const SettingsPage(),
           '/mybooks': (context) => const MyBooksPage(),
           '/activity': (context) => const ActivityPage(),
           '/notifications': (context) => const NotificationsPage(),
-          '/edit_profile' : (context) => const EditProfilePage(),
-
+          '/edit_profile' : (context) => EditProfilePage(),
+          '/allbooks' : (context) => const Allbooks(),
 
         },
+
       ),
     );
   }
@@ -73,9 +73,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  User? firebaseUser;
-  Widget initialScreen = const SplashScreen();
-  BuildContext? bContext;
+  // User? firebaseUser;
+  // Widget initialScreen = const SplashScreen();
 
   @override
   void initState() {
@@ -85,20 +84,32 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   checkAuthState() async {
-    FirebaseAuth.instance.authStateChanges().listen((user) async {
-      if (user == null) {
-        initialScreen = PhoneScreen();
-      } else {
-        await context.read<DbProvider>().getUserFromFirestore(user: user, bContent: bContext);
-        initialScreen = const NavPage();
-      }
-      setState(() {});
-    });
+    debugPrint("checkAuthState");
+    User? user = FirebaseAuth.instance.currentUser;
+    if(user == null){
+      //not login
+      Navigator.pushReplacementNamed(context, '/phone');
+    }else{
+      //logged in
+          await context.read<DbProvider>().getUserFromFirestore(user: user, bContent: context);
+          debugPrint("after getting user data");
+          Navigator.pushReplacementNamed(context, '/nav');
+    }
+    // FirebaseAuth.instance.authStateChanges().listen((user) async {
+    //   if (user == null) {
+    //     //
+    //     Navigator.pushReplacementNamed(context, '/phone');
+    //   } else {
+    //     await context.read<DbProvider>().getUserFromFirestore(user: user, bContent: bContext);
+    //     initialScreen = const NavPage();
+    //   }
+    //   setState(() {});
+    // });
   }
 
   @override
   Widget build(BuildContext context) {
-    bContext = context;
-    return initialScreen;
+    return SplashScreen();
   }
 }
+
