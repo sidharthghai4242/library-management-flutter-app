@@ -61,7 +61,11 @@ class _SearchPageState extends State<SearchPage> {
             ),
           ),
           Expanded(
-            child: ListView.builder(
+            child: searchResult.isEmpty
+                ? Center(
+              child: Text("No recent searches"),
+            )
+                : ListView.builder(
               itemCount: searchResult.length,
               itemBuilder: (context, index) {
                 final book = searchResult[index];

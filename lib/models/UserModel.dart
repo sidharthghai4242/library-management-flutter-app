@@ -65,9 +65,9 @@ class UserModel {
 class Subscription {
   String description = "";
   String descriptiontitle = "";
-  String issueperiod = "";
+  int issueperiod = 0; // Update the type to int
   String name = "";
-  String maxbooks = "";
+  int maxbooks = 0; // Update the type to int
   String planId = "";
   double price = 0.0;
   String validity = "";
@@ -76,9 +76,9 @@ class Subscription {
     Subscription subscription = Subscription();
     subscription.description = doc["description"] ?? "";
     subscription.descriptiontitle = doc["descriptiontitle"] ?? "";
-    subscription.issueperiod = doc["issueperiod"] ?? "";
+    subscription.issueperiod = doc["issueperiod"] ?? 0;
     subscription.name = doc["name"] ?? "";
-    subscription.maxbooks = doc["maxbooks"] ?? "";
+    subscription.maxbooks = doc["maxbooks"] ?? 0;
     subscription.planId = doc["planId"] ?? "";
     subscription.price = doc["price"] ?? 0.0;
     subscription.validity = doc["validity"] ?? "";
@@ -89,9 +89,9 @@ class Subscription {
     Map<String, dynamic> map = <String, dynamic>{};
     map["description"] = description ?? "";
     map["descriptiontitle"] = descriptiontitle ?? "";
-    map["issueperiod"] = issueperiod ?? "";
+    map["issueperiod"] = issueperiod ?? 0;
     map["name"] = name ?? "";
-    map["maxbooks"] = maxbooks ?? "";
+    map["maxbooks"] = maxbooks ?? 0;
     map["planId"] = planId ?? "";
     map["price"] = price ?? 0.0;
     map["validity"] = validity ?? "";
