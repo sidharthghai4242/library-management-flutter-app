@@ -1,9 +1,10 @@
 import 'package:rlr/pages/activity_page.dart';
 import 'package:rlr/pages/all_books.dart';
 import 'package:rlr/pages/authentication/phone_screen.dart';
+import 'package:rlr/pages/authentication/sign_up_widget.dart';
 import 'package:rlr/pages/edit_profile.dart';
 import 'package:rlr/pages/home_screen.dart';
-import 'package:rlr/pages/mybooks_page.dart';
+import 'package:rlr/pages/my_books.dart';
 import 'package:rlr/pages/notifications_page.dart';
 import 'package:rlr/pages/profile_page.dart';
 import 'package:rlr/pages/settings_page.dart';
@@ -53,11 +54,12 @@ class MyApp extends StatelessWidget {
           '/splash': (context) => const SplashScreen(),
           '/profile': (context) => const ProfilePage(),
           '/settings': (context) => const SettingsPage(),
-          '/mybooks': (context) => const MyBooksPage(),
+          '/mybooks': (context) => const MyBooks(),
           '/activity': (context) => const ActivityPage(),
           '/notifications': (context) => const NotificationsPage(),
           '/edit_profile' : (context) => EditProfilePage(),
           '/allbooks' : (context) => const Allbooks(),
+          '/signup':(context)=>SignUpPage()
 
         },
 
@@ -88,7 +90,7 @@ class _MyHomePageState extends State<MyHomePage> {
     User? user = FirebaseAuth.instance.currentUser;
     if(user == null){
       //not login
-      Navigator.pushReplacementNamed(context, '/phone');
+      Navigator.pushReplacementNamed(context, '/google');
     }else{
       //logged in
           await context.read<DbProvider>().getUserFromFirestore(user: user, bContent: context);

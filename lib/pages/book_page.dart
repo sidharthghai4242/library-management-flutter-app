@@ -6,14 +6,14 @@ class BookPage extends StatefulWidget {
   final String? author;
   final String? title;
   final String url;
-  final String id;
+  final String? id;
   final String DocId;
 
   const BookPage({
     this.author,
     this.title,
+    this.id,
     required this.url,
-    required this.id,
     required this.DocId,
   });
 
@@ -26,10 +26,12 @@ class _BookPageState extends State<BookPage> {
   bool isFavorite = false; // Track favorite status
   double bookRating = 0.0; // Book's average rating
   int readByCount = 0; // Count of users who have read the book
+  bool dataFetched = false;
 
-  fetchBooksByName(String value, String? title) {
+  fetchBooksByName(String value, String title) {
     return FirebaseFirestore.instance
         .collection("Books")
+        // .where('title',isNotEqualTo:title)
         .where('type.catalogueId', isEqualTo: value)
         .snapshots();
   }
@@ -86,6 +88,48 @@ class _BookPageState extends State<BookPage> {
 
   // Fetch the book's average rating and readBy count from Firestore
   // Fetch the book's average rating and readBy count from Firestore
+  Future<void> fetchSpecificBookRating() async {
+    setState(() {
+      dataFetched = true;
+    });
+    try {
+      final specificBookQuery = FirebaseFirestore.instance
+          .collection("ratings")
+          .where('docId', isEqualTo: widget.DocId);
+
+      final specificBookSnapshot = await specificBookQuery.get();
+
+      if (specificBookSnapshot.docs.isNotEmpty) {
+        final specificBookData = specificBookSnapshot.docs.first.data() as Map<String, dynamic>;
+        final specificBookRating = specificBookData['rating'];
+        final specificBookReadBy = specificBookData['readBy'];
+
+        // Check if the rating is an integer and convert it to a double
+        if (specificBookRating is int) {
+          setState(() {
+            userRating = specificBookRating.toDouble();
+            readByCount = specificBookReadBy.toDouble();
+          });
+        } else if (specificBookRating is double) {
+          setState(() {
+            userRating = specificBookRating;
+            readByCount = specificBookReadBy;
+          });
+        }
+      } else {
+        // If there are no ratings for this book yet, initialize readByCount to 0.
+        setState(() {
+          readByCount = 0;
+        });
+      }
+
+      // Set dataFetched to true when data is fetched
+
+    } catch (e) {
+      print("Error fetching specific book rating: $e");
+    }
+  }
+
   Future<void> fetchBookRating() async {
     try {
       final ratingsQuery = FirebaseFirestore.instance
@@ -108,64 +152,44 @@ class _BookPageState extends State<BookPage> {
       }
 
       setState(() {
+        // Update the readBy count
         bookRating = totalRatings > 0 ? sumRatings / totalRatings : 0.0;
-        readByCount = totalRatings;
+      });
+
+      // Set dataFetched to true when data is fetched
+      setState(() {
+        dataFetched = true;
       });
     } catch (e) {
       print("Error fetching book rating: $e");
     }
   }
-  // Fetch the book's specific rating and readBy count from Firestore
-// Fetch the book's specific rating and readBy count from Firestore
-  Future<void> fetchSpecificBookRating() async {
-    try {
-      final specificBookQuery = FirebaseFirestore.instance
-          .collection("ratings")
-          .where('docId', isEqualTo: widget.DocId);
-
-      final specificBookSnapshot = await specificBookQuery.get();
-
-      if (specificBookSnapshot.docs.isNotEmpty) {
-        final specificBookData = specificBookSnapshot.docs.first.data() as Map<String, dynamic>;
-        final specificBookRating = specificBookData['rating'];
-        final specificBookReadBy = specificBookData['readBy'];
-
-        // Check if the rating is an integer and convert it to a double
-        if (specificBookRating is int) {
-          setState(() {
-            userRating = specificBookRating.toDouble();
-            readByCount = specificBookReadBy;
-          });
-        } else if (specificBookRating is double) {
-          setState(() {
-            userRating = specificBookRating;
-            readByCount = specificBookReadBy;
-          });
-        }
-      } else {
-        // If there are no ratings for this book yet, initialize readByCount to 0.
-        setState(() {
-          readByCount = 0;
-        });
-      }
-    } catch (e) {
-      print("Error fetching specific book rating: $e");
-    }
-  }
   @override
   void initState() {
     super.initState();
-    // Fetch the user's rating, book's average rating, and specific book rating when the page is initialized
+
+    // Set initial values while waiting for data// You can set it to any default value you prefer
+
+    // Fetch the specific book rating when the page is initialized
     fetchSpecificBookRating();
+
+    // Fetch the average book rating when the page is initialized
     fetchBookRating();
   }
 
+
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
+    Widget build(BuildContext context) {
+    Color borderColor = MediaQuery.of(context).platformBrightness == Brightness.dark
+        ? Colors.white24
+        : Colors.black26;
+    String id='${widget.id}';
+    String title='${widget.title}';
+    return !dataFetched
+        ? (Center(child:CircularProgressIndicator()))// Show loader
+        : Scaffold(
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Colors.white,
         centerTitle: true,
         title: Text(
           '${widget.title}',
@@ -173,27 +197,49 @@ class _BookPageState extends State<BookPage> {
           style: TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.bold,
-            color: Colors.orange,
+            color: Colors.pink,
           ),
+
         ),
+        backgroundColor: Colors.transparent,
+        iconTheme: IconThemeData(color: Colors.pink),
         actions: [
           // Favorite icon removed from AppBar
         ],
       ),
       body: SingleChildScrollView(
+        padding: EdgeInsets.only(left: 10,right: 8),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+
             SizedBox(height: 5),
             Row(
               children: [
+                SizedBox(width: 5,),
                 Container(
-                  padding: EdgeInsets.all(16),
-                  height: 270,
-                  width: 175,
-                  child: Image.network('${widget.url}'),
+                  height: 250,
+                  width: 160,
+                  padding: EdgeInsets.all(2),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10), // Adjust the value as needed
+                    border: Border.all(
+                      color: borderColor, // Adjust the border color as needed
+                      width: 2, // Adjust the border width as needed
+                    ),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12), // Adjust the value as needed
+                    child: Image.network(
+                      '${widget.url}',
+                      errorBuilder: (context, error, stackTrace) {
+                        return const Text('Unable to load image from server');
+                      },
+                    ),
+                  ),
                 ),
-                SizedBox(width: 5),
+
+                SizedBox(width: 10),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -367,10 +413,10 @@ class _BookPageState extends State<BookPage> {
               child: Divider(),
             ),
             Container(
-              padding: EdgeInsets.all(16),
+              padding: EdgeInsets.all(10),
               child: Container(
                 child: StreamBuilder(
-                  stream: fetchBooksByName(widget.id, widget.title),
+                  stream: fetchBooksByName(id, title),
                   builder: (BuildContext context, AsyncSnapshot booksSnapshot) {
                     if (booksSnapshot.connectionState == ConnectionState.waiting) {
                       return CircularProgressIndicator();
@@ -397,103 +443,108 @@ class _BookPageState extends State<BookPage> {
                         children: booksWithUrls.map<Widget>((bookDocument) {
                           Map<String, dynamic> bookMap = bookDocument.data() as Map<String, dynamic>;
                           String author = bookMap['author'];
-                          String title = bookMap['title'];
+                          String secondtitle = bookMap['title'];
                           String url = bookMap['url'];
                           String DocId = bookMap['docId'] ?? '';
-
                           return Row(
                             children: [
-                              Material(
-                                child: Container(
-                                  padding: EdgeInsets.all(8),
-                                  decoration: BoxDecoration(
-
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  width: 150, // Set a fixed width
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      Container(
-                                        height: 200,
-                                        child: InkWell(
-                                          onTap: () {
-                                            // Navigate to the book page with details
-                                            Navigator.of(context).push(
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    BookPage(
-                                                      author: author,
-                                                      title: title,
-                                                      url: url,
-                                                      id: widget.id,
-                                                      DocId: DocId,
-                                                    ),
+                              if(secondtitle !=widget.title)...[
+                                Material(
+                                  child: Container(
+                                    height:320,
+                                    padding: EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(10), // Adjust the value as needed
+                                      border: Border.all(
+                                        color: borderColor, // Adjust the border color as needed
+                                        width: 2, // Adjust the border width as needed
+                                      ),
+                                    ),
+                                    width: 150, // Set a fixed width
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      children: [
+                                        Container(
+                                          height: 200,
+                                          child: InkWell(
+                                            onTap: () {
+                                              // Navigate to the book page with details
+                                              Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      BookPage(
+                                                        author: author,
+                                                        title: title,
+                                                        url: url,
+                                                        id: widget.id,
+                                                        DocId: DocId,
+                                                      ),
+                                                ),
+                                              );
+                                            },
+                                            child: ClipRRect(
+                                              borderRadius: BorderRadius.circular(15),
+                                              child: Image.network(
+                                                url,
+                                                errorBuilder: (context, error, stackTrace) {
+                                                  return const Text('Unable to load image from server');
+                                                },
                                               ),
-                                            );
-                                          },
-                                          child: ClipRRect(
-                                            borderRadius: BorderRadius.circular(15),
-                                            child: Image.network(
-                                              url,
-                                              errorBuilder: (context, error, stackTrace) {
-                                                return const Text('Unable to load image from server');
-                                              },
                                             ),
                                           ),
                                         ),
-                                      ),
-                                      Container(
-                                        padding: EdgeInsets.symmetric(horizontal: 4),
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              title,
-                                              style: TextStyle(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.bold,
+                                        Container(
+                                          padding: EdgeInsets.symmetric(horizontal: 4),
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                title,
+                                                style: TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                                overflow: TextOverflow.ellipsis,
+                                                maxLines: 2,
                                               ),
-                                              overflow: TextOverflow.ellipsis,
-                                              maxLines: 2,
-                                            ),
-                                            SizedBox(height: 4),
-                                            Text(
-                                              "By $author",
-                                              style: TextStyle(
-                                                fontSize: 14,
-                                                color: Colors.grey,
+                                              SizedBox(height: 4),
+                                              Text(
+                                                "By $author",
+                                                style: TextStyle(
+                                                  fontSize: 14,
+                                                  color: Colors.grey,
+                                                ),
+                                                overflow: TextOverflow.ellipsis,
+                                                maxLines: 1,
                                               ),
-                                              overflow: TextOverflow.ellipsis,
-                                              maxLines: 1,
-                                            ),
-                                            SizedBox(height: 4),
-                                            // if (bookRating > 0.0) ...[
-                                            Row(
-                                              children: [
-                                                Text(
-                                                  bookRating.toStringAsFixed(1),
-                                                  style: TextStyle(
-                                                    fontSize: 14,
-                                                    fontWeight: FontWeight.bold,
+                                              SizedBox(height: 4),
+                                              // if (bookRating > 0.0) ...[
+                                              Row(
+                                                children: [
+                                                  Text(
+                                                    bookRating.toStringAsFixed(1),
+                                                    style: TextStyle(
+                                                      fontSize: 14,
+                                                      fontWeight: FontWeight.bold,
+                                                    ),
                                                   ),
-                                                ),
-                                                Icon(
-                                                  Icons.star,
-                                                  color: Colors.amber,
-                                                  size: 16,
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                          // ],
+                                                  Icon(
+                                                    Icons.star,
+                                                    color: Colors.amber,
+                                                    size: 16,
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                            // ],
+                                          ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
                                 ),
-                              ),
-                              SizedBox(width: 10),
+                                SizedBox(width: 10),
+                              ],
                             ],
                           );
                         }).toList(),

@@ -43,14 +43,14 @@ class _CataloguePageState extends State<CataloguePage> {
           '${widget.name}',
           textAlign: TextAlign.center,
           style: TextStyle(
-            color: Colors.deepOrangeAccent,
+            color: Colors.pink,
             fontWeight: FontWeight.bold,
             fontSize: 22,
           ),
         ),
         elevation: 0,
         backgroundColor: Colors.transparent,
-        iconTheme: IconThemeData(color: Colors.deepOrangeAccent),
+        iconTheme: IconThemeData(color: Colors.pink),
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: fetchBooksByName(widget.id),
@@ -96,6 +96,7 @@ class _CataloguePageState extends State<CataloguePage> {
                             String title = bookMap['title'] ?? "Unknown Title";
                             String url = bookMap['url'] ?? "https://example.com/default-image.jpg";
                             String docId = bookMap['docId'] ?? '';
+                            String catalogueId= bookMap['type']['catalogueId'] ??'';
 
                             return FutureBuilder<double>(
                               future: fetchRatingByDocId(docId),
@@ -108,7 +109,7 @@ class _CataloguePageState extends State<CataloguePage> {
                                   child: Container(
                                     padding: EdgeInsets.all(8),
                                     decoration: BoxDecoration(
-                                      border: Border.all(color: Colors.grey), // Add border for separation
+                                      border: Border.all(color: Colors.pinkAccent), // Add border for separation
                                       borderRadius: BorderRadius.circular(10),
                                     ),
                                     child: Column(
@@ -125,7 +126,7 @@ class _CataloguePageState extends State<CataloguePage> {
                                                     author: author,
                                                     title: title,
                                                     url: url,
-                                                    id: widget.id,
+                                                    id: catalogueId,
                                                     DocId: docId,
                                                   ),
                                                 ),

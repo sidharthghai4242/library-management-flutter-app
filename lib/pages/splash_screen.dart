@@ -8,20 +8,20 @@ class SplashScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      // backgroundColor: Colors.white,
       body: Center(
         child: Column(
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Image.asset("assets/otp1.png", height: 180,),
+            Image.asset("assets/logo.jpg", height: 180,),
             Text(
               "Read Ludhiana Read",
               style: GoogleFonts.openSans(
                 fontSize: 32,
                 fontWeight: FontWeight.bold,
-                color: Colors.blue
+                color: Colors.pink
               ),
             ),
             Text(

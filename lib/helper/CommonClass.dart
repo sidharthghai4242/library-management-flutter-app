@@ -62,7 +62,7 @@ class CommonClass {
         height: MediaQuery.of(context).size.height * 0.1,
         padding: const EdgeInsets.all(UIConstants.padding16),
         decoration: const BoxDecoration(
-          color: Colors.white,
+          // color: Colors.white,
           borderRadius: BorderRadius.only(
               topRight: Radius.circular(UIConstants.borderRadius16),
               topLeft: Radius.circular(UIConstants.borderRadius16)
@@ -140,7 +140,7 @@ class CommonClass {
                     // padding: const EdgeInsets.all(4),
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
-                        color: Colors.grey.shade200,
+                        // color: Colors.grey.shade200,
                         borderRadius: const BorderRadius.all(Radius.circular(12))
                     ),
                     child: const Icon(Icons.close, size: 18,),
@@ -253,26 +253,36 @@ class CommonClass {
     User? firebaseUser,
     UserModel? user,
     bool isEditable = true,
-    bool isRegistrationProcess = true
+    bool isRegistrationProcess = true,
+    String? username,
+    String? email,
+    String? password,
   }) {
+
     debugPrint(">>> Firebase User: ${firebaseUser.toString()}");
-    TextEditingController name = TextEditingController(text: user?.name ?? "");
+    TextEditingController name = TextEditingController(text: user?.name ?? username ?? ""); // Use the provided username
     TextEditingController phone = TextEditingController(text: user?.phone ?? "");
-    TextEditingController email = TextEditingController(text: firebaseUser?.email ?? "");
+    TextEditingController emailController = TextEditingController(text: firebaseUser?.email ?? email ?? ""); // Use the provided email
     TextEditingController age = TextEditingController(text: user?.age.toString() ?? "");
     TextEditingController address = TextEditingController(text: user?.address ?? "");
 
     StatefulBuilder content = StatefulBuilder(
       builder: (context, setState) {
+        Color containerColor = MediaQuery.of(context).platformBrightness == Brightness.dark
+            ? Colors.black
+            : Colors.white;
+        Color TextColor = MediaQuery.of(context).platformBrightness == Brightness.dark
+            ? Colors.pink
+            : Colors.black;
         return Container(
           height: MediaQuery.of(context).size.height,
-          padding: const EdgeInsets.all(8.0),
-          decoration: const BoxDecoration(
+          padding: const EdgeInsets.all(12.0),
+          decoration:  BoxDecoration(
               borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(24),
                   topRight: Radius.circular(24)
               ),
-              color: Colors.white
+            color: containerColor,
           ),
           child: ListView(
             shrinkWrap: true,
@@ -292,7 +302,7 @@ class CommonClass {
                         style: GoogleFonts.openSans(
                             fontSize: 28,
                             fontWeight: FontWeight.bold,
-                            color: Color.fromRGBO(0, 0, 128, 1)
+                            color: Colors.pink
                         ),
                       ),
                       Text(
@@ -329,8 +339,8 @@ class CommonClass {
               ),
               const SizedBox(height: 24,),
               Text(
-                "${isEditable ? 'Enter your' : ''} name:",
-                style: GoogleFonts.openSans(fontSize: 14),
+                "${isEditable ? 'Enter your' : ''} Username:",
+                style: TextStyle(color: TextColor,fontWeight: FontWeight.bold),
               ),
               Container(
                 margin: const EdgeInsets.only(top: 10, bottom: 16),
@@ -338,6 +348,36 @@ class CommonClass {
                   controller: name,
                   readOnly: !isEditable,
                   keyboardType: TextInputType.name,
+
+                  style: GoogleFonts.roboto(
+                    fontWeight: FontWeight.w700,
+                  ),
+                  decoration: InputDecoration(
+                    counterText: "",
+                    border: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.grey.shade500, width: 1),
+                        borderRadius: BorderRadius.circular(8)
+                    ),
+                    focusColor: UIConstants.colorPrimary.withOpacity(0.8),
+                    focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: UIConstants.colorPrimary.withOpacity(0.8), width: 1),
+                        borderRadius: BorderRadius.circular(8)
+                    ),
+                    hintStyle: GoogleFonts.roboto(),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  ),
+                ),
+              ),
+              Text(
+                "${isEditable ? 'Enter your' : ''} age:",
+                style: TextStyle(color: TextColor,fontWeight: FontWeight.bold),
+              ),
+              Container(
+                margin: const EdgeInsets.only(top: 10, bottom: 16),
+                child: TextFormField(
+                  controller: age,
+                  readOnly: !isEditable,
+                  keyboardType: TextInputType.number,
                   style: GoogleFonts.roboto(
                     fontWeight: FontWeight.w700,
                   ),
@@ -359,7 +399,7 @@ class CommonClass {
               ),
               Text(
                 "${isEditable ? 'Enter your' : ''} phone:",
-                style: GoogleFonts.openSans(fontSize: 14),
+                style: TextStyle(color: TextColor,fontWeight: FontWeight.bold),
               ),
               Container(
                 margin: const EdgeInsets.only(top: 10, bottom: 16),
@@ -389,12 +429,12 @@ class CommonClass {
               // User EMail
               Text(
                 "${isEditable ? 'Enter your' : ''} email:",
-                style: GoogleFonts.openSans(fontSize: 14),
+                style: TextStyle(color: TextColor,fontWeight: FontWeight.bold),
               ),
             Container(
               margin: const EdgeInsets.only(top: 10, bottom: 16),
               child: TextFormField(
-                controller: email,
+                controller: emailController,
                 readOnly: true,
                 keyboardType: TextInputType.emailAddress,
                 style: GoogleFonts.roboto(
@@ -421,38 +461,10 @@ class CommonClass {
               ),
             ),
               // User age
-              Text(
-                "${isEditable ? 'Enter your' : ''} age:",
-                style: GoogleFonts.openSans(fontSize: 14),
-              ),
-              Container(
-                margin: const EdgeInsets.only(top: 10, bottom: 16),
-                child: TextFormField(
-                  controller: age,
-                  readOnly: !isEditable,
-                  keyboardType: TextInputType.number,
-                  style: GoogleFonts.roboto(
-                    fontWeight: FontWeight.w700,
-                  ),
-                  decoration: InputDecoration(
-                    counterText: "",
-                    border: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.grey.shade500, width: 1),
-                        borderRadius: BorderRadius.circular(8)
-                    ),
-                    focusColor: UIConstants.colorPrimary.withOpacity(0.8),
-                    focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: UIConstants.colorPrimary.withOpacity(0.8), width: 1),
-                        borderRadius: BorderRadius.circular(8)
-                    ),
-                    hintStyle: GoogleFonts.roboto(),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  ),
-                ),
-              ),
+
               Text(
                 "${isEditable ? 'Enter your' : ''} address:",
-                style: GoogleFonts.openSans(fontSize: 14),
+                style: TextStyle(color: TextColor,fontWeight: FontWeight.bold),
               ),
               Container(
                 margin: const EdgeInsets.only(top: 10, bottom: 16),
@@ -486,11 +498,11 @@ class CommonClass {
                     CommonClass.openErrorDialog(context: context, message: "Name is Required");
                     return;
                   }
-                  if(email.text.isEmpty) {
+                  if(emailController.text.isEmpty) {
                     CommonClass.openErrorDialog(context: context, message: "Email is Required");
                     return;
                   }
-                  if(email.text.isNotEmpty && !CommonClass.isValidEmail(email.text)) {
+                  if(emailController.text.isNotEmpty && !CommonClass.isValidEmail(emailController.text)) {
                     CommonClass.openErrorDialog(context: context, message: "Email badly formatted");
                     return;
                   }
@@ -523,7 +535,7 @@ class CommonClass {
                       newUser.token = "";
                       newUser.phone = phone.text.toString();
                       newUser.name =  name.text.toString();
-                      newUser.email = email.text.toString();
+                      newUser.email = emailController.text.toString();
                       newUser.age = int.parse(age.text.toString());
                       newUser.address = address.text.toString();
                       newUser.authId = firebaseUser!.uid;
@@ -534,7 +546,7 @@ class CommonClass {
                     } else {
                       userModel = user;
                       userModel!.name =  name.text.toString();
-                      userModel.email = email.text.toString();
+                      userModel.email = emailController.text.toString();
                       userModel.age = int.parse(age.text.toString());
                       userModel.address = address.text.toString();
                       userModel.userId = user!.userId;
@@ -549,7 +561,7 @@ class CommonClass {
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   width: MediaQuery.of(context).size.width,
                   decoration: BoxDecoration(
-                      color: Colors.blue,
+                      color: Colors.pink,
                       borderRadius: BorderRadius.circular(8)
                   ),
                   child: Row(

@@ -16,6 +16,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
   final navigatorKey = GlobalKey<NavigatorState>();
   bool shouldRefreshRatings = false;
   bool isCategoryDropdownOpen = false;
+  bool datafetched=false;
   void toggleCategoryDropdown() {
     setState(() {
       isCategoryDropdownOpen = !isCategoryDropdownOpen;
@@ -105,7 +106,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
 
-                    Text("Categories",textAlign: TextAlign.center,style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20),),
+                    Text("Categories",textAlign: TextAlign.center,style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20,color: Colors.pink),),
                     Divider(),
                     ListView.builder(
                       shrinkWrap: true,
@@ -124,7 +125,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
                               ),
                             );
                           },
-                          child: Text(name),
+                          child: Text(name,style: TextStyle(color: Colors.pinkAccent),),
                         );
                       },
                     ),
@@ -136,7 +137,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
                           ),
                         );
                       },
-                      child: Text("All"),
+                      child: Text("All",style: TextStyle(color: Colors.pinkAccent),),
                     ),
                     SizedBox(height: 5,),
                     RawMaterialButton(
@@ -155,8 +156,6 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
                         color: Colors.black, // Change the icon color as needed
                       ),
                     ),
-
-
                   ],
                 ),
               ),
@@ -170,20 +169,25 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    Color borderColor = MediaQuery.of(context).platformBrightness == Brightness.dark
+        ? Colors.white24
+        : Colors.black26;
+    return
+      // datafetched ?(Center(child: CircularProgressIndicator(),)):
+    Scaffold(
       appBar: AppBar(
         title: Text(
           'Read Ludhiana Read',
           textAlign: TextAlign.center,
           style: TextStyle(
-            color: Colors.deepOrangeAccent,
+            color: Colors.pink,
             fontWeight: FontWeight.bold,
             fontSize: 22,
           ),
         ),
         elevation: 0,
         backgroundColor: Colors.transparent,
-        iconTheme: IconThemeData(color: Colors.deepOrangeAccent),
+        iconTheme: IconThemeData(color: Colors.pink),
         actions: [
           IconButton(
             onPressed: () {
@@ -205,7 +209,6 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
                 );
               }
               return Container(
-
                 padding: EdgeInsets.symmetric(horizontal: 8), // Adjust padding as needed
                 height: 50,
                 child: Row(
@@ -229,7 +232,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
                                         ),
                                       );
                                     },
-                                    child: Text(snapshot.data.docs[index]['name'].toString()),
+                                    child: Text(snapshot.data.docs[index]['name'].toString(),style: TextStyle(color:Colors.pinkAccent),),
                                   ),
                                   SizedBox(width: 10),
                                 ],
@@ -239,8 +242,8 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
                                 onPressed: () {
                                   showCategoriesPopup(context, snapshot.data.docs.sublist(2));
                                 },
-                                label: Text("Categories"),
-                                icon: Icon(Icons.arrow_drop_down),
+                                label: Text("Categories",style: TextStyle(color: Colors.pinkAccent),),
+                                icon: Icon(Icons.arrow_drop_down,color: Colors.pinkAccent),
                               ),
                           ],
                         ),
@@ -303,7 +306,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text("$value"),
+                                  Text("$value",style: TextStyle(fontWeight: FontWeight.bold),),
                                   Container(
                                     width: value.length *
                                         8, // Specify the width you want
@@ -325,6 +328,8 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
                                           String title = bookMap['title'];
                                           String url = bookMap['url'];
                                           String docId = bookMap['docId'] ?? '';
+                                          String catalogueId= bookMap['type']['catalogueId'] ??'';
+                                          print(catalogueId);
                                           return FutureBuilder<double>(
                                             future: fetchRatingByDocId(docId),
                                             builder: (context, ratingSnapshot) {
@@ -334,17 +339,21 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
                                                 children: [
                                                   Material(
                                                     child: Container(
+                                                      height:380,
                                                       padding: EdgeInsets.all(8),
                                                       decoration: BoxDecoration(
-
-                                                        borderRadius: BorderRadius.circular(10),
+                                                        borderRadius: BorderRadius.circular(15), // Adjust the value as needed
+                                                        border: Border.all(
+                                                          color: borderColor, // Adjust the border color as needed
+                                                          width: 2, // Adjust the border width as needed
+                                                        ),
                                                       ),
                                                       width: 150, // Set a fixed width
                                                       child: Column(
                                                         mainAxisAlignment: MainAxisAlignment.start,
                                                         children: [
                                                           Container(
-                                                            height: 200,
+                                                            height: 190,
                                                             child: InkWell(
                                                               onTap: () {
                                                                 // Navigate to the book page with details
@@ -355,7 +364,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
                                                                           author: author,
                                                                           title: title,
                                                                           url: url,
-                                                                          id: id,
+                                                                          id: catalogueId,
                                                                           DocId: docId,
                                                                         ),
                                                                   ),
@@ -382,6 +391,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
                                                                   style: TextStyle(
                                                                     fontSize: 16,
                                                                     fontWeight: FontWeight.bold,
+
                                                                   ),
                                                                   overflow: TextOverflow.ellipsis,
                                                                   maxLines: 2,
@@ -422,6 +432,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
                                                       ),
                                                     ),
                                                   ),
+                                                  SizedBox(width: 10,)
 
                                                 ],
                                               );

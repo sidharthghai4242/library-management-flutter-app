@@ -8,8 +8,7 @@ class UserModel {
   String address = "";
   String phone = "";
   String token = "";
-  String subscription = "";
-  String password = "";
+  Subscription subscription = Subscription();
   int age = 0;
   Timestamp createdOn = Timestamp.now();
 
@@ -28,8 +27,7 @@ class UserModel {
     user.age = doc["age"];
     user.userId = doc["userId"];
     user.token = doc["token"];
-    user.subscription = doc["subscription"];
-    user.password = doc["password"];
+    user.subscription = Subscription.toObject(doc["subscription"]);
     return user;
   }
 
@@ -44,10 +42,10 @@ class UserModel {
     map["age"] = age ?? 0;
     map["userId"] = userId ?? "";
     map["token"] = token ?? "";
-    map["subscription"] = subscription ?? "";
-    map["password"] = password ?? "";
+    map["subscription"] = subscription.toMap();
     return map;
   }
+
   Map<String, dynamic> toMap() {
     Map<String, dynamic> map = <String, dynamic>{};
     map["phone"] = phone ?? "";
@@ -59,10 +57,44 @@ class UserModel {
     map["age"] = age ?? 0;
     map["userId"] = userId ?? "";
     map["token"] = token ?? "";
-    map["subscription"] = subscription ?? "";
-    map["password"] = password ?? "";
+    map["subscription"] = subscription.toMap();
     return map;
   }
 }
 
+class Subscription {
+  String description = "";
+  String descriptiontitle = "";
+  String issueperiod = "";
+  String name = "";
+  String maxbooks = "";
+  String planId = "";
+  double price = 0.0;
+  String validity = "";
 
+  static Subscription toObject(doc) {
+    Subscription subscription = Subscription();
+    subscription.description = doc["description"] ?? "";
+    subscription.descriptiontitle = doc["descriptiontitle"] ?? "";
+    subscription.issueperiod = doc["issueperiod"] ?? "";
+    subscription.name = doc["name"] ?? "";
+    subscription.maxbooks = doc["maxbooks"] ?? "";
+    subscription.planId = doc["planId"] ?? "";
+    subscription.price = doc["price"] ?? 0.0;
+    subscription.validity = doc["validity"] ?? "";
+    return subscription;
+  }
+
+  Map<String, dynamic> toMap() {
+    Map<String, dynamic> map = <String, dynamic>{};
+    map["description"] = description ?? "";
+    map["descriptiontitle"] = descriptiontitle ?? "";
+    map["issueperiod"] = issueperiod ?? "";
+    map["name"] = name ?? "";
+    map["maxbooks"] = maxbooks ?? "";
+    map["planId"] = planId ?? "";
+    map["price"] = price ?? 0.0;
+    map["validity"] = validity ?? "";
+    return map;
+  }
+}

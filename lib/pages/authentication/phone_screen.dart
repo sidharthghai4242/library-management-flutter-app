@@ -18,13 +18,15 @@ class PhoneScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Colors.white12,
+        // backgroundColor: Colors.white12,
         centerTitle: true,
         title: Text(
           "",
           textAlign: TextAlign.center,
           style: GoogleFonts.robotoSerif(
-              fontSize: 18, color: Colors.black, fontWeight: FontWeight.w600),
+              fontSize: 18,
+              color: Colors.black,
+              fontWeight: FontWeight.w600),
         ),
       ),
       body: LayoutBuilder(
@@ -59,7 +61,7 @@ class PhoneScreen extends StatelessWidget {
                     textAlign: TextAlign.center,
                     style: GoogleFonts.openSans(
                       fontSize: 14,
-                      color: Colors.grey.shade600,
+                      // color: Colors.grey.shade600,
                       fontWeight: FontWeight.w600
                     ),
                   ),
@@ -77,12 +79,16 @@ class PhoneScreen extends StatelessWidget {
                         hintText: "+91 99999 ****",
                         counterText: "",
                         border: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.blue, width: 1),
+                          borderSide: BorderSide(
+                              // color: Colors.blue,
+                              width: 1),
                           borderRadius: BorderRadius.circular(8)
                         ),
                         focusColor: UIConstants.colorPrimary.withOpacity(0.8),
                         focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: UIConstants.colorPrimary.withOpacity(0.8), width: 1),
+                            borderSide: BorderSide(
+                                // color: UIConstants.colorPrimary.withOpacity(0.8),
+                                width: 1),
                             borderRadius: BorderRadius.circular(8)
                         ),
                         hintStyle: GoogleFonts.roboto(),

@@ -34,9 +34,11 @@ class _MembershipState extends State<Membership> {
           style: TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.bold,
-            color: Colors.deepOrangeAccent,
+            color: Colors.pink,
           ),
         ),
+        backgroundColor: Colors.transparent,
+        iconTheme: IconThemeData(color: Colors.pink),
       ),
       body: StreamBuilder(
         stream: fetch(),
@@ -91,7 +93,7 @@ class _MembershipState extends State<Membership> {
                             children: [
                               Icon(
                                 Icons.library_books,
-                                color: Colors.blue,
+                                color: Colors.pink,
                                 size: 24, // Larger icon size
                               ),
                               SizedBox(width: 12), // Increased spacing between icon and text
@@ -109,7 +111,7 @@ class _MembershipState extends State<Membership> {
                             children: [
                               Icon(
                                 Icons.schedule,
-                                color: Colors.blue,
+                                color: Colors.pink,
                                 size: 24,
                               ),
                               SizedBox(width: 12),
@@ -127,7 +129,7 @@ class _MembershipState extends State<Membership> {
                             children: [
                               Icon(
                                 Icons.money,
-                                color: Colors.blue,
+                                color: Colors.pink,
                                 size: 24,
                               ),
                               SizedBox(width: 12),
@@ -145,7 +147,7 @@ class _MembershipState extends State<Membership> {
                             children: [
                               Icon(
                                 Icons.access_time,
-                                color: Colors.blue,
+                                color: Colors.pink,
                                 size: 24,
                               ),
                               SizedBox(width: 12),

@@ -17,27 +17,52 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   bool isDark = false; // Initialize with the light theme
   UserModel? userModel;
-  bool loggingOut = false; // Track whether log out process is in progress
+  bool loggingOut = false;
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
+  Future<void> signOut() async {
+    // Check if the user is signed in with Google
+    final googleUser = await _googleSignIn.signInSilently();
+    if (googleUser != null) {
+      await _googleSignIn.signOut();
+      // Sign out from Google
+      await FirebaseAuth.instance.signOut();
+      Navigator.pushReplacementNamed(context, '/phone');// Sign out from Google
+    }
+
+    // Sign out from Firebase
+    await _firebaseAuth.signOut();
+    Navigator.pushReplacementNamed(context, '/phone');
+  }// Track whether log out process is in progress
 
   @override
   Widget build(BuildContext context) {
     userModel = context.watch<DbProvider>().userModel;
-    String name = userModel?.name ?? "name";
-    String email = userModel?.email ?? "email";
-    int age = userModel?.age ?? 18;
-    String phone = userModel?.phone ?? "+910000000000";
-    String address = userModel?.address ?? "address";
-    String userId = userModel?.userId ?? " ";
+    // String name = userModel?.name ?? "name";
+    // String email = userModel?.email ?? "email";
+    // int age = userModel?.age ?? 18;
+    // String phone = userModel?.phone ?? "+910000000000";
+    // String address = userModel?.address ?? "address";
+    // String userId = userModel?.userId ?? " ";
     var isDark = MediaQuery.of(context).platformBrightness == Brightness.dark;
+    Color containerColor = MediaQuery.of(context).platformBrightness == Brightness.dark
+        ? Colors.black
+        : Colors.white;
+    Color MainColor = MediaQuery.of(context).platformBrightness == Brightness.dark
+        ? Colors.pink
+        : Colors.black;
+    Color TextColor = MediaQuery.of(context).platformBrightness == Brightness.dark
+        ? Colors.white
+        : Colors.black;
+    return loggingOut? Center(child: CircularProgressIndicator(),) :  Scaffold(
 
-    return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xFFFFFFFF),
+        backgroundColor: containerColor,
         elevation: 0.0,
-        title: const Text(
+        title:Text(
           "My Profile",
           style: TextStyle(
-            color: Color(0xFF3B0900),
+            color:  MainColor,
             fontSize: 22.0,
             fontWeight: FontWeight.bold,
           ),
@@ -54,9 +79,9 @@ class _ProfilePageState extends State<ProfilePage> {
             )
           ],
       ),
-      body: SingleChildScrollView(
+      body:SingleChildScrollView(
         child: Container(
-          color: Color(0xFFFFFFFF),
+          color: containerColor,
           padding: const EdgeInsets.all(10.0),
           child: Column(
             children: [
@@ -95,7 +120,7 @@ class _ProfilePageState extends State<ProfilePage> {
               Text(
                 userModel?.name ?? 'Guest User',
                 style: TextStyle(
-                  color: Color(0xFF3B0900),
+                  color: TextColor,
                   fontSize: 22.0,
                   fontWeight: FontWeight.bold,
                 ),
@@ -103,7 +128,7 @@ class _ProfilePageState extends State<ProfilePage> {
               Text(
                 userModel?.email ?? '',
                 style: TextStyle(
-                  color: Color(0xFF3B0900),
+                  color: TextColor,
                   fontSize: 15.0,
                   fontWeight: FontWeight.bold,
                 ),
@@ -126,10 +151,10 @@ class _ProfilePageState extends State<ProfilePage> {
                     side: BorderSide.none,
                     shape: const StadiumBorder(),
                   ),
-                  child: const Text(
+                  child:  Text(
                     "Edit Profile",
                     style: TextStyle(
-                      color: Color(0xFF3B0900),
+                      color: MainColor,
                       fontSize: 15.0,
                       fontWeight: FontWeight.bold,
                     ),
@@ -149,15 +174,15 @@ class _ProfilePageState extends State<ProfilePage> {
                     borderRadius: BorderRadius.circular(100),
                     color: Color(0xFFFFDBD1).withOpacity(0.1),
                   ),
-                  child: const Icon(
+                  child:  Icon(
                     CupertinoIcons.cart,
-                    color: Color(0xFF3B0900),
+                    color: MainColor,
                   ),
                 ),
-                title: const Text(
+                title:  Text(
                   "My Orders",
                   style: TextStyle(
-                    color: Color(0xFF3B0900),
+                    color: TextColor,
                     fontSize: 15.0,
                   ),
                 ),
@@ -166,12 +191,12 @@ class _ProfilePageState extends State<ProfilePage> {
                     height: 30,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(100),
-                      color: Color(0xFF3B0900).withOpacity(0.1),
+                      color: MainColor.withOpacity(0.1),
                     ),
-                    child: const Icon(
+                    child:  Icon(
                       Icons.arrow_right,
                       size: 18.0,
-                      color: Color(0xFF3B0900),
+                      color: MainColor,
                     )),
               ),
               ListTile(
@@ -182,15 +207,15 @@ class _ProfilePageState extends State<ProfilePage> {
                     borderRadius: BorderRadius.circular(100),
                     color: Color(0xFFFFDBD1).withOpacity(0.1),
                   ),
-                  child: const Icon(
+                  child: Icon(
                     CupertinoIcons.heart,
-                    color: Color(0xFF3B0900),
+                    color: MainColor,
                   ),
                 ),
-                title: const Text(
+                title: Text(
                   "My Wishlist",
                   style: TextStyle(
-                    color: Color(0xFF3B0900),
+                    color: TextColor,
                     fontSize: 15.0,
                   ),
                 ),
@@ -199,12 +224,12 @@ class _ProfilePageState extends State<ProfilePage> {
                     height: 30,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(100),
-                      color: Color(0xFF3B0900).withOpacity(0.1),
+                      color: MainColor.withOpacity(0.1),
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.arrow_right,
                       size: 18.0,
-                      color: Color(0xFF3B0900),
+                      color: MainColor,
                     )),
               ),
               ListTile(
@@ -218,15 +243,15 @@ class _ProfilePageState extends State<ProfilePage> {
                     borderRadius: BorderRadius.circular(100),
                     color: Color(0xFFFFDBD1).withOpacity(0.1),
                   ),
-                  child: const Icon(
+                  child:  Icon(
                     Icons.credit_card,
-                    color: Color(0xFF3B0900),
+                    color: MainColor,
                   ),
                 ),
-                title: const Text(
+                title:  Text(
                   "Manage Membership",
                   style: TextStyle(
-                    color: Color(0xFF3B0900),
+                    color: TextColor,
                     fontSize: 15.0,
                   ),
                 ),
@@ -235,12 +260,12 @@ class _ProfilePageState extends State<ProfilePage> {
                     height: 30,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(100),
-                      color: Color(0xFF3B0900).withOpacity(0.1),
+                      color: MainColor.withOpacity(0.1),
                     ),
-                    child: const Icon(
+                    child:  Icon(
                       Icons.arrow_right,
                       size: 18.0,
-                      color: Color(0xFF3B0900),
+                      color: MainColor,
                     )),
               ),
               ListTile(
@@ -254,15 +279,15 @@ class _ProfilePageState extends State<ProfilePage> {
                     borderRadius: BorderRadius.circular(100),
                     color: Color(0xFFFFDBD1).withOpacity(0.1),
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.settings_outlined,
-                    color: Color(0xFF3B0900),
+                    color: MainColor,
                   ),
                 ),
-                title: const Text(
+                title:  Text(
                   "Settings",
                   style: TextStyle(
-                    color: Color(0xFF3B0900),
+                    color: TextColor,
                     fontSize: 15.0,
                   ),
                 ),
@@ -271,12 +296,12 @@ class _ProfilePageState extends State<ProfilePage> {
                     height: 30,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(100),
-                      color: Color(0xFF3B0900).withOpacity(0.1),
+                      color: MainColor.withOpacity(0.1),
                     ),
-                    child: const Icon(
+                    child:  Icon(
                       Icons.arrow_right,
                       size: 18.0,
-                      color: Color(0xFF3B0900),
+                      color: MainColor,
                     )),
               ),
               ListTile(
@@ -287,15 +312,15 @@ class _ProfilePageState extends State<ProfilePage> {
                     borderRadius: BorderRadius.circular(100),
                     color: Color(0xFFFFDBD1).withOpacity(0.1),
                   ),
-                  child: const Icon(
+                  child:  Icon(
                     Icons.headset_mic_outlined,
-                    color: Color(0xFF3B0900),
+                    color: MainColor,
                   ),
                 ),
-                title: const Text(
+                title:  Text(
                   "Help Desk",
                   style: TextStyle(
-                    color: Color(0xFF3B0900),
+                    color: TextColor,
                     fontSize: 15.0,
                   ),
                 ),
@@ -304,12 +329,12 @@ class _ProfilePageState extends State<ProfilePage> {
                     height: 30,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(100),
-                      color: Color(0xFF3B0900).withOpacity(0.1),
+                      color: MainColor.withOpacity(0.1),
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.arrow_right,
                       size: 18.0,
-                      color: Color(0xFF3B0900),
+                      color: MainColor,
                     )),
               ),
               ListTile(
@@ -320,15 +345,15 @@ class _ProfilePageState extends State<ProfilePage> {
                     borderRadius: BorderRadius.circular(100),
                     color: Color(0xFFFFDBD1).withOpacity(0.1),
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.info_outline,
-                    color: Color(0xFF3B0900),
+                    color: MainColor,
                   ),
                 ),
-                title: const Text(
+                title:  Text(
                   "About Us",
                   style: TextStyle(
-                    color: Color(0xFF3B0900),
+                    color: TextColor,
                     fontSize: 15.0,
                   ),
                 ),
@@ -337,29 +362,24 @@ class _ProfilePageState extends State<ProfilePage> {
                     height: 30,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(100),
-                      color: Color(0xFF3B0900).withOpacity(0.1),
+                      color: MainColor.withOpacity(0.1),
                     ),
-                    child: const Icon(
+                    child:Icon(
                       Icons.arrow_right,
                       size: 18.0,
-                      color: Color(0xFF3B0900),
+                      color: MainColor,
                     )),
               ),
 
               // Other list items...
               ListTile(
                 onTap: () async {
+
                   if (!loggingOut) {
                     setState(() {
                       loggingOut = true; // Start the log out process
                     });
-
-                    final googleSignIn = GoogleSignIn();
-                    await googleSignIn.disconnect(); // Sign out from Google
-                    await FirebaseAuth.instance.signOut(); // Sign out from Firebase
-
-                    // Navigate to '/phone' when log out is complete
-                    Navigator.pushReplacementNamed(context, '/phone');
+                    signOut();
                   }
                 },
                 leading: Container(
@@ -386,7 +406,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   height: 30,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(100),
-                    color: Color(0xFF3B0900).withOpacity(0.1),
+                    color: MainColor.withOpacity(0.1),
                   ),
                   child: const Icon(
                     Icons.arrow_right,
