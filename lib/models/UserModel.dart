@@ -69,8 +69,8 @@ class Subscription {
   String name = "";
   int maxbooks = 0; // Update the type to int
   String planId = "";
-  double price = 0.0;
-  String validity = "";
+  int price = 0;
+  int validity = 0;
 
   static Subscription toObject(doc) {
     Subscription subscription = Subscription();
@@ -80,8 +80,8 @@ class Subscription {
     subscription.name = doc["name"] ?? "";
     subscription.maxbooks = doc["maxbooks"] ?? 0;
     subscription.planId = doc["planId"] ?? "";
-    subscription.price = doc["price"] ?? 0.0;
-    subscription.validity = doc["validity"] ?? "";
+    subscription.price = doc["price"] ?? 0;
+    subscription.validity = doc["validity"] ?? 0 ;
     return subscription;
   }
 
@@ -93,8 +93,8 @@ class Subscription {
     map["name"] = name ?? "";
     map["maxbooks"] = maxbooks ?? 0;
     map["planId"] = planId ?? "";
-    map["price"] = price ?? 0.0;
-    map["validity"] = validity ?? "";
+    map["price"] = price ?? 0;
+    map["validity"] = validity ?? 0;
     return map;
   }
 }

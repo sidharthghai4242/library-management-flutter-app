@@ -3,11 +3,11 @@ import 'package:rlr/pages/all_books.dart';
 import 'package:rlr/pages/authentication/phone_screen.dart';
 import 'package:rlr/pages/authentication/sign_up_widget.dart';
 import 'package:rlr/pages/edit_profile.dart';
+import 'package:rlr/pages/help_desk_page.dart';
 import 'package:rlr/pages/home_screen.dart';
 import 'package:rlr/pages/my_books.dart';
 import 'package:rlr/pages/notifications_page.dart';
 import 'package:rlr/pages/profile_page.dart';
-import 'package:rlr/pages/settings_page.dart';
 import 'package:rlr/pages/splash_screen.dart';
 import 'package:rlr/provider/DbProvider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -18,52 +18,62 @@ import 'package:rlr/pages/nav_page.dart';
 import 'package:rlr/pages/membership.dart';
 import 'package:rlr/helper/color_schemes.g.dart';
 import 'package:rlr/pages/search_page.dart';
-
+import 'package:rlr/provider/ThemeProvider.dart';
 import 'pages/authentication/signin_with_email.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
 
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) => ThemeProvider(
+            lightColorScheme: lightColorScheme, // Pass the light color scheme
+            darkColorScheme: darkColorScheme,
+            // Pass the dark color scheme
+          ),
+        ),
+        ChangeNotifierProvider(create: (_) => DbProvider()),
+        // Add other providers if needed
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
+
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => DbProvider())
-      ],
-      child: MaterialApp(
-        title: 'Flutter Demo',
-        theme: ThemeData(useMaterial3: true, colorScheme: lightColorScheme),
-        darkTheme: ThemeData(useMaterial3: true, colorScheme: darkColorScheme),
-        debugShowCheckedModeBanner: false,
-        home: const MyHomePage(),
-        routes: {
-          '/phone':(context)=>PhoneScreen(),
-          '/membership':(context)=>Membership(),
-          '/google':(context)=>const GoogleSignInPage(),
-          '/search': (context) => const SearchPage(),
-          '/home': (context) => const HomeScreen(),
-          '/nav' : (context) => NavPage(),
-          '/splash': (context) => const SplashScreen(),
-          '/profile': (context) => const ProfilePage(),
-          '/settings': (context) => const SettingsPage(),
-          '/mybooks': (context) => const MyBooks(),
-          '/activity': (context) => const ActivityPage(),
-          '/notifications': (context) => const NotificationsPage(),
-          '/edit_profile' : (context) => EditProfilePage(),
-          '/allbooks' : (context) => const Allbooks(),
-          '/signup':(context)=>SignUpPage()
+    return MaterialApp(
+      title: 'Flutter Demo',
+      theme: context.watch<ThemeProvider>().themeData,
+      // darkTheme: ThemeData(useMaterial3: true, colorScheme: darkColorScheme),
+      debugShowCheckedModeBanner: false,
+      home: const MyHomePage(),
+      routes: {
+        '/phone':(context)=>PhoneScreen(),
+        '/membership':(context)=>Membership(),
+        '/google':(context)=>const GoogleSignInPage(),
+        '/search': (context) => const SearchPage(),
+        '/home': (context) => const HomeScreen(),
+        '/nav' : (context) => NavPage(),
+        '/splash': (context) => const SplashScreen(),
+        '/profile': (context) => const ProfilePage(),
+        // '/settings': (context) => const SettingsPage(),
+        '/mybooks': (context) => const MyBooks(),
+        '/activity': (context) => const ActivityPage(),
+        '/notifications': (context) => const NotificationsPage(),
+        '/edit_profile' : (context) => EditProfilePage(),
+        '/allbooks' : (context) => const Allbooks(),
+        '/signup':(context)=>SignUpPage(),
+        '/helpdesk':(context)=>HelpDesk(),
 
-        },
-
-      ),
+      },
     );
   }
 }

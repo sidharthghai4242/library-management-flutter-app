@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 import 'package:rlr/provider/DbProvider.dart';
 import 'package:rlr/provider/google_signin_provider.dart';
@@ -15,15 +16,15 @@ class GoogleSignInPage extends StatefulWidget {
 class _GoogleSignInPageState extends State<GoogleSignInPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-
+  bool gsign=false;
   Future<void> _handleEmailSignIn(BuildContext context) async {
     final auth = FirebaseAuth.instance;
+
 
     try {
       final email = emailController.text.trim();
       final password = passwordController.text.trim();
       UserCredential userCredential= await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
-      // final userCredential = await auth.signInWithEmailAndPassword(email: email, password: password);
       if(userCredential.user!.uid.isNotEmpty){
         await context.read<DbProvider>().getUserFromFirestore(user: userCredential.user, bContent: context);
         Navigator.pushReplacementNamed(context, '/nav');
@@ -35,7 +36,7 @@ class _GoogleSignInPageState extends State<GoogleSignInPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return gsign? (Center(child:CircularProgressIndicator())):Scaffold(
       appBar: AppBar(
         // title: Text('Sign-In Example'),
       ),
@@ -109,6 +110,9 @@ class _GoogleSignInPageState extends State<GoogleSignInPage> {
                   User? user = await AuthService().signInWithGoogle(context);
                   if(user != null){
                     debugPrint('User: $user');
+                    setState(() {
+                      gsign=true;
+                    });
                     await context.read<DbProvider>().getUserFromFirestore(user: user, bContent: context);
                     Navigator.of(context).pushReplacementNamed('/nav');
                   }else{

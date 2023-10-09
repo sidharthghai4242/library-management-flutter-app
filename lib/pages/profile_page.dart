@@ -1,12 +1,22 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:rlr/models/UserModel.dart';
+import 'dart:io';
 import 'package:rlr/pages/edit_profile.dart';
 import 'package:rlr/provider/DbProvider.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:rlr/helper/color_schemes.g.dart';
+import '../provider/ThemeProvider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:http/http.dart' as http;
+
+
+import 'package:firebase_storage/firebase_storage.dart';
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
 
@@ -18,8 +28,11 @@ class _ProfilePageState extends State<ProfilePage> {
   bool isDark = false; // Initialize with the light theme
   UserModel? userModel;
   bool loggingOut = false;
+  final picker = ImagePicker();
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
+  File? _pickedImage;
+  String? profileImage;
   Future<void> signOut() async {
     // Check if the user is signed in with Google
     final googleUser = await _googleSignIn.signInSilently();
@@ -34,16 +47,106 @@ class _ProfilePageState extends State<ProfilePage> {
     await _firebaseAuth.signOut();
     Navigator.pushReplacementNamed(context, '/phone');
   }// Track whether log out process is in progress
+  // void _loadImageFromUrl(String imageUrl) async {
+  //   try {
+  //     final response = await http.get(Uri.parse(imageUrl));
+  //     if (response.statusCode == 200) {
+  //       setState(() {
+  //         _pickedImage = File.fromRawPath(response.bodyBytes);
+  //       });
+  //     }
+  //   } catch (error) {
+  //     print('Error loading image: $error');
+  //   }
+  // }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //
+  //   // Fetch the user's data, including the profile image URL from Firestore
+  //   // You can use StreamBuilder or FutureBuilder depending on your data retrieval method
+  //   FirebaseFirestore.instance
+  //       .collection('users')
+  //       .doc(userModel?.userId)
+  //       .get()
+  //       .then((doc) async {
+  //     if (doc.exists) {
+  //       String imageUrl = doc['profileImage'];
+  //       if (imageUrl != null) {
+  //         // Load the image from the URL
+  //         _loadImageFromUrl(imageUrl);
+  //         // Store the image URL in shared preferences
+  //         SharedPreferences prefs = await SharedPreferences.getInstance();
+  //         prefs.setString('profileImage', imageUrl);
+  //       }
+  //     }
+  //   });
+  //
+  //   // Retrieve the image URL from shared preferences on app launch
+  //   _loadImageFromSharedPreferences();
+  // }
+  //
+  // void _loadImageFromSharedPreferences() async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   String? imageUrl = prefs.getString('profileImage');
+  //   if (imageUrl != null) {
+  //     // Load the image from the URL
+  //     _loadImageFromUrl(imageUrl);
+  //   }
+  // }
+  @override
+  void initState() {
+    super.initState();
+    // Load the picked image path from SharedPreferences when the app starts
+    _loadImageFromSharedPreferences();
+  }
+
+
+  Future<void> _loadImageFromSharedPreferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? imagePath = prefs.getString('pickedImage');
+    if (imagePath != null) {
+      setState(() {
+        _pickedImage = File(imagePath);
+      });
+    }
+  }
+
+  Future<void> _pickImage() async {
+    final pickedImage = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedImage != null) {
+      File imageFile = File(pickedImage.path);
+
+      // Upload the image to Firebase Storage
+      String imageName = 'profile_images/${DateTime.now().toString()}.jpg';
+      Reference ref = FirebaseStorage.instance.ref().child(imageName);
+      UploadTask uploadTask = ref.putFile(imageFile);
+      TaskSnapshot storageTaskSnapshot = await uploadTask;
+
+      if (storageTaskSnapshot.state == TaskState.success) {
+        // Image uploaded successfully, now get the URL
+        String imageUrl = await ref.getDownloadURL();
+
+        // Update Firestore with the image URL for the current user (You need to have userModel defined)
+        // await FirebaseFirestore.instance.collection('users').doc(userModel?.userId).update({
+        //   'profileImage': imageUrl,
+        // });
+
+        // Save the picked image path to SharedPreferences
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        prefs.setString('pickedImage', imageFile.path);
+
+        setState(() {
+          _pickedImage = imageFile;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     userModel = context.watch<DbProvider>().userModel;
-    // String name = userModel?.name ?? "name";
-    // String email = userModel?.email ?? "email";
-    // int age = userModel?.age ?? 18;
-    // String phone = userModel?.phone ?? "+910000000000";
-    // String address = userModel?.address ?? "address";
-    // String userId = userModel?.userId ?? " ";
     var isDark = MediaQuery.of(context).platformBrightness == Brightness.dark;
     Color containerColor = MediaQuery.of(context).platformBrightness == Brightness.dark
         ? Colors.black
@@ -54,7 +157,7 @@ class _ProfilePageState extends State<ProfilePage> {
     Color TextColor = MediaQuery.of(context).platformBrightness == Brightness.dark
         ? Colors.white
         : Colors.black;
-    return loggingOut? Center(child: CircularProgressIndicator(),) :  Scaffold(
+    return loggingOut? Center(child:  CircularProgressIndicator(),) :  Scaffold(
 
       appBar: AppBar(
         backgroundColor: containerColor,
@@ -67,52 +170,69 @@ class _ProfilePageState extends State<ProfilePage> {
             fontWeight: FontWeight.bold,
           ),
         ),
-          actions: [
-            IconButton(
-              onPressed: () {
-                setState(() {
-                  isDark = !isDark; // Toggle the theme
-                });
-              },
-              icon: Icon(isDark ? Icons.wb_sunny : Icons.dark_mode),
-              color: isDark ? Color(0xFFFFDBD1) : Color(0xFF9B442B),
-            )
-          ],
+        actions: [
+          Consumer<ThemeProvider>(
+            builder: (context, themeProvider, _) {
+              final isDark = themeProvider.themeData.brightness == Brightness.dark;
+              return IconButton(
+                onPressed: () {
+                  themeProvider.toggleTheme(); // Toggle the theme
+                },
+                icon: Icon(isDark ? Icons.wb_sunny : Icons.dark_mode),
+                color: isDark ? Color(0xFFFFDBD1) : Color(0xFF9B442B),
+              );
+            },
+          )
+        ],
       ),
       body:SingleChildScrollView(
         child: Container(
-          color: containerColor,
+          // color: containerColor,
           padding: const EdgeInsets.all(10.0),
           child: Column(
             children: [
               Stack(
                 children: [
-                  SizedBox(
-                    width: 120,
-                    height: 120,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(100),
-                      child: Image.network(
-                        'https://w7.pngwing.com/pngs/1008/377/png-transparent-computer-icons-avatar-user-profile-avatar-heroes-black-hair-computer.png',
+                  Stack(
+                    children: [
+                      SizedBox(
+                        width: 120,
+                        height: 120,
+                        child: ClipOval(
+                          child: _pickedImage != null
+                              ? Image.file(
+                            _pickedImage!,
+                            fit: BoxFit.cover, // This property makes the image cover the entire box
+                          )
+                              : Image.network(
+                            'https://w7.pngwing.com/pngs/1008/377/png-transparent-computer-icons-avatar-user-profile-avatar-heroes-black-hair-computer.png',
+                            fit: BoxFit.cover, // Set the fit property for the network image as well
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                  Positioned(
-                    bottom: 0,
-                    right: 0,
-                    child: Container(
-                      width: 35,
-                      height: 35,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(100),
-                        color: Color(0xFFBA1A1A),
+                      Positioned(
+                        bottom: 0,
+                        right: 0,
+                        child: GestureDetector(
+                          onTap: () async{
+                            _pickImage();
+                          },
+                          child: Container(
+                            width: 35,
+                            height: 35,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(100),
+                              color: Color(0xFFBA1A1A),
+                            ),
+                            child: Icon(
+                              CupertinoIcons.pencil,
+                              color: Color(0xFFFFDBD1),
+                              size: 20,
+                            ),
+                          ),
+                        ),
                       ),
-                      child: const Icon(
-                        CupertinoIcons.pencil,
-                        color: Color(0xFFFFDBD1),
-                        size: 20,
-                      ),
-                    ),
+                    ],
                   ),
                 ],
               ),
@@ -120,7 +240,7 @@ class _ProfilePageState extends State<ProfilePage> {
               Text(
                 userModel?.name ?? 'Guest User',
                 style: TextStyle(
-                  color: TextColor,
+                  //  color: TextColor,
                   fontSize: 22.0,
                   fontWeight: FontWeight.bold,
                 ),
@@ -128,7 +248,7 @@ class _ProfilePageState extends State<ProfilePage> {
               Text(
                 userModel?.email ?? '',
                 style: TextStyle(
-                  color: TextColor,
+                  //  color: TextColor,
                   fontSize: 15.0,
                   fontWeight: FontWeight.bold,
                 ),
@@ -174,39 +294,6 @@ class _ProfilePageState extends State<ProfilePage> {
                     borderRadius: BorderRadius.circular(100),
                     color: Color(0xFFFFDBD1).withOpacity(0.1),
                   ),
-                  child:  Icon(
-                    CupertinoIcons.cart,
-                    color: MainColor,
-                  ),
-                ),
-                title:  Text(
-                  "My Orders",
-                  style: TextStyle(
-                    color: TextColor,
-                    fontSize: 15.0,
-                  ),
-                ),
-                trailing: Container(
-                    width: 30,
-                    height: 30,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(100),
-                      color: MainColor.withOpacity(0.1),
-                    ),
-                    child:  Icon(
-                      Icons.arrow_right,
-                      size: 18.0,
-                      color: MainColor,
-                    )),
-              ),
-              ListTile(
-                leading: Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(100),
-                    color: Color(0xFFFFDBD1).withOpacity(0.1),
-                  ),
                   child: Icon(
                     CupertinoIcons.heart,
                     color: MainColor,
@@ -215,7 +302,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 title: Text(
                   "My Wishlist",
                   style: TextStyle(
-                    color: TextColor,
+                    //  color: TextColor,
                     fontSize: 15.0,
                   ),
                 ),
@@ -251,7 +338,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 title:  Text(
                   "Manage Membership",
                   style: TextStyle(
-                    color: TextColor,
+                     // color: TextColor,
                     fontSize: 15.0,
                   ),
                 ),
@@ -269,42 +356,9 @@ class _ProfilePageState extends State<ProfilePage> {
                     )),
               ),
               ListTile(
-                onTap: () {
-                  Navigator.pushNamed(context, '/settings');
+                onTap: (){
+                  Navigator.pushNamed(context, '/helpdesk');
                 },
-                leading: Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(100),
-                    color: Color(0xFFFFDBD1).withOpacity(0.1),
-                  ),
-                  child: Icon(
-                    Icons.settings_outlined,
-                    color: MainColor,
-                  ),
-                ),
-                title:  Text(
-                  "Settings",
-                  style: TextStyle(
-                    color: TextColor,
-                    fontSize: 15.0,
-                  ),
-                ),
-                trailing: Container(
-                    width: 30,
-                    height: 30,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(100),
-                      color: MainColor.withOpacity(0.1),
-                    ),
-                    child:  Icon(
-                      Icons.arrow_right,
-                      size: 18.0,
-                      color: MainColor,
-                    )),
-              ),
-              ListTile(
                 leading: Container(
                   width: 40,
                   height: 40,
@@ -320,7 +374,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 title:  Text(
                   "Help Desk",
                   style: TextStyle(
-                    color: TextColor,
+                     // color: TextColor,
                     fontSize: 15.0,
                   ),
                 ),
@@ -353,7 +407,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 title:  Text(
                   "About Us",
                   style: TextStyle(
-                    color: TextColor,
+                     // color: TextColor,
                     fontSize: 15.0,
                   ),
                 ),
@@ -397,7 +451,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 title: Text(
                   "Log Out",
                   style: TextStyle(
-                    color: loggingOut ? Colors.grey : Colors.red, // Change color based on log out state
+                    color: Colors.red, // Change color based on log out state
                     fontSize: 15.0,
                   ),
                 ),

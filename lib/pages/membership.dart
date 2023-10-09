@@ -1,10 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:provider/provider.dart';
 import 'package:rlr/models/UserModel.dart';
+
+import '../provider/DbProvider.dart';
 class Membership extends StatefulWidget {
   const Membership({super.key});
 
@@ -16,7 +15,7 @@ class _MembershipState extends State<Membership> {
   FirebaseFirestore? firestore;
   UserModel? userModel;
   fetch() {
-    var uid = FirebaseAuth.instance.currentUser!.uid;
+    // var uid = FirebaseAuth.instance.currentUser!.uid;
     Stream<QuerySnapshot> stream =
     FirebaseFirestore.instance.collection("Subscriptions").snapshots();
     return stream;
@@ -24,6 +23,7 @@ class _MembershipState extends State<Membership> {
 
   @override
   Widget build(BuildContext context) {
+    userModel = context.watch<DbProvider>().userModel;
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -53,6 +53,7 @@ class _MembershipState extends State<Membership> {
             children: snapshot.data.docs.map<Widget>((DocumentSnapshot document) {
               Map<String, dynamic> map =
               document.data()! as Map<String, dynamic>;
+              String title=map['name'].toString();
               return Column(
                 children: [
                   Card(
@@ -160,30 +161,69 @@ class _MembershipState extends State<Membership> {
                               )
                             ],
                           ),
-                          SizedBox(height: 24),
+                          SizedBox(height: 20),
                           Center(
-                            child: ElevatedButton(
-                              onPressed: () => Navigator.pushNamed(context, '/home'),
-                              style: ElevatedButton.styleFrom(
-                                primary: Colors.black,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12, // Wider button
-                                  vertical: 12,   // Taller button
-                                ),
-                                child: Text(
-                                  "Join Now",
-                                  style: TextStyle(
-                                    fontSize: 18, // Larger text size
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
+                            child: Column(
+                              children: [
+                                if(userModel?.subscription.name==title)...[
+                                  ElevatedButton(
+                                    onPressed: () {},
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.black,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 12, // Wider button
+                                        vertical: 12,   // Taller button
+                                      ),
+                                      child:Column(
+                                        children: [
+                                          Text(
+                                            "Already Joined",
+                                            style: TextStyle(
+                                              fontSize: 18, // Larger text size
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white,
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  )
+                                ],
+                                if(userModel?.subscription.name!=title)...[
+                                  ElevatedButton(
+                                    onPressed: () {},
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.black,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 12, // Wider button
+                                        vertical: 12,   // Taller button
+                                      ),
+                                      child:Column(
+                                        children: [
+                                          Text(
+                                            "Join Now",
+                                            style: TextStyle(
+                                              fontSize: 18, // Larger text size
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white,
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              ],
                             ),
                           ),
                         ],
