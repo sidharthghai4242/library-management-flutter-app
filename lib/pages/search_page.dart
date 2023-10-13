@@ -14,6 +14,7 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
+
   List searchResult = [];
   TextEditingController searchcontroller = TextEditingController();
   void searchFromFirebase(String query) async {
@@ -27,10 +28,10 @@ class _SearchPageState extends State<SearchPage> {
     });
   }
 
-  Future<double> fetchRatingByDocId(String docId) async {
+  Future<double> fetchRatingBybookId(String bookId) async {
     final ratingQuerySnapshot = await FirebaseFirestore.instance
         .collection("ratings")
-        .where('docId', isEqualTo: docId)
+        .where('bookId', isEqualTo: bookId)
         .get();
 
     if (ratingQuerySnapshot.docs.isNotEmpty) {
@@ -131,12 +132,12 @@ class _SearchPageState extends State<SearchPage> {
 
                               // Subtract 1 from index to get the correct book index
                               final ratingDoc = topRatedBooks[index - 1];
-                              final docId = (ratingDoc.data() as Map<String, dynamic>)['docId'] as String;
+                              final bookId = (ratingDoc.data() as Map<String, dynamic>)['bookId'] as String;
 
                               return FutureBuilder<DocumentSnapshot>(
                                 future: FirebaseFirestore.instance
                                     .collection("Books")
-                                    .doc(docId)
+                                    .doc(bookId)
                                     .get(),
                                 builder: (context, bookSnapshot) {
                                   if (bookSnapshot.connectionState == ConnectionState.waiting) {
@@ -154,7 +155,9 @@ class _SearchPageState extends State<SearchPage> {
 
                                   final bookData = bookSnapshot.data!.data() as Map<String, dynamic>;
                                   final author = bookData['author'] ?? "";
+                                  print(author);
                                   final title = bookData['title'] ?? "";
+                                  print(title);
                                   final url = bookData['url'] ?? "";
                                   final id = bookData['type']['catalogueId'] ?? "";
 
@@ -168,7 +171,7 @@ class _SearchPageState extends State<SearchPage> {
                                             title: title,
                                             id: id,
                                             url: url,
-                                            DocId: docId,
+                                            bookId: bookId,
                                           ),
                                         ),
                                       );
@@ -267,13 +270,13 @@ class _SearchPageState extends State<SearchPage> {
                     final title = book['title'];
                     final url = book['url'];
                     final id = book['type']['catalogueId'];
-                    final DocId = book['docId'] ?? '';
+                    final bookId = book['bookId'] ?? '';
                     print(author);
-                    print(title);print(url);print(id);print(DocId);
+                    print(title);print(url);print(id);print(bookId);
 
 
                     return FutureBuilder<double>(
-                      future: fetchRatingByDocId(DocId),
+                      future: fetchRatingBybookId(bookId),
                       builder: (context, ratingSnapshot) {
                         double bookRating = ratingSnapshot.data ?? 0.0;
                         String ratingString = bookRating.toStringAsFixed(1); // Adjust the number of decimal places as needed
@@ -288,7 +291,7 @@ class _SearchPageState extends State<SearchPage> {
                                   title: title,
                                   id: id,
                                   url: url,
-                                  DocId: DocId, // Corrected from 'id'
+                                  bookId: bookId, // Corrected from 'id'
                                 ),
                               ),
                             );

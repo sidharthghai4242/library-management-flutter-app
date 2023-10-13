@@ -9,6 +9,7 @@ import 'package:rlr/pages/my_books.dart';
 import 'package:rlr/pages/notifications_page.dart';
 import 'package:rlr/pages/profile_page.dart';
 import 'package:rlr/pages/splash_screen.dart';
+import 'package:rlr/pages/wishlist.dart';
 import 'package:rlr/provider/DbProvider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -19,6 +20,7 @@ import 'package:rlr/pages/membership.dart';
 import 'package:rlr/helper/color_schemes.g.dart';
 import 'package:rlr/pages/search_page.dart';
 import 'package:rlr/provider/ThemeProvider.dart';
+import 'package:rlr/provider/wishlist_provider.dart';
 import 'pages/authentication/signin_with_email.dart';
 
 void main() async {
@@ -36,6 +38,8 @@ void main() async {
           ),
         ),
         ChangeNotifierProvider(create: (_) => DbProvider()),
+        ChangeNotifierProvider<WishListProvider>(
+            create: (context) => WishListProvider(),)
         // Add other providers if needed
       ],
       child: const MyApp(),
@@ -72,6 +76,7 @@ class MyApp extends StatelessWidget {
         '/allbooks' : (context) => const Allbooks(),
         '/signup':(context)=>SignUpPage(),
         '/helpdesk':(context)=>HelpDesk(),
+        '/wishlist': (context) => WishList(),
 
       },
     );

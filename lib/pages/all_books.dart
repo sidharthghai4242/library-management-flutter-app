@@ -10,11 +10,11 @@ class Allbooks extends StatefulWidget {
 }
 
 class _AllbooksState extends State<Allbooks> {
-  Future<double> fetchRatingByDocId(String docId) async {
+  Future<double> fetchRatingBybookId(String bookId) async {
     try {
       final ratingQuery = await FirebaseFirestore.instance
           .collection("ratings")
-          .where('docId', isEqualTo: docId)
+          .where('bookId', isEqualTo: bookId)
           .get();
 
       if (ratingQuery.docs.isNotEmpty) {
@@ -25,7 +25,7 @@ class _AllbooksState extends State<Allbooks> {
         return 0.0; // Return 0.0 if there are no ratings for the book
       }
     } catch (e) {
-      print("Error fetching rating for docId $docId: $e");
+      print("Error fetching rating for bookId $bookId: $e");
       return 0.0; // Return 0.0 in case of an error
     }
   }
@@ -89,11 +89,11 @@ class _AllbooksState extends State<Allbooks> {
                     String author = bookMap['author'] ?? "Unknown Author";
                     String title = bookMap['title'] ?? "Unknown Title";
                     String url = bookMap['url'] ?? "https://example.com/default-image.jpg";
-                    String docId = bookMap['docId'] ?? '';
+                    String bookId = bookMap['bookId'] ?? '';
                     String catalogueId= bookMap['type']['catalogueId'] ??'';
 
                     return FutureBuilder<double>(
-                      future: fetchRatingByDocId(docId),
+                      future: fetchRatingBybookId(bookId),
                       builder: (context, ratingSnapshot) {
                         double bookRating = ratingSnapshot.data ?? 0.0;
 
@@ -121,7 +121,7 @@ class _AllbooksState extends State<Allbooks> {
                                             title: title,
                                             url: url,
                                             id: catalogueId,
-                                            DocId: docId,
+                                            bookId: bookId,
                                           ),
                                         ),
                                       );

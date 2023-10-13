@@ -5,6 +5,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../pages/book_page.dart';
+
 class DbProvider extends ChangeNotifier {
   FirebaseFirestore? _firestore;
 
@@ -12,6 +14,65 @@ class DbProvider extends ChangeNotifier {
 
   DbProvider() {
     _firestore = FirebaseFirestore.instance;
+  }
+  addWishListData({
+    String? wishlistId,
+    String? wishlistName,
+    String? wishlistImage,
+    String? wishlistAuthor,
+  }) {
+    print(userModel?.userId);
+    FirebaseFirestore.instance
+        .collection("users")
+        .doc(userModel?.userId)
+        .collection("wishList")
+        .doc(wishlistId)
+        .set({
+      "wishlistId": wishlistId,
+      "wishlistName": wishlistName,
+      "wishlistImage": wishlistImage,
+      "wishlistAuthor": wishlistAuthor,
+      "wishlist": true,
+    });
+  }
+  //   GET WISHLIST DATA
+  List<BookPage> WishList = [];
+
+  getWishListData() async {
+    List<BookPage> newList = [];
+    QuerySnapshot value = await FirebaseFirestore.instance
+        .collection("users")
+        .doc('VkMhC98aY4zy2LlS948V')
+        .collection("wishList")
+        .get();
+    value.docs.forEach(
+          (element) {
+        BookPage productModel = BookPage(
+          bookId: element.get("wishlistId"),
+          title: element.get("wishlistName"),
+          url: element.get("wishlistImage"),
+          author: element.get("wishlistAuthor"),
+        );
+        newList.add(productModel);
+      },
+    );
+    WishList = newList;
+    notifyListeners(); //figure this one out
+
+  }
+
+
+  List<BookPage> get getWishList {
+    return WishList;
+  }
+//   DELETE WISHLIST ITEMS
+  deleteWishList(wishlistId) {
+    FirebaseFirestore.instance
+        .collection("users")
+        .doc('VkMhC98aY4zy2LlS948V')
+        .collection("wishList")
+        .doc(wishlistId) // Use the passed wishlistId here
+        .delete();
   }
 
   void setUserModel(UserModel userModel) {
@@ -62,4 +123,5 @@ class DbProvider extends ChangeNotifier {
         return false;
       });
   }
+
 }

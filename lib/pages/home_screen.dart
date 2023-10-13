@@ -43,7 +43,6 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
   String minimumPriceAsString ="";
   // Charcoal gray for text.
 
-
   TextStyle customTextStyle = GoogleFonts.robotoSlab(
     fontSize: 20,
    fontWeight: FontWeight.bold,
@@ -111,10 +110,10 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
     return minimumPriceAsString;
   }
 
-  Future<double> fetchRatingByDocId(String docId) async {
+  Future<double> fetchRatingBybookId(String bookId) async {
     final ratingQuerySnapshot = await FirebaseFirestore.instance
         .collection("ratings")
-        .where('docId', isEqualTo: docId)
+        .where('bookId', isEqualTo: bookId)
         .get();
 
     if (ratingQuerySnapshot.docs.isNotEmpty) {
@@ -125,22 +124,6 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
 
     return 0.0; // Default rating if not found
   }
-
-  // @override
-  // void didPush() {
-  //   // This method is called when a new route has been pushed.
-  //   // You can add additional logic here if needed.
-  // }
-  //
-  // @override
-  // void didPopNext() {
-  //   // This method is called when the current route has been popped off,
-  //   // and the previous route (i.e., the home page) is now visible again.
-  //   // You can refresh ratings or perform any other necessary updates here.
-  //   if (shouldRefreshRatings) {
-  //     refreshRatings();
-  //   }
-  // }
 
   void refreshRatings() {
 
@@ -295,7 +278,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
   Widget build(BuildContext context) {
     userModel = context.watch<DbProvider>().userModel;
     Color primaryColor = MediaQuery.of(context).platformBrightness == Brightness.dark
-        ? primaryColorDark
+        ? Color(0xFFF5F5F5)
         : primaryColorLight;
     Color secondarycolor = MediaQuery.of(context).platformBrightness == Brightness.dark
         ? secondaryColorDark
@@ -316,6 +299,9 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
     Color bordercolor = MediaQuery.of(context).platformBrightness == Brightness.dark
         ? Colors.white30
         : Colors.black;
+    Color barcolor = MediaQuery.of(context).platformBrightness == Brightness.dark
+        ? Color(0xFF363062)
+        : Colors.black;
 
     print(minimumPriceAsString);
     String? subname =userModel?.subscription.name;
@@ -327,18 +313,15 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
     // print(titles.length);//
     return Scaffold(
       appBar: AppBar(
-        // shadowColor: buttoncolor,
-        elevation: 3,
-        backgroundColor: primaryColor,
+        backgroundColor: Color(0xFF363062),
         iconTheme: IconThemeData(color: secondarycolor),
         actions: [
           InkWell(
             onTap: () {
-              Navigator.pushNamed(context, '/notifications');
+              Navigator.pushNamed(context, '/wishlist');
             },
             child:DecoratedIcon(
-              icon: Icon(CupertinoIcons.heart_fill,size: 32,),
-
+              icon: Icon(CupertinoIcons.heart,size: 32,),
               decoration: IconDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
@@ -358,7 +341,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
                 Navigator.pushNamed(context, '/notifications');
               },
               child:DecoratedIcon(
-                icon: Icon(CupertinoIcons.bell_fill,size: 32,),
+                icon: Icon(CupertinoIcons.bell,size: 32,),
                 decoration: IconDecoration(
                   gradient: LinearGradient(colors: [
                     if(MediaQuery.of(context).platformBrightness == Brightness.dark)...[
@@ -376,8 +359,8 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
           height: 70,
           child: Image.asset(
             MediaQuery.of(context).platformBrightness == Brightness.dark
-              ? 'assets/rlrblack.jpg'
-              : 'assets/rlrwhite.jpg',
+              ? 'assets/rlrwhite.jpg'
+              : 'assets/rlrblack.jpg',
           ),
         ),
         titleSpacing: 0,
@@ -434,7 +417,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
                                                   );
                                                 },
                                                 style: ElevatedButton.styleFrom(
-                                                  backgroundColor: buttoncolor,
+                                                  backgroundColor: Colors.deepOrange,
                                                   shape: RoundedRectangleBorder(
                                                     borderRadius: BorderRadius.circular(25.0), // Adjust the radius as needed
                                                   ),// Set your desired button color here
@@ -967,8 +950,8 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
                                                               bookMap['title'];
                                                           String url =
                                                               bookMap['url'];
-                                                          String docId =
-                                                              bookMap['docId'] ??
+                                                          String bookId =
+                                                              bookMap['bookId'] ??
                                                                   '';
                                                           String catalogueId =
                                                               bookMap['type'][
@@ -978,8 +961,8 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
                                                           return FutureBuilder<
                                                               double>(
                                                             future:
-                                                                fetchRatingByDocId(
-                                                                    docId),
+                                                                fetchRatingBybookId(
+                                                                    bookId),
                                                             builder: (context,
                                                                 ratingSnapshot) {
                                                               double
@@ -1031,7 +1014,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
                                                                                         title: title,
                                                                                         url: url,
                                                                                         id: catalogueId,
-                                                                                        DocId: docId,
+                                                                                        bookId: bookId,
                                                                                       ),
                                                                                     ),
                                                                                   );
@@ -1133,21 +1116,3 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
     );
   }
 }
-
-// class NavigatorObserver extends RouteObserver<PageRoute<dynamic>> {
-//   final _homeScreenState;
-//
-//   NavigatorObserver(this._homeScreenState);
-//
-//   @override
-//   void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) {
-//     super.didPop(route, previousRoute);
-//
-//     if (previousRoute is PageRoute && previousRoute.settings.name == '/') {
-//       // Detect when returning to the home page and set the refresh flag
-//       _homeScreenState.setState(() {
-//         _homeScreenState.shouldRefreshRatings = true;
-//       });
-//     }
-//   }
-// }

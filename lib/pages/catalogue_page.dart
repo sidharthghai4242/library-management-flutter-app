@@ -13,10 +13,10 @@ class CataloguePage extends StatefulWidget {
 }
 
 class _CataloguePageState extends State<CataloguePage> {
-  Future<double> fetchRatingByDocId(String docId) async {
+  Future<double> fetchRatingBybookId(String bookId) async {
     final ratingQuerySnapshot = await FirebaseFirestore.instance
         .collection("ratings")
-        .where('docId', isEqualTo: docId)
+        .where('bookId', isEqualTo: bookId)
         .get();
 
     if (ratingQuerySnapshot.docs.isNotEmpty) {
@@ -95,11 +95,11 @@ class _CataloguePageState extends State<CataloguePage> {
                             String author = bookMap['author'] ?? "Unknown Author";
                             String title = bookMap['title'] ?? "Unknown Title";
                             String url = bookMap['url'] ?? "https://example.com/default-image.jpg";
-                            String docId = bookMap['docId'] ?? '';
+                            String bookId = bookMap['bookId'] ?? '';
                             String catalogueId= bookMap['type']['catalogueId'] ??'';
 
                             return FutureBuilder<double>(
-                              future: fetchRatingByDocId(docId),
+                              future: fetchRatingBybookId(bookId),
                               builder: (context, ratingSnapshot) {
                                 double bookRating = ratingSnapshot.data ?? 0.0;
 
@@ -127,7 +127,7 @@ class _CataloguePageState extends State<CataloguePage> {
                                                     title: title,
                                                     url: url,
                                                     id: catalogueId,
-                                                    DocId: docId,
+                                                    bookId: bookId,
                                                   ),
                                                 ),
                                               );

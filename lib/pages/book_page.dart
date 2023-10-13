@@ -4,20 +4,26 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:provider/provider.dart';
+import 'package:rlr/models/UserModel.dart';
+import 'package:share_plus/share_plus.dart';
+
+import '../provider/DbProvider.dart';
+import '../provider/wishlist_provider.dart';
 
 class BookPage extends StatefulWidget {
   final String? author;
   final String? title;
   final String url;
   final String? id;
-  final String DocId;
+  final String bookId;
 
   const BookPage({
     this.author,
     this.title,
     this.id,
     required this.url,
-    required this.DocId,
+    required this.bookId,
   });
 
   @override
@@ -26,11 +32,12 @@ class BookPage extends StatefulWidget {
 
 class _BookPageState extends State<BookPage> {
   double userRating = 0.0; // Track user's rating
-  bool isFavorite = false; // Track favorite status
+  // bool isFavorite = false; // Track favorite status
   double bookRating = 0.0; // Book's average rating
   int readByCount = 0; // Count of users who have read the book
   bool dataFetched = false;
   bool isRatingUpdateInProgress = false;
+  UserModel?userModel;
   TextEditingController review =TextEditingController();
   double storedRating = 5.0;
   final int maxCharacterLimit = 150;
@@ -54,16 +61,16 @@ class _BookPageState extends State<BookPage> {
   }
 
   // Toggle favorite status
-  void toggleFavorite() {
-    setState(() {
-      isFavorite = !isFavorite;
-    });
-  }
-  Future<void> updateRatingAndReadByInFirestore(double newRating, String docId, String uid, String reviewText) async {
+  // void toggleFavorite() {
+  //   setState(() {
+  //     isFavorite = !isFavorite;
+  //   });
+  // }
+  Future<void> updateRatingAndReadByInFirestore(double newRating, String bookId, String uid, String reviewText) async {
     try {
       final ratingsQuery = FirebaseFirestore.instance
           .collection("ratings")
-          .where('docId', isEqualTo: docId);
+          .where('bookId', isEqualTo: bookId);
 
       final ratingsSnapshot = await ratingsQuery.get();
 
@@ -113,7 +120,7 @@ class _BookPageState extends State<BookPage> {
       } else {
         // Document doesn't exist, create a new one
         await FirebaseFirestore.instance.collection("ratings").add({
-          'docId': docId,
+          'bookId': bookId,
           'rating': newRating,
           'readBy': [
             {
@@ -143,7 +150,7 @@ class _BookPageState extends State<BookPage> {
     try {
       final specificBookQuery = FirebaseFirestore.instance
           .collection("ratings")
-          .where('docId', isEqualTo: widget.DocId);
+          .where('bookId', isEqualTo: widget.bookId);
 
       final specificBookSnapshot = await specificBookQuery.get();
 
@@ -183,7 +190,7 @@ class _BookPageState extends State<BookPage> {
     try {
       final ratingsQuery = FirebaseFirestore.instance
           .collection("ratings")
-          .where('docId', isEqualTo: widget.DocId);
+          .where('bookId', isEqualTo: widget.bookId);
 
       final ratingsSnapshot = await ratingsQuery.get();
 
@@ -213,12 +220,36 @@ class _BookPageState extends State<BookPage> {
       print("Error fetching book rating: $e");
     }
   }
+  bool wishListBool = false;
+
+  getWishListBool() {
+    FirebaseFirestore.instance
+        .collection("users")
+        .doc('VkMhC98aY4zy2LlS948V')
+        .collection("wishList")
+    // .doc("wishlistId")
+        .doc(widget.bookId)
+        .get()
+        .then((value) => {
+      if (this.mounted)
+        {
+          if (value.exists)
+            {
+              setState(
+                    () {
+                  wishListBool = value.get("wishlist");
+                },
+              ),
+            }
+        }
+    });
+  }
   @override
   void initState() {
     super.initState();
 
     // Set initial values while waiting for data// You can set it to any default value you prefer
-
+    getWishListBool();
     // Fetch the specific book rating when the page is initialized
     fetchSpecificBookRating();
 
@@ -229,6 +260,8 @@ class _BookPageState extends State<BookPage> {
 
   @override
   Widget build(BuildContext context) {
+    userModel = context.watch<DbProvider>().userModel;
+    WishListProvider wishListProvider = Provider.of(context);
     Color primaryColor = MediaQuery.of(context).platformBrightness == Brightness.dark
         ? primaryColorDark
         : primaryColorLight;
@@ -334,15 +367,6 @@ class _BookPageState extends State<BookPage> {
                       style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.orange),
                     ),
                     SizedBox(height: 5), // Add a SizedBox with a height of 5
-                    ElevatedButton.icon(
-                      onPressed: () {
-                        // Handle the "Add to Cart" button click here
-                        // You can implement the cart functionality here, such as adding the book to the user's cart.
-                        // You may also want to display a confirmation message.
-                      },
-                      icon: Icon(Icons.add_shopping_cart), // Add an icon to the button
-                      label: Text("Add to Cart"), // Add text to the button
-                    ),
                   ],
                 )
 
@@ -398,10 +422,28 @@ class _BookPageState extends State<BookPage> {
                   children: [
                     IconButton(
                       icon: Icon(
-                        isFavorite ? Icons.favorite : Icons.favorite_border,
-                        color: isFavorite ? Colors.red : null,
+                        wishListBool == false
+                            ? Icons.favorite_outline
+                            : Icons.favorite,
+                        color: wishListBool ? Colors.red : null,
                       ),
-                      onPressed: toggleFavorite,
+                      onPressed: () {
+                        setState(() {
+                          wishListBool = !wishListBool;
+                        });
+                        if (wishListBool == true) {
+                          // Add item to the wishlist
+                          wishListProvider.addWishListData(
+                            wishlistId: widget.bookId,
+                            wishlistImage: widget.url,
+                            wishlistName: widget.title,
+                            wishlistAuthor: widget.author,
+                              userId:userModel?.userId as String
+                          );
+                        }else{
+                          wishListProvider.deleteWishList(widget.bookId,userModel?.userId as String);
+                        }
+                      },
                     ),
                     Row(children: [
                       Text("Wishlist"),
@@ -412,7 +454,9 @@ class _BookPageState extends State<BookPage> {
                   children: [
                     IconButton(
                       icon: Icon(Icons.share),
-                      onPressed: () {},
+                      onPressed: () async {
+                        Share.share(BookPage(url: widget.url, bookId: widget.bookId) as String);
+                      },
                     ),
                     Row(children: [
                       SizedBox(width: 4,),
@@ -428,8 +472,6 @@ class _BookPageState extends State<BookPage> {
                         showDialog(
                           context: context,
                           builder: (BuildContext context) {
-// Initialize the rating
-
                             return isRatingUpdateInProgress
                                 ? CircularProgressIndicator() // Show loading indicator
                                 : AlertDialog(
@@ -485,11 +527,11 @@ class _BookPageState extends State<BookPage> {
                                       // Handle the submit action here
                                       Navigator.of(context).pop(); // Close the dialog
 
-                                      // Use the captured DocId to update the rating and review in Firestore
+                                      // Use the captured bookId to update the rating and review in Firestore
                                       await updateRatingAndReadByInFirestore(
                                         storedRating, // Use the storedRating value
-                                        widget.DocId,
-                                        FirebaseAuth.instance.currentUser?.uid as String,
+                                        widget.bookId,
+                                        userModel?.userId as String,
                                         review.text.trim(),
                                       );
 
@@ -536,7 +578,7 @@ class _BookPageState extends State<BookPage> {
                     child: StreamBuilder(
                       stream: FirebaseFirestore.instance
                           .collection("ratings")
-                          .where('docId', isEqualTo: widget.DocId) // Replace with the actual document ID
+                          .where('bookId', isEqualTo: widget.bookId) // Replace with the actual document ID
                           .snapshots(),
                       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
                         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -545,7 +587,7 @@ class _BookPageState extends State<BookPage> {
 
                         if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
                           return Center(
-                            child: Text('No reviews yet.'),
+                            child: Text('No reviews yet. Be the first one to review it'),
                           );
                         }
 
@@ -654,7 +696,7 @@ class _BookPageState extends State<BookPage> {
             ),
             SizedBox(height: 3),
             Divider(),
-            SizedBox(height: 20),
+            SizedBox(height: 5,),
             Container(
               padding: EdgeInsets.all(10),
               child: Container(
@@ -682,22 +724,29 @@ class _BookPageState extends State<BookPage> {
 
                     return Column(
                       children: [
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text("Similar Publications",style: TextStyle(fontWeight: FontWeight.bold),textAlign:TextAlign.center,),
+                            Container(
+                              width: 150,
+                              child: Divider(),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 5,),
                         SingleChildScrollView(
                           scrollDirection: Axis.horizontal,
                           child: Column(
                             children: [
-                              Text("Similar Publications",style: TextStyle(fontWeight: FontWeight.bold),),
-                              Container(
-                                width: 150,
-                                child: Divider(),
-                              ),
                               Row(
                                 children: booksWithUrls.map<Widget>((bookDocument) {
                                   Map<String, dynamic> bookMap = bookDocument.data() as Map<String, dynamic>;
                                   String author = bookMap['author'];
                                   String secondtitle = bookMap['title'];
                                   String url = bookMap['url'];
-                                  String DocId = bookMap['docId'] ?? '';
+                                  String bookId = bookMap['bookId'] ?? '';
                                   return Row(
                                     children: [
                                       if(secondtitle !=widget.title)...[
@@ -729,7 +778,7 @@ class _BookPageState extends State<BookPage> {
                                                                 title: secondtitle,
                                                                 url: url,
                                                                 id: widget.id,
-                                                                DocId: DocId,
+                                                                bookId: bookId,
                                                               ),
                                                         ),
                                                       );

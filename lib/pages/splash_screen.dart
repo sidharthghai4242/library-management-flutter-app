@@ -15,7 +15,9 @@ class SplashScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Image.asset("assets/logo.jpg", height: 180,),
+            Image.asset( MediaQuery.of(context).platformBrightness == Brightness.dark
+                ? 'assets/rlrblack.jpg'
+                : 'assets/rlrwhite.jpg', height: 180,),
             Text(
               "Read Ludhiana Read",
               style: GoogleFonts.openSans(
