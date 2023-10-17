@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:rlr/pages/book_page.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:provider/provider.dart';
 import 'package:rlr/provider/wishlist_provider.dart';
-
 import '../models/UserModel.dart';
 import '../provider/DbProvider.dart';
 
@@ -14,9 +11,9 @@ class WishList extends StatefulWidget {
 }
 
 class _WishListState extends State<WishList> {
-  UserModel?userModel;
+  UserModel? userModel;
   late WishListProvider wishListProvider;
-  // WishListProvider wishListProvider;
+
   showAlertDialog(BuildContext context, BookPage delete) {
     Widget cancelButton = TextButton(
       child: Text("No"),
@@ -27,13 +24,11 @@ class _WishListState extends State<WishList> {
     Widget continueButton = TextButton(
       child: Text("Yes"),
       onPressed: () {
-        // WishListProvider wishListProvider = Provider.of<WishListProvider>(context, listen: false);
-        wishListProvider.deleteWishList(delete.bookId,userModel?.userId as String);
+        wishListProvider.deleteWishList(delete.bookId, userModel!.userId);
         Navigator.of(context).pop();
       },
     );
 
-    // set up the AlertDialog
     AlertDialog alert = AlertDialog(
       title: Text("WishList Product"),
       content: Text("Are you sure you want to delete this WishList Product?"),
@@ -43,7 +38,6 @@ class _WishListState extends State<WishList> {
       ],
     );
 
-    // show the dialog
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -51,12 +45,12 @@ class _WishListState extends State<WishList> {
       },
     );
   }
+
   @override
   Widget build(BuildContext context) {
     userModel = context.watch<DbProvider>().userModel;
-    // wishListProvider = Provider.of<WishListProvider>(context);
-    wishListProvider = Provider.of(context);
-    wishListProvider.getWishListData(userModel?.userId as String );
+    wishListProvider = Provider.of<WishListProvider>(context);
+    wishListProvider.getWishListData(userModel!.userId);
 
     return Scaffold(
       appBar: AppBar(
@@ -91,121 +85,91 @@ class _WishListState extends State<WishList> {
   }
 }
 
-class SingleItem extends StatefulWidget {
+class SingleItem extends StatelessWidget {
   final String? author;
   final String? title;
   final String url;
-  final String? id;
   final String bookId;
-  final Function onDelete;
-
+  final VoidCallback onDelete;
 
   SingleItem({
     this.author,
     this.title,
-    this.id,
     required this.url,
     required this.bookId,
     required this.onDelete,
   });
-  @override
-  _SingleItemState createState() => _SingleItemState();
-}
-
-class _SingleItemState extends State<SingleItem> {
-  // ReviewCartProvider? reviewCartProvider;
-  // int count = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    // getCount();
-  }
-
-  // void getCount() {
-  //   setState(() {
-  //     count = widget.productQuantity ?? 0;
-  //   });
-  // }
 
   @override
   Widget build(BuildContext context) {
-    // reviewCartProvider = Provider.of<ReviewCartProvider>(context);
-    // reviewCartProvider?.getReviewCartData();
-
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).pushReplacement(MaterialPageRoute(
+          builder: (context) => BookPage(
+            author: author,
+            title: title,
+            url: url,
+            id: bookId,
+            bookId: bookId,
+          ),
+        ));
+      },
+      child: Card(
+        elevation: 0,
+        margin: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15.0),
+        ),
+        child: Container(
+          padding: EdgeInsets.all(12),
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Image.network(
+                  url,
+                  width: 120,
+                  height: 190,
+                  fit: BoxFit.cover,
+                ),
+              ),
+              SizedBox(width: 12),
+
               Expanded(
-                child: Container(
-                  height: 90,
-                  child: Center(
-                    child: Image.network(
-                      widget.url,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: 8),
+                    Text(
+                      title!,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
                     ),
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Container(
-                  height: 90,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            widget.title ?? "",
-                            style: TextStyle(
-
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                          ),
-                          Text(
-                            "\$${widget.author}",
-                            style: TextStyle(
-
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
+                    SizedBox(height: 8),
+                    Text(
+                      'Author: $author',
+                      style: TextStyle(
+                        color: Colors.grey,
                       ),
-                    ],
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Container(
-                  height: 90,
-                  padding: EdgeInsets.only(left: 15, right: 15),
-                  child: Column(
-                    children: [
-                      InkWell(
-                        onTap: widget.onDelete as void Function()?,
-                        child: Icon(
-                          Icons.delete,
-                          size: 30,
-                          color: Colors.black54,
-                        ),
+                    ),
+                    SizedBox(height: 8),
+                    TextButton(
+                      onPressed: onDelete,
+                      child: Icon(
+                        Icons.delete,
+                        color: Colors.blueGrey,
                       ),
-                    ],
-                  ),
+                    )
+                  ],
                 ),
               ),
             ],
           ),
         ),
-        Divider(
-          height: 1,
-          color: Colors.black45,
-        ),
-      ],
+      ),
     );
   }
 }

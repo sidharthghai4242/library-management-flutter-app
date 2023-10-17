@@ -1,8 +1,6 @@
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:provider/provider.dart';
 import 'package:rlr/models/UserModel.dart';
@@ -60,12 +58,6 @@ class _BookPageState extends State<BookPage> {
         .snapshots();
   }
 
-  // Toggle favorite status
-  // void toggleFavorite() {
-  //   setState(() {
-  //     isFavorite = !isFavorite;
-  //   });
-  // }
   Future<void> updateRatingAndReadByInFirestore(double newRating, String bookId, String uid, String reviewText) async {
     try {
       final ratingsQuery = FirebaseFirestore.instance
@@ -163,7 +155,7 @@ class _BookPageState extends State<BookPage> {
         if (specificBookRating is int) {
           setState(() {
             userRating = specificBookRating.toDouble();
-            print(userRating);
+            // print(userRating);
             readByCount = specificBookReadBy.length;
           });
         } else if (specificBookRating is double) {
@@ -222,28 +214,26 @@ class _BookPageState extends State<BookPage> {
   }
   bool wishListBool = false;
 
-  getWishListBool() {
+  void getWishListBool() {
+    userModel = context.read<DbProvider>().userModel; // Use context.read
+    print(userModel?.userId);
     FirebaseFirestore.instance
         .collection("users")
-        .doc('VkMhC98aY4zy2LlS948V')
+        .doc(userModel?.userId)
         .collection("wishList")
-    // .doc("wishlistId")
         .doc(widget.bookId)
         .get()
-        .then((value) => {
-      if (this.mounted)
-        {
-          if (value.exists)
-            {
-              setState(
-                    () {
-                  wishListBool = value.get("wishlist");
-                },
-              ),
-            }
+        .then((value) {
+      if (this.mounted) {
+        if (value.exists) {
+          setState(() {
+            wishListBool = value.get("wishlist");
+          });
         }
+      }
     });
   }
+
   @override
   void initState() {
     super.initState();
@@ -261,6 +251,7 @@ class _BookPageState extends State<BookPage> {
   @override
   Widget build(BuildContext context) {
     userModel = context.watch<DbProvider>().userModel;
+
     WishListProvider wishListProvider = Provider.of(context);
     Color primaryColor = MediaQuery.of(context).platformBrightness == Brightness.dark
         ? primaryColorDark
@@ -290,7 +281,7 @@ class _BookPageState extends State<BookPage> {
         : Colors.black;
     String id='${widget.id}';
     String title='${widget.title}';
-    print(FirebaseAuth.instance.currentUser?.uid as String);
+    // print(FirebaseAuth.instance.currentUser?.uid as String);
     return !dataFetched
         ? (Center(child:CircularProgressIndicator()))// Show loader
         : Scaffold(
@@ -455,7 +446,11 @@ class _BookPageState extends State<BookPage> {
                     IconButton(
                       icon: Icon(Icons.share),
                       onPressed: () async {
-                        Share.share(BookPage(url: widget.url, bookId: widget.bookId) as String);
+                        // Create a deep link with the necessary parameters
+                        final deepLink = 'myapp://bookPage?bookId=${widget.bookId}&url=${widget.url}&author=${widget.author}&title=${widget.title}&id=${widget.bookId}';
+                        print(deepLink);
+                        // Share the deep link
+                        Share.share(deepLink);
                       },
                     ),
                     Row(children: [

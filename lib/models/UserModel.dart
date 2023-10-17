@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UserModel {
-  String userId = "";
+  String? userId;
   String authId = "";
   String name = "";
   String email = "";
@@ -9,7 +9,7 @@ class UserModel {
   String phone = "";
   String token = "";
   Subscription subscription = Subscription();
-  int age = 0;
+  int? age;
   Timestamp createdOn = Timestamp.now();
 
   UserModel() {
@@ -24,9 +24,9 @@ class UserModel {
     user.name = doc["name"];
     user.email = doc["email"];
     user.address = doc["address"];
-    user.age = doc["age"];
-    user.userId = doc["userId"];
-    user.token = doc["token"];
+    user.age = doc["age"] ?? 0;
+    user.userId = doc["userId"] ?? "";
+    user.token = doc["token"] ?? "";
     user.subscription = Subscription.toObject(doc["subscription"]);
     return user;
   }

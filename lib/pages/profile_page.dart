@@ -46,54 +46,8 @@ class _ProfilePageState extends State<ProfilePage> {
     // Sign out from Firebase
     await _firebaseAuth.signOut();
     Navigator.pushReplacementNamed(context, '/phone');
-  }// Track whether log out process is in progress
-  // void _loadImageFromUrl(String imageUrl) async {
-  //   try {
-  //     final response = await http.get(Uri.parse(imageUrl));
-  //     if (response.statusCode == 200) {
-  //       setState(() {
-  //         _pickedImage = File.fromRawPath(response.bodyBytes);
-  //       });
-  //     }
-  //   } catch (error) {
-  //     print('Error loading image: $error');
-  //   }
-  // }
-  // @override
-  // void initState() {
-  //   super.initState();
-  //
-  //   // Fetch the user's data, including the profile image URL from Firestore
-  //   // You can use StreamBuilder or FutureBuilder depending on your data retrieval method
-  //   FirebaseFirestore.instance
-  //       .collection('users')
-  //       .doc(userModel?.userId)
-  //       .get()
-  //       .then((doc) async {
-  //     if (doc.exists) {
-  //       String imageUrl = doc['profileImage'];
-  //       if (imageUrl != null) {
-  //         // Load the image from the URL
-  //         _loadImageFromUrl(imageUrl);
-  //         // Store the image URL in shared preferences
-  //         SharedPreferences prefs = await SharedPreferences.getInstance();
-  //         prefs.setString('profileImage', imageUrl);
-  //       }
-  //     }
-  //   });
-  //
-  //   // Retrieve the image URL from shared preferences on app launch
-  //   _loadImageFromSharedPreferences();
-  // }
-  //
-  // void _loadImageFromSharedPreferences() async {
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   String? imageUrl = prefs.getString('profileImage');
-  //   if (imageUrl != null) {
-  //     // Load the image from the URL
-  //     _loadImageFromUrl(imageUrl);
-  //   }
-  // }
+  }
+
   @override
   void initState() {
     super.initState();

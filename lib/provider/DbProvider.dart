@@ -82,10 +82,11 @@ class DbProvider extends ChangeNotifier {
   }
 
   Future getUserFromFirestore({BuildContext? bContent, User? user}) async {
-    return await _firestore?.collection(Constants.userCollection)
-      .where("authId", isEqualTo: user!.uid)
+    return await _firestore?.collection("users")
+      .where("email", isEqualTo: user!.email)
       .get()
       .then((value) async {
+        print('getUserFromFirestore size${value.size}');
         if(value.size == 0) {
           UserModel newUserModel = await CommonClass.askedUserInfoViaModalBottomSheet(bContent!,
             isEditable: true,
@@ -94,11 +95,13 @@ class DbProvider extends ChangeNotifier {
             firebaseUser: user,
           );
           userModel = newUserModel;
-          DbProvider().setUserModel(userModel!);
+          print('usermodel 1 ${userModel}');
+          setUserModel(userModel!);
           return userModel;
         } else {
           userModel = UserModel.toObject(value.docChanges.first.doc.data());
-          DbProvider().setUserModel(userModel!);
+          print('usermodel 1 ${userModel}');
+          setUserModel(userModel!);
           return userModel;
         }
       }).catchError((error) {
