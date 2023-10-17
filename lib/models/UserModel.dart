@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UserModel {
   String? userId;
-  String authId = "";
+  String? authId;
   String name = "";
   String email = "";
   String address = "";
@@ -19,7 +19,7 @@ class UserModel {
   static UserModel toObject(doc) {
     UserModel user = UserModel();
     user.phone = doc["phone"];
-    user.authId = doc["authId"];
+    user.authId = doc["authId"] ?? "";
     user.createdOn = doc["createdOn"];
     user.name = doc["name"];
     user.email = doc["email"];

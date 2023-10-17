@@ -577,7 +577,7 @@ class _BookPageState extends State<BookPage> {
                           .snapshots(),
                       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
                         if (snapshot.connectionState == ConnectionState.waiting) {
-                          return CircularProgressIndicator(); // Loading indicator
+                          return Text(""); // Loading indicator
                         }
 
                         if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
@@ -699,7 +699,7 @@ class _BookPageState extends State<BookPage> {
                   stream: fetchBooksByName(id, title),
                   builder: (BuildContext context, AsyncSnapshot booksSnapshot) {
                     if (booksSnapshot.connectionState == ConnectionState.waiting) {
-                      return CircularProgressIndicator();
+                      return Text("");
                     }
 
                     if (!booksSnapshot.hasData || booksSnapshot.data == null) {

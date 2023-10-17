@@ -35,7 +35,7 @@ class _MyBooksState extends State<MyBooks> {
 
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(
-              child: CircularProgressIndicator(),
+              child: Text(""),
             );
           }
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
@@ -80,7 +80,7 @@ class _MyBooksState extends State<MyBooks> {
             builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> bookSnapshot) {
               if (bookSnapshot.connectionState == ConnectionState.waiting) {
                 return Center(
-                  child: CircularProgressIndicator(),
+                  child: Text("Loading Awesomeness",style: TextStyle(fontWeight: FontWeight.bold),),
                 );
               }
               if (!bookSnapshot.hasData || bookSnapshot.data!.docs.isEmpty) {
@@ -228,7 +228,7 @@ class _BookCardState extends State<BookCard> {
                     SizedBox(height: 8), // Add spacing between author and issue date
                     Text('Issue Date: ${formattedIssueDate}'),
                     SizedBox(height: 8), // Add spacing between issue date and return date
-                    Text('Return Date: ${formatteddueDate}'),
+                    Text('Due Date: ${formatteddueDate}'),
                     SizedBox(height: 8), // Add spacing between return date and button
 
                   ],
