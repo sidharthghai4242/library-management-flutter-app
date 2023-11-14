@@ -84,13 +84,13 @@ class _HelpDeskBodyState extends State<HelpDeskBody> {
       FirebaseFirestore firestore = FirebaseFirestore.instance;
 
       // Get the user's ID from userModel
-      String userId = context.read<DbProvider>().userModel?.userId ?? '';
+      String authId = context.read<DbProvider>().userModel?.authId ?? '';
 
-      // Check if the userId is available
-      if (userId.isNotEmpty) {
+      // Check if the authId is available
+      if (authId.isNotEmpty) {
         // Create or access the 'inquiries' collection within the 'users' collection
         CollectionReference inquiriesCollection =
-        firestore.collection('users').doc(userId).collection('inquiries');
+        firestore.collection('users').doc(authId).collection('inquiries');
 
         // Create a map to represent the data you want to store in the document
         Map<String, dynamic> inquiryData = {

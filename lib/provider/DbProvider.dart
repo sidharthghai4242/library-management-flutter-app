@@ -21,10 +21,10 @@ class DbProvider extends ChangeNotifier {
     String? wishlistImage,
     String? wishlistAuthor,
   }) {
-    print(userModel?.userId);
+    print(userModel?.authId);
     FirebaseFirestore.instance
         .collection("users")
-        .doc(userModel?.userId)
+        .doc(userModel?.authId)
         .collection("wishList")
         .doc(wishlistId)
         .set({
@@ -113,7 +113,7 @@ class DbProvider extends ChangeNotifier {
   Future<bool?> saveUserInFirestore({BuildContext? context, UserModel? userModel}) async {
     CommonClass().showLoadingErrorModalBottomSheet(context!);
     return await _firestore?.collection(Constants.userCollection)
-      .doc(userModel!.userId)
+      .doc(userModel!.authId)
       .set(userModel.getMap(), SetOptions(merge: true))
       .then((value) {
         Navigator.pop(context);

@@ -8,11 +8,11 @@ class WishListProvider with ChangeNotifier {
     String? wishlistName,
     String? wishlistImage,
     String? wishlistAuthor,
-    String? userId,
+    String? authId,
   }) {
     FirebaseFirestore.instance
         .collection("users")
-        .doc(userId)
+        .doc(authId)
         .collection("wishList")
         .doc(wishlistId)
         .set({
@@ -27,11 +27,11 @@ class WishListProvider with ChangeNotifier {
   //   GET WISHLIST DATA
   List<BookPage> WishList = [];
 
-  getWishListData(String? userId) async {
+  getWishListData(String? authId) async {
     List<BookPage> newList = [];
     QuerySnapshot value = await FirebaseFirestore.instance
         .collection("users")
-        .doc(userId)
+        .doc(authId)
         .collection("wishList")
         .get();
     value.docs.forEach(
@@ -55,10 +55,10 @@ class WishListProvider with ChangeNotifier {
     return WishList;
   }
 //   DELETE WISHLIST ITEMS
-  deleteWishList(wishlistId,String? userId) {
+  deleteWishList(wishlistId,String? authId) {
     FirebaseFirestore.instance
         .collection("users")
-        .doc(userId)
+        .doc(authId)
         .collection("wishList")
         .doc(wishlistId) // Use the passed wishlistId here
         .delete();
@@ -89,7 +89,7 @@ class WishListProvider with ChangeNotifier {
 //     if (user != null) {
 //       await FirebaseFirestore.instance
 //           .collection("users")
-//           .doc(userModel?.userId)
+//           .doc(userModel?.authId)
 //           .collection("wishlist")
 //           .add({
 //         "wishlistId": wishlistId,

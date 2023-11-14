@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UserModel {
-  String? userId;
   String? authId;
+  // String? authId;
   String name = "";
   String email = "";
   String address = "";
@@ -19,13 +19,13 @@ class UserModel {
   static UserModel toObject(doc) {
     UserModel user = UserModel();
     user.phone = doc["phone"];
-    user.authId = doc["authId"] ?? "";
+    // user.authId = doc["authId"] ?? "";
     user.createdOn = doc["createdOn"];
     user.name = doc["name"];
     user.email = doc["email"];
     user.address = doc["address"];
     user.age = doc["age"] ?? 0;
-    user.userId = doc["userId"] ?? "";
+    user.authId = doc["authId"] ?? "";
     user.token = doc["token"] ?? "";
     user.subscription = Subscription.toObject(doc["subscription"]);
     return user;
@@ -34,13 +34,13 @@ class UserModel {
   Map<String, dynamic> getMap() {
     Map<String, dynamic> map = <String, dynamic>{};
     map["phone"] = phone ?? "";
-    map["authId"] = authId ?? "";
+    // map["authId"] = authId ?? "";
     map["createdOn"] = createdOn ?? Timestamp.now();
     map["name"] = name ?? "";
     map["email"] = email ?? "";
     map["address"] = address ?? "";
     map["age"] = age ?? 0;
-    map["userId"] = userId ?? "";
+    map["authId"] = authId ?? "";
     map["token"] = token ?? "";
     map["subscription"] = subscription.toMap();
     return map;
@@ -49,13 +49,13 @@ class UserModel {
   Map<String, dynamic> toMap() {
     Map<String, dynamic> map = <String, dynamic>{};
     map["phone"] = phone ?? "";
-    map["authId"] = authId ?? "";
+    // map["authId"] = authId ?? "";
     map["createdOn"] = createdOn ?? Timestamp.now();
     map["name"] = name ?? "";
     map["email"] = email ?? "";
     map["address"] = address ?? "";
     map["age"] = age ?? 0;
-    map["userId"] = userId ?? "";
+    map["authId"] = authId ?? "";
     map["token"] = token ?? "";
     map["subscription"] = subscription.toMap();
     return map;

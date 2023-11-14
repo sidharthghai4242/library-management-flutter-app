@@ -27,6 +27,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> with RouteAware {
   final navigatorKey = GlobalKey<NavigatorState>();
   bool shouldRefreshRatings = false;
+  int issuedBooks = 0;
   bool isCategoryDropdownOpen = false;
   bool datafetched = false;
   List<String> titles = [];
@@ -156,10 +157,6 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
         ? secondaryColorDark
         : secondaryColorLight;
 
-    Color tertiarycolor = MediaQuery.of(context).platformBrightness == Brightness.dark
-        ? tertiaryColorDark
-        : tertiaryColorLight;
-
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -212,14 +209,14 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
                             );
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: secondarycolor,
+                            backgroundColor: Color(0xFF111111),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(25.0), // Adjust the radius as needed
                             ),// Set your desired button color here
                           ),
                           child: Text(
                             name,
-                            style: TextStyle(color: primaryColor),
+                            style: TextStyle(color: Colors.white),
                           ),
                         );
                       },
@@ -233,14 +230,14 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
                         );
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: secondarycolor,
+                        backgroundColor: Color(0xFF111111),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(25.0), // Adjust the radius as needed
                         ),// Set your desired button color here
                       ),
                       child: Text(
                         "All",
-                        style: TextStyle(color: primaryColor),
+                        style: TextStyle(color: Colors.white),
                       ),
                     ),
                     SizedBox(
@@ -278,15 +275,15 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
   Widget build(BuildContext context) {
     userModel = context.watch<DbProvider>().userModel;
     Color primaryColor = MediaQuery.of(context).platformBrightness == Brightness.dark
-        ? Color(0xFFF5F5F5)
-        : primaryColorLight;
-    Color secondarycolor = MediaQuery.of(context).platformBrightness == Brightness.dark
-        ? secondaryColorDark
-        : secondaryColorLight;
+        ? Color(0xFF111111)
+        : Colors.white;
+    Color secondaryColor = MediaQuery.of(context).platformBrightness == Brightness.dark
+        ? Colors.white
+        : Color(0xFF111111);
 
     Color tertiarycolor = MediaQuery.of(context).platformBrightness == Brightness.dark
-        ? tertiaryColorDark
-        : tertiaryColorLight;
+        ? Colors.grey
+        : Color(0xFF111111);
     Color neutralcolor = MediaQuery.of(context).platformBrightness == Brightness.dark
         ? neutralColorDark
         : neutralColorLight;
@@ -303,84 +300,160 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
         ? Color(0xFF363062)
         : Colors.black;
 
-    print(minimumPriceAsString);
-    String? subname =userModel?.subscription.name;
-    // initializeData();
-    // titles.clear();
-    print(userModel?.subscription.name);
-    // print("titles written");
-    // print(titles); //
-    // print(titles.length);//
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Color(0xFF363062),
-        iconTheme: IconThemeData(color: secondarycolor),
-        actions: [
-          InkWell(
-            onTap: () {
-              Navigator.pushNamed(context, '/wishlist');
-            },
-            child:DecoratedIcon(
-              icon: Icon(CupertinoIcons.heart,size: 32,),
-              decoration: IconDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                    colors: [
-                  if(MediaQuery.of(context).platformBrightness == Brightness.dark)...[
-                    Color(0xFF880000), Color(0xFFFF0000), Colors.white
-                  ]else...[
-                    Color(0xFF880000), Color(0xFFFF0000), Colors.white
-                  ]
-                ]),
-              ),
-            )
-          ),
-          SizedBox(width: 10,),
-          InkWell(
-              onTap: () {
-                Navigator.pushNamed(context, '/notifications');
-              },
-              child:DecoratedIcon(
-                icon: Icon(CupertinoIcons.bell,size: 32,),
-                decoration: IconDecoration(
-                  gradient: LinearGradient(colors: [
-                    if(MediaQuery.of(context).platformBrightness == Brightness.dark)...[
-                      Colors.yellow, Color(0xFFFFBF00), Color(0xFFFFD700),Colors.yellowAccent
-                    ]else...[
-                      Colors.yellow, Color(0xFFFFBF00), Color(0xFFFFD700),Colors.yellowAccent
-                    ]
-                  ]),
-                ),
-              )
-          ),
-          SizedBox(width: 10,),
-        ],
-        title: Container(
-          height: 70,
-          child: Image.asset(
-            MediaQuery.of(context).platformBrightness == Brightness.dark
-              ? 'assets/rlrwhite.jpg'
-              : 'assets/rlrblack.jpg',
-          ),
-        ),
-        titleSpacing: 0,
-      ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
             decoration: BoxDecoration(
-              color: primaryColor
+              color:Color(0xFF111111)
             ),
             // color: primaryColor,
-            height: 586.57,
+            height: 674,
             child: ListView(
               physics: BouncingScrollPhysics(),
               children: <Widget>[
+                Row(
+                  children: [
+                    // Enhancing the Image Container
+                    Container(
+                      height: 65,
+                      child: Image.asset(
+                        MediaQuery.of(context).platformBrightness == Brightness.dark
+                            ? 'assets/rlrblack.jpg'
+                            : 'assets/rlrwhite.jpg',
+                      ),
+                    ),
+                    // Enhancing the Membership Container
+                   if(userModel!.subscription.name.isNotEmpty)...[
+                     Container(
+                       padding: EdgeInsets.all(6),
+                       height: 50,
+                       width: 110,
+                       decoration: BoxDecoration(
+                         // border: Border.all(
+                         //   color: Colors.amber,
+                         // ),
+                         borderRadius: BorderRadius.circular(10),
+                       ),
+                       child: Row(
+                         children: [
+                           Column(
+                             children: [
+                               Text("|",style: TextStyle(color: Colors.grey,fontSize: 30,fontWeight: FontWeight.w100),),
+                             ],
+                           ),
+                           SizedBox(
+                             width: 8, // Increased spacing for better alignment
+                           ),
+                           Column(
+                             crossAxisAlignment: CrossAxisAlignment.start, // Align text to the left
+                             mainAxisAlignment: MainAxisAlignment.center,
+                             children: [
+                               GradientText(
+                                 userModel!.subscription.name,
+                                 style: TextStyle(
+
+                                   fontWeight: FontWeight.bold, // Added bold font
+                                 ), colors: [
+                                 // if(MediaQuery.of(context).platformBrightness == Brightness.dark)...[
+                                   Color(0xFFEDEADE),Color(0xFFFFF5EE)
+                                 // ]else...[
+                                 //   Colors.black,Colors.black87
+                                 // ]
+                               ],
+                               ),
+                               GradientText(
+                                 "Membership",
+                                 style: TextStyle(
+                                 ), colors: [
+                                 // if(MediaQuery.of(context).platformBrightness == Brightness.dark)...[
+                                   Color(0xFFE1C16E),Color(0xFFfffdd0) ,Color(0xFFE1C16E),
+                                 // ]else...[
+                                 //   Colors.black,Colors.black87
+                                 // ]
+
+                               ],
+                               ),
+                             ],
+                           )
+                         ],
+                       ),
+                     ),
+                   ],
+                    Spacer(), // This pushes the icons to the end of the row
+                    // Enhancing the Heart Icon
+                    InkWell(
+                      onTap: () {
+                        Navigator.pushNamed(context, '/wishlist');
+                      },
+                      child: DecoratedIcon(
+                        icon: Icon(
+                          CupertinoIcons.heart,
+                          size: 32,
+                        ),
+                        decoration: IconDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            colors: [
+                              if (MediaQuery.of(context).platformBrightness == Brightness.dark)
+                                ...[
+                                  Color(0xFF880000),
+                                  Color(0xFFFF0000),
+                                  Colors.white,
+                                ]
+                              else
+                                ...[
+                                  Color(0xFF880000),
+                                  Color(0xFFFF0000),
+                                  Colors.white,
+                                ]
+                            ],
+                          ),
+                          // Rounded icon decoration
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 15), // Increased spacing for better alignment
+                    // Enhancing the Bell Icon
+                    InkWell(
+                      onTap: () {
+                        Navigator.pushNamed(context, '/notifications');
+                      },
+                      child: DecoratedIcon(
+                        icon: Icon(
+                          CupertinoIcons.bell,
+                          size: 32,
+                        ),
+                        decoration: IconDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              if (MediaQuery.of(context).platformBrightness == Brightness.dark)
+                                ...[
+                                  Colors.yellow,
+                                  Color(0xFFFFBF00),
+                                  Color(0xFFFFD700),
+                                  Colors.yellowAccent,
+                                ]
+                              else
+                                ...[
+                                  Colors.yellow,
+                                  Color(0xFFFFBF00),
+                                  Color(0xFFFFD700),
+                                  Colors.yellowAccent,
+                                ]
+                            ],
+                          ),
+                         // Rounded icon decoration
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 15), // Increased spacing for better alignment
+                  ],
+                ),
                 Container(
                   child: Column(
                     children: <Widget>[
-                      SizedBox(height: 7,),
                       StreamBuilder(
                         stream: fetchCatalogue(),
                         builder: (BuildContext context, AsyncSnapshot snapshot) {
@@ -417,14 +490,14 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
                                                   );
                                                 },
                                                 style: ElevatedButton.styleFrom(
-                                                  backgroundColor: Colors.deepOrange,
+                                                  backgroundColor: Colors.white,
                                                   shape: RoundedRectangleBorder(
                                                     borderRadius: BorderRadius.circular(25.0), // Adjust the radius as needed
                                                   ),// Set your desired button color here
                                                 ),
                                                 child: Text(
                                                   snapshot.data.docs[index]['name'].toString(),
-                                                  style: TextStyle(color: primaryColor),
+                                                  style: TextStyle(color: Color(0xFF111111)),
                                                 ),
                                               ),
                                               SizedBox(width: 10),
@@ -445,11 +518,11 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
                                             label: Text(
                                               "Categories",
                                               style: TextStyle(
-                                                  color: primaryColor,fontWeight: FontWeight.bold
+                                                  color: Colors.black,fontWeight: FontWeight.bold
                                               ),
                                             ),
                                             icon: Icon(Icons.arrow_drop_down,
-                                                color: primaryColor
+                                                color: Colors.black
                                             ),
                                           ),
                                       ],
@@ -462,7 +535,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
                         },
                       ),
                       Container(
-                        height: 190,
+                        height: 170,
                         child:
                             StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
                           stream:
@@ -482,7 +555,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
                             }
                             // Access the "title" field from each document in the snapshot
                             final titles = snapshot.data?.docs
-                                .map((doc) => doc.data()['title'] as String)
+                                .map((doc) => doc.data()['url'] as String)
                                 .toList();
                             print(titles);
                             return Container(
@@ -505,22 +578,23 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
                                           } else {}
                                         },
                                         child: Container(
-                                          // padding: EdgeInsets.only(
-                                          //   left: 5,
-                                          //   right: 5
-                                          // ),
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                              // borderRadius: BorderRadius.circular(12),
-                                              border:Border.all(
-                                                color: bordercolor,
-                                                width: 2
-                                              )
-                                            ),
-                                            width: MediaQuery.of(context).size.width,
-                                            child: Image.network('$i', fit: BoxFit.cover),
+                                          padding: EdgeInsets.all(
+                                            4
                                           ),
-                                        ),
+                                          child: ClipRRect(
+                                            borderRadius: BorderRadius.circular(18), // Adjust the value as needed
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                // border: Border.all(
+                                                //   // color: bordercolor,
+                                                //   width: 2,
+                                                // ),
+                                              ),
+                                              width: MediaQuery.of(context).size.width,
+                                              child: Image.network('$i', fit: BoxFit.cover),
+                                            ),
+                                          ),
+                                        )
                                       );
                                     },
                                   );
@@ -530,581 +604,422 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
                           },
                         ),
                       ),
-                      if(userModel!.subscription.name.isEmpty)...[
-                        SizedBox(height: 5,),
-                        InkWell(
-                          onTap:(){Navigator.pushNamed(context, '/membership');},
-                          child: Container(
-                            height: 200,
-                            width: 300,
-                            child:  Stack(
-                              children: [
-                                Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Container(
-                                      width: 350, // Adjust the width and height as needed
-                                      height: 150,
-                                      decoration: BoxDecoration(
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: Colors.black.withOpacity(0.8), // Set the shadow color and opacity
-                                            spreadRadius: 2, // Set the spread radius
-                                            blurRadius: 5, // Set the blur radius
-                                            offset: Offset(0, 2), // Set the shadow offset
-                                          ),
-                                        ],
-                                        color: Colors.black,
-                                        borderRadius: BorderRadius.circular(20.0),
-                                        border: const GradientBoxBorder(
-                                          gradient: LinearGradient(
-                                              begin: Alignment.bottomLeft,
-                                              colors: [Color(0xFF966919),Color(0xFF966919),Color(0xFFC19A6B),Color(0xFF966919),Color(0xFF966919),Color(0xFFC19A6B)]),
-                                          width: 1,
-                                        ),
-                                      ),
-                                      child: Column(
-                                        children: [
-                                          SizedBox(height:40),
-                                          Row(
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            children: [
-                                              GradientText(
-                                                "₹"+minimumPriceAsString+"*",
-                                                textAlign: TextAlign.start,
-                                                style: TextStyle(
-                                                  fontSize: 32,
-                                                ), colors: [
-                                                if(MediaQuery.of(context).platformBrightness == Brightness.dark)...[
-                                                  Color(0xFFE1C16E),Color(0xFFfffdd0)
-                                                ]else...[
-                                                  Color(0xFFE1C16E),Color(0xFFfffdd0) ,Color(0xFFE1C16E),
-                                                ]
-                                              ],
-                                              ),
-                                              Column(
-                                                children: [
-                                                  Container(
-                                                    height: 20,
-                                                  ),
-                                                  Text("for 1 month", style: TextStyle(color: Colors.white),textAlign: TextAlign.end,),
-                                                ],
-                                              )
-                                            ],
-                                          ),
-                                          SizedBox(height:10),
-                                          Container(
-                                            width: 280,
-                                            height:45,
-                                            padding:  EdgeInsets.all(8),
-                                            decoration: BoxDecoration(
-                                                borderRadius: BorderRadius.circular(10),
-                                                gradient: LinearGradient(
-                                                    colors:  [Color(0xFFE1C16E),Color(0xFFfffdd0) ,Color(0xFF966919)]
-                                                ),
-                                                border: Border.all(
-                                                    color: Colors.black
-                                                )
-                                            ),
-                                            child: Text("Join Now",style:TextStyle(color: Colors.black,fontWeight: FontWeight.bold,fontSize: 18),textAlign: TextAlign.center,),
-                                          )
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Column(
-                                  children: [
-                                    SizedBox(height: 2,),
-                                    Row(
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        Column(
-                                          children: [
-                                            SizedBox(height: 4.5,),
-                                            Container(
-                                              decoration: BoxDecoration(
-                                                color: Colors.black,
-                                                borderRadius: BorderRadius.circular(60.0),
-                                                gradient: LinearGradient(
-                                                    colors: [
-                                                      if(MediaQuery.of(context).platformBrightness == Brightness.dark)...[
-                                                        Color(0xFFE1C16E),Color(0xFF966919)
-                                                      ]else...[
-                                                        Color(0xFFE1C16E),Color(0xFF966919)
-                                                      ]
-                                                    ]
-                                                ),
-                                                border: Border.all(
-                                                  width: 2.0, // Adjust the border width as needed
-                                                  color: Colors.black38, // Adjust the border color as needed
-                                                ),
-                                              ),
-                                              height: 40,
-                                              width: 140,
-                                              child:Column(
-                                                crossAxisAlignment: CrossAxisAlignment.center,
-                                                mainAxisAlignment: MainAxisAlignment.center,
-                                                children: [
-                                                  Text("Become a member",textAlign: TextAlign.center,style: TextStyle(
-                                                      fontWeight: FontWeight.bold,
-                                                      fontSize: 14,
-                                                      color: Colors.white
-                                                  ),)
-                                                ],
-                                              ),
-                                            )
-                                          ],
-                                        )
-                                      ],
-                                    )
-                                  ],
-                                )
-                              ],
-                            ),
-                          ),
-                        )
-
-                      ],
-                      if(userModel!.subscription.name.isNotEmpty)...[
-                        SizedBox(height: 5,),
-                        InkWell(
-                          onTap:(){Navigator.pushNamed(context, '/membership');},
-                          child: Container(
-                            height: 200,
-                            width: 300,
-                            child:  Stack(
-                              children: [
-                                Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Container(
-                                      width: 350, // Adjust the width and height as needed
-                                      height: 140,
-                                      decoration: BoxDecoration(
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: Colors.black.withOpacity(0.8), // Set the shadow color and opacity
-                                            spreadRadius: 2, // Set the spread radius
-                                            blurRadius: 5, // Set the blur radius
-                                            offset: Offset(0, 2), // Set the shadow offset
-                                          ),
-                                        ],
-                                        color: Colors.black,
-                                        borderRadius: BorderRadius.circular(20.0),
-                                        border: const GradientBoxBorder(
-                                          gradient: LinearGradient(
-                                              begin: Alignment.bottomLeft,
-                                              colors: [Color(0xFF966919),Color(0xFF966919),Color(0xFFC19A6B),Color(0xFF966919),Color(0xFF966919),Color(0xFFC19A6B)]),
-                                          width: 1,
-                                        ),
-                                      ),
-                                      child: Column(
-                                        children: [
-                                          SizedBox(height:40),
-                                          Row(
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            children: [
+                     Container(
+                       child: Column(
+                         children: [
+                           if(userModel!.subscription.name.isEmpty)...[
+                             // SizedBox(height: 5,),
+                             InkWell(
+                               onTap:(){Navigator.pushNamed(context, '/membership');},
+                               child: Container(
+                                 height: 200,
+                                 width: 300,
+                                 child:  Stack(
+                                   children: [
+                                     Column(
+                                       mainAxisAlignment: MainAxisAlignment.center,
+                                       crossAxisAlignment: CrossAxisAlignment.center,
+                                       children: [
+                                         Container(
+                                           width: 350, // Adjust the width and height as needed
+                                           height: 150,
+                                           decoration: BoxDecoration(
+                                             boxShadow: [
+                                               BoxShadow(
+                                                 color: Colors.black.withOpacity(0.8), // Set the shadow color and opacity
+                                                 spreadRadius: 2, // Set the spread radius
+                                                 blurRadius: 5, // Set the blur radius
+                                                 offset: Offset(0, 2), // Set the shadow offset
+                                               ),
+                                             ],
+                                             color: Colors.black,
+                                             borderRadius: BorderRadius.circular(20.0),
+                                             border: const GradientBoxBorder(
+                                               gradient: LinearGradient(
+                                                   begin: Alignment.bottomLeft,
+                                                   colors: [Color(0xFF966919),Color(0xFF966919),Color(0xFFC19A6B),Color(0xFF966919),Color(0xFF966919),Color(0xFFC19A6B)]),
+                                               width: 1,
+                                             ),
+                                           ),
+                                           child: Column(
+                                             children: [
+                                               SizedBox(height:40),
+                                               Row(
+                                                 mainAxisAlignment: MainAxisAlignment.center,
+                                                 children: [
+                                                   GradientText(
+                                                     "₹"+minimumPriceAsString+"*",
+                                                     textAlign: TextAlign.start,
+                                                     style: TextStyle(
+                                                       fontSize: 32,
+                                                     ), colors: [
+                                                     // if(MediaQuery.of(context).platformBrightness == Brightness.dark)...[
+                                                     Color(0xFFE1C16E),Color(0xFFfffdd0)
+                                                     // ]else...[
+                                                     //   Color(0xFFE1C16E),Color(0xFFfffdd0) ,Color(0xFFE1C16E),
+                                                     // ]
+                                                   ],
+                                                   ),
+                                                   Column(
+                                                     children: [
+                                                       Container(
+                                                         height: 20,
+                                                       ),
+                                                       Text("for 1 month", style: TextStyle(color: Colors.white),textAlign: TextAlign.end,),
+                                                     ],
+                                                   )
+                                                 ],
+                                               ),
+                                               SizedBox(height:10),
+                                               Container(
+                                                 width: 280,
+                                                 height:45,
+                                                 padding:  EdgeInsets.all(8),
+                                                 decoration: BoxDecoration(
+                                                     borderRadius: BorderRadius.circular(10),
+                                                     gradient: LinearGradient(
+                                                         colors:  [Color(0xFFE1C16E),Color(0xFFfffdd0) ,Color(0xFF966919)]
+                                                     ),
+                                                     border: Border.all(
+                                                         color: Colors.black
+                                                     )
+                                                 ),
+                                                 child: Text("Join Now",style:TextStyle(color: Colors.black,fontWeight: FontWeight.bold,fontSize: 18),textAlign: TextAlign.center,),
+                                               )
+                                             ],
+                                           ),
+                                         ),
+                                       ],
+                                     ),
+                                     Column(
+                                       children: [
+                                         SizedBox(height: 2,),
+                                         Row(
+                                           crossAxisAlignment: CrossAxisAlignment.center,
+                                           mainAxisAlignment: MainAxisAlignment.center,
+                                           children: [
                                              Column(
                                                children: [
-                                                 GradientText(
-                                                   userModel!.subscription.name +" Membership",
-                                                   textAlign: TextAlign.center,
-                                                   style: TextStyle(
-                                                     fontSize: 20,
-                                                   ), colors: [
-                                                   if(MediaQuery.of(context).platformBrightness == Brightness.dark)...[
-                                                     Color(0xFFE1C16E),Color(0xFFfffdd0)
-                                                   ]else...[
-                                                     Color(0xFFE1C16E),Color(0xFFfffdd0) ,Color(0xFFE1C16E),
-                                                   ]
-                                                 ],
-                                                 ),
-                                                 SizedBox(height:5),
-
+                                                 SizedBox(height: 4.5,),
+                                                 Container(
+                                                   decoration: BoxDecoration(
+                                                     color: Colors.black,
+                                                     borderRadius: BorderRadius.circular(60.0),
+                                                     gradient: LinearGradient(
+                                                         colors: [
+                                                           // if(MediaQuery.of(context).platformBrightness == Brightness.dark)...[
+                                                           Color(0xFFE1C16E),Color(0xFF966919)
+                                                           // ]else...[
+                                                           //   Color(0xFFE1C16E),Color(0xFF966919)
+                                                           // ]
+                                                         ]
+                                                     ),
+                                                     border: Border.all(
+                                                       width: 2.0, // Adjust the border width as needed
+                                                       color: Colors.black38, // Adjust the border color as needed
+                                                     ),
+                                                   ),
+                                                   height: 40,
+                                                   width: 140,
+                                                   child:Column(
+                                                     crossAxisAlignment: CrossAxisAlignment.center,
+                                                     mainAxisAlignment: MainAxisAlignment.center,
+                                                     children: [
+                                                       Text("Become a member",textAlign: TextAlign.center,style: TextStyle(
+                                                           fontWeight: FontWeight.bold,
+                                                           fontSize: 14,
+                                                           color: Colors.white
+                                                       ),)
+                                                     ],
+                                                   ),
+                                                 )
                                                ],
                                              )
-                                            ],
-                                          ),
-                                          SizedBox(height:10),
-                                          Container(
-                                            width: 280,
-                                            height:45,
-                                            padding:  EdgeInsets.all(8),
-                                            decoration: BoxDecoration(
-                                                borderRadius: BorderRadius.circular(10),
-                                                gradient: LinearGradient(
-                                                    colors:  [Color(0xFFE1C16E),Color(0xFFfffdd0) ,Color(0xFF966919)]
-                                                ),
-                                                border: Border.all(
-                                                    color: Colors.black
-                                                )
-                                            ),
-                                            child: Text("Know More",style:TextStyle(color: Colors.black,fontWeight: FontWeight.bold,fontSize: 18),textAlign: TextAlign.center,),
-                                          )
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Column(
-                                  children: [
-                                    SizedBox(height: 9,),
-                                    Row(
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        Column(
-                                          children: [
-                                            SizedBox(height: 4.5,),
-                                            Container(
-                                              decoration: BoxDecoration(
-                                                color: Colors.black,
-                                                borderRadius: BorderRadius.circular(60.0),
-                                                gradient: LinearGradient(
-                                                    colors: [
-                                                      if(MediaQuery.of(context).platformBrightness == Brightness.dark)...[
-                                                        Color(0xFFE1C16E),Color(0xFF966919)
-                                                      ]else...[
-                                                        Color(0xFFE1C16E),Color(0xFF966919)
-                                                      ]
-                                                    ]
-                                                ),
-                                                border: Border.all(
-                                                  width: 2.0, // Adjust the border width as needed
-                                                  color: Colors.black38, // Adjust the border color as needed
-                                                ),
-                                              ),
-                                              height: 40,
-                                              width: 140,
-                                              child:Column(
-                                                crossAxisAlignment: CrossAxisAlignment.center,
-                                                mainAxisAlignment: MainAxisAlignment.center,
-                                                children: [
-                                                  Text("You are a member!",textAlign: TextAlign.center,style: TextStyle(
-                                                      fontWeight: FontWeight.bold,
-                                                      fontSize: 14,
-                                                      color: Colors.white
-                                                  ),)
-                                                ],
-                                              ),
-                                            )
-                                          ],
-                                        )
-                                      ],
-                                    )
-                                  ],
-                                )
-                              ],
-                            ),
-                          ),
-                        )
+                                           ],
+                                         )
+                                       ],
+                                     )
+                                   ],
+                                 ),
+                               ),
+                             )
 
-                      ],
-                     SizedBox(height: 10,),
-                     Row(
-                       children: [
-                         Container(
-                           width: 103.5,
-                           child:  Divider(color: dividercolor,thickness: 1.3,),
-                         ),
-                         // SizedBox(width: 4,),
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(60),
-                          child: Container(
-                            padding: EdgeInsets.all(6),
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [
-                                  if(MediaQuery.of(context).platformBrightness == Brightness.dark)...[
-                                    Colors.yellow, Color(0xFFFFBF00), Color(0xFFFFD700),Colors.yellowAccent
-                                  ]else...[
-                                    Colors.black,
-                                    Colors.black,
-                                  ]
-                                ]
-                              ),
+                           ],
+                           SizedBox(height: 10,),
+                           Row(
+                             crossAxisAlignment: CrossAxisAlignment.center,
+                             mainAxisAlignment: MainAxisAlignment.center,
+                             children: [
+                               Text("EXPLORE LIBRARY",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20,color: secondaryColor),),
+                             ],
+                           ),
+                           Container(
+                               width:200,
+                               child:Divider(color:tertiarycolor)
+                           ),
+                           SizedBox(height: 7,),
+                           StreamBuilder(
+                             stream: fetchCatalogueordered(), // Stream for fetching data
+                             builder:
+                                 (BuildContext context, AsyncSnapshot snapshot) {
+                               if (snapshot.connectionState ==
+                                   ConnectionState.waiting) {
+                                 return CircularProgressIndicator();
+                               }
+                               return CustomScrollView(
+                                 shrinkWrap: true, // Add this line
+                                 physics:
+                                 NeverScrollableScrollPhysics(), // Add this line
+                                 slivers: <Widget>[
+                                   SliverList(
+                                     delegate: SliverChildBuilderDelegate(
+                                           (BuildContext context, int index) {
+                                         Map<String, dynamic> map =
+                                         snapshot.data.docs[index].data()
+                                         as Map<String, dynamic>;
+                                         String cataloguetitle =
+                                         map['name'].toString();
+                                         String id = map['catalogueId'].toString();
+                                         return StreamBuilder(
+                                           stream: fetchBooksByName(id),
+                                           builder: (BuildContext context,
+                                               AsyncSnapshot booksSnapshot) {
+                                             if (booksSnapshot.connectionState ==
+                                                 ConnectionState.waiting) {
+                                               return SizedBox(); // Hide the category until data is fetched
+                                             }
 
-                              border: Border.all(
-                                color: bordercolor,
-                                width: 2
-                              ),
-                              borderRadius: BorderRadius.circular(60)
-                            ),
-                            child:  Text("EXPLORE MORE",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18,color: primaryColor),),
-                          ),
-                        ),
-                         // SizedBox(width: 4,),
-                         Container(
-                             width: 103.5,
-                             child:  Divider(color: dividercolor,thickness: 1.3,),
-                         ),
+                                             final booksWithUrls = booksSnapshot
+                                                 .data.docs
+                                                 .where((bookDocument) {
+                                               Map<String, dynamic> bookMap =
+                                               bookDocument.data()
+                                               as Map<String, dynamic>;
+                                               String url = bookMap['url'];
+                                               return url != null;
+                                             }).toList();
 
-                       ],
-                     ),
-                      SizedBox(height: 10,),
-                      StreamBuilder(
-                        stream: fetchCatalogueordered(), // Stream for fetching data
-                        builder:
-                            (BuildContext context, AsyncSnapshot snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return CircularProgressIndicator();
-                          }
-                          return CustomScrollView(
-                            shrinkWrap: true, // Add this line
-                            physics:
-                                NeverScrollableScrollPhysics(), // Add this line
-                            slivers: <Widget>[
-                              SliverList(
-                                delegate: SliverChildBuilderDelegate(
-                                  (BuildContext context, int index) {
-                                    Map<String, dynamic> map =
-                                        snapshot.data.docs[index].data()
-                                            as Map<String, dynamic>;
-                                    String cataloguetitle =
-                                        map['name'].toString();
-                                    String id = map['catalogueId'].toString();
-                                    return StreamBuilder(
-                                      stream: fetchBooksByName(id),
-                                      builder: (BuildContext context,
-                                          AsyncSnapshot booksSnapshot) {
-                                        if (booksSnapshot.connectionState ==
-                                            ConnectionState.waiting) {
-                                          return SizedBox(); // Hide the category until data is fetched
-                                        }
+                                             if (booksWithUrls.isEmpty) {
+                                               return SizedBox();
+                                             }
 
-                                        final booksWithUrls = booksSnapshot
-                                            .data.docs
-                                            .where((bookDocument) {
-                                          Map<String, dynamic> bookMap =
-                                              bookDocument.data()
-                                                  as Map<String, dynamic>;
-                                          String url = bookMap['url'];
-                                          return url != null;
-                                        }).toList();
+                                             return Column(
+                                               crossAxisAlignment:
+                                               CrossAxisAlignment.start,
+                                               children: [
+                                                 Container(
+                                                   padding: EdgeInsets.all(10),
+                                                   child: Column(
+                                                     crossAxisAlignment:
+                                                     CrossAxisAlignment.start,
+                                                     children: [
+                                                       Row(
+                                                         mainAxisAlignment: MainAxisAlignment.start,
+                                                         children: [
+                                                           SizedBox(width: 5,),
+                                                           Column(
+                                                             children: [
+                                                               Text(
+                                                                 cataloguetitle,
+                                                                 style: TextStyle(
+                                                                   fontWeight: FontWeight.bold,
+                                                                   color: secondaryColor,
+                                                                   fontSize: 18,
+                                                                 ),
+                                                               ),
+                                                             ],
+                                                           )
+                                                         ],
+                                                       ),
 
-                                        if (booksWithUrls.isEmpty) {
-                                          return SizedBox();
-                                        }
+                                                       SizedBox(height: 5,),
+                                                       Container(
+                                                         color: Colors.transparent,
+                                                         height: 320,
+                                                         padding: EdgeInsets.only(
+                                                             top: 4,bottom: 4
+                                                         ),
+                                                         child:
+                                                         SingleChildScrollView(
+                                                           scrollDirection:
+                                                           Axis.horizontal,
+                                                           child: Row(
+                                                             children: booksWithUrls
+                                                                 .map<Widget>(
+                                                                     (bookDocument) {
+                                                                   Map<String, dynamic>
+                                                                   bookMap =
+                                                                   bookDocument
+                                                                       .data()
+                                                                   as Map<String,
+                                                                       dynamic>;
+                                                                   String author =
+                                                                   bookMap['author'];
+                                                                   String title =
+                                                                   bookMap['title'];
+                                                                   String url =
+                                                                   bookMap['url'];
+                                                                   String bookId =
+                                                                       bookMap['bookId'] ??
+                                                                           '';
+                                                                   String catalogueId =
+                                                                       bookMap['type'][
+                                                                       'catalogueId'] ??
+                                                                           '';
 
-                                        return Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Container(
-                                              padding: EdgeInsets.all(10),
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  ClipRRect(
-                                                    borderRadius: BorderRadius.circular(60),
-                                                    child: Container(
-                                                      padding: EdgeInsets.all(6),
-                                                      decoration: BoxDecoration(
-                                                        color:neutralcolor,
-                                                        borderRadius:BorderRadius.circular(60),
-                                                        border: Border.all(
-                                                          color: bordercolor,
-                                                          width: 2
-                                                        )
-                                                      ),
-                                                      child: Text(
-                                                        cataloguetitle,
-                                                        style: TextStyle(
-                                                          fontWeight: FontWeight.bold,
-                                                          color: primaryColor,
-                                                          fontSize: 18,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  SizedBox(height: 8,),
-                                                  Container(
-                                                    color: Colors.transparent,
-                                                    height: 320,
-                                                    padding: EdgeInsets.only(
-                                                      top: 4,bottom: 4
-                                                    ),
-                                                    child:
-                                                        SingleChildScrollView(
-                                                      scrollDirection:
-                                                          Axis.horizontal,
-                                                      child: Row(
-                                                        children: booksWithUrls
-                                                            .map<Widget>(
-                                                                (bookDocument) {
-                                                          Map<String, dynamic>
-                                                              bookMap =
-                                                              bookDocument
-                                                                      .data()
-                                                                  as Map<String,
-                                                                      dynamic>;
-                                                          String author =
-                                                              bookMap['author'];
-                                                          String title =
-                                                              bookMap['title'];
-                                                          String url =
-                                                              bookMap['url'];
-                                                          String bookId =
-                                                              bookMap['bookId'] ??
-                                                                  '';
-                                                          String catalogueId =
-                                                              bookMap['type'][
-                                                                      'catalogueId'] ??
-                                                                  '';
+                                                                   return FutureBuilder<
+                                                                       double>(
+                                                                     future:
+                                                                     fetchRatingBybookId(
+                                                                         bookId),
+                                                                     builder: (context,
+                                                                         ratingSnapshot) {
+                                                                       double
+                                                                       bookRating =
+                                                                           ratingSnapshot
+                                                                               .data ??
+                                                                               0.0;
 
-                                                          return FutureBuilder<
-                                                              double>(
-                                                            future:
-                                                                fetchRatingBybookId(
-                                                                    bookId),
-                                                            builder: (context,
-                                                                ratingSnapshot) {
-                                                              double
-                                                                  bookRating =
-                                                                  ratingSnapshot
-                                                                          .data ??
-                                                                      0.0;
-
-                                                              return Row(
-                                                                children: [
-                                                                  ClipRRect(
-                                                                    borderRadius:BorderRadius.circular(16),
-                                                                    child: Material(
-                                                                      child:
-                                                                      Container(
-                                                                        height:
-                                                                        340,
-                                                                        padding:
-                                                                        EdgeInsets.all(
-                                                                            8),
-                                                                        decoration:
-                                                                        BoxDecoration(
-                                                                          borderRadius:
-                                                                          BorderRadius.circular(15),
-                                                                          border:
-                                                                          Border.all(
-                                                                            color: bordercolor,
-                                                                            width:
-                                                                            2,
-                                                                          ),
-                                                                        ),
-                                                                        width:
-                                                                        150,
-                                                                        child:
-                                                                        Column(
-                                                                          mainAxisAlignment:
-                                                                          MainAxisAlignment.start,
-                                                                          children: [
-                                                                            Container(
-                                                                              height:
-                                                                              190,
-                                                                              child:
-                                                                              InkWell(
-                                                                                onTap: () {
-                                                                                  Navigator.of(context).push(
-                                                                                    MaterialPageRoute(
-                                                                                      builder: (context) => BookPage(
-                                                                                        author: author,
-                                                                                        title: title,
-                                                                                        url: url,
-                                                                                        id: catalogueId,
-                                                                                        bookId: bookId,
-                                                                                      ),
-                                                                                    ),
-                                                                                  );
-                                                                                },
-                                                                                child: ClipRRect(
-                                                                                  borderRadius: BorderRadius.circular(15),
-                                                                                  child: Image.network(
-                                                                                    url,
-                                                                                    errorBuilder: (context, error, stackTrace) {
-                                                                                      return const Text('Unable to load image from server');
-                                                                                    },
-                                                                                  ),
-                                                                                ),
-                                                                              ),
-                                                                            ),
-                                                                            Container(
-                                                                              padding:
-                                                                              EdgeInsets.symmetric(horizontal: 4),
-                                                                              child:
-                                                                              Column(
-                                                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                                                children: [
-                                                                                  Text(
-                                                                                    title,
-                                                                                    style: TextStyle(
-                                                                                      fontSize: 16,
-                                                                                      fontWeight: FontWeight.bold,
-                                                                                    ),
-                                                                                    overflow: TextOverflow.ellipsis,
-                                                                                    maxLines: 2,
-                                                                                  ),
-                                                                                  SizedBox(height: 4),
-                                                                                  Text(
-                                                                                    "By $author",
-                                                                                    style: TextStyle(
-                                                                                      fontSize: 14,
-                                                                                      // color: Colors.grey,
-                                                                                    ),
-                                                                                    overflow: TextOverflow.ellipsis,
-                                                                                    maxLines: 1,
-                                                                                  ),
-                                                                                  SizedBox(height: 4),
-                                                                                  Row(
-                                                                                    children: [
-                                                                                      Text(
-                                                                                        bookRating.toStringAsFixed(1),
-                                                                                        style: TextStyle(
-                                                                                          fontSize: 14,
-                                                                                          fontWeight: FontWeight.bold,
-                                                                                        ),
-                                                                                      ),
-                                                                                      Icon(
-                                                                                        Icons.star,
-                                                                                        color: Colors.amber,
-                                                                                        size: 16,
-                                                                                      ),
-                                                                                    ],
-                                                                                  ),
-                                                                                ],
-                                                                              ),
-                                                                            ),
-                                                                          ],
-                                                                        ),
-                                                                      ),
-                                                                    ),
-                                                                  ),
-                                                                  SizedBox(width: 8),
-                                                                ],
-                                                              );
-                                                            },
-                                                          );
-                                                        }).toList(),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            )
-                                          ],
-                                        );
-                                      },
-                                    );
-                                  },
-                                  childCount: snapshot.data.docs.length,
-                                ),
-                              ),
-                            ],
-                          );
-                        },
-                      ),
+                                                                       return Row(
+                                                                         children: [
+                                                                           ClipRRect(
+                                                                             borderRadius:BorderRadius.circular(16),
+                                                                             child: Material(
+                                                                               child:
+                                                                               Container(
+                                                                                 height:
+                                                                                 340,
+                                                                                 padding:
+                                                                                 EdgeInsets.all(
+                                                                                     8),
+                                                                                 decoration:
+                                                                                 BoxDecoration(
+                                                                                   borderRadius:
+                                                                                   BorderRadius.circular(15),
+                                                                                   border:
+                                                                                   Border.all(
+                                                                                     color: bordercolor,
+                                                                                     width:
+                                                                                     2,
+                                                                                   ),
+                                                                                 ),
+                                                                                 width:
+                                                                                 150,
+                                                                                 child:
+                                                                                 Column(
+                                                                                   mainAxisAlignment:
+                                                                                   MainAxisAlignment.start,
+                                                                                   children: [
+                                                                                     Container(
+                                                                                       height:
+                                                                                       190,
+                                                                                       child:
+                                                                                       InkWell(
+                                                                                         onTap: () {
+                                                                                           Navigator.of(context).push(
+                                                                                             MaterialPageRoute(
+                                                                                               builder: (context) => BookPage(
+                                                                                                 author: author,
+                                                                                                 title: title,
+                                                                                                 url: url,
+                                                                                                 id: catalogueId,
+                                                                                                 bookId: bookId,
+                                                                                               ),
+                                                                                             ),
+                                                                                           );
+                                                                                         },
+                                                                                         child: ClipRRect(
+                                                                                           borderRadius: BorderRadius.circular(15),
+                                                                                           child: Image.network(
+                                                                                             url,
+                                                                                             errorBuilder: (context, error, stackTrace) {
+                                                                                               return const Text('Unable to load image from server');
+                                                                                             },
+                                                                                           ),
+                                                                                         ),
+                                                                                       ),
+                                                                                     ),
+                                                                                     SizedBox(height: 6,),
+                                                                                     Container(
+                                                                                       padding:
+                                                                                       EdgeInsets.only(
+                                                                                           top: 4
+                                                                                       ),
+                                                                                       child:
+                                                                                       Column(
+                                                                                         crossAxisAlignment: CrossAxisAlignment.start,
+                                                                                         children: [
+                                                                                           Text(
+                                                                                             title,
+                                                                                             style: TextStyle(
+                                                                                               fontSize: 16,
+                                                                                               fontWeight: FontWeight.bold,
+                                                                                             ),
+                                                                                             overflow: TextOverflow.ellipsis,
+                                                                                             maxLines: 2,
+                                                                                           ),
+                                                                                           SizedBox(height: 4),
+                                                                                           Text(
+                                                                                             "By $author",
+                                                                                             style: TextStyle(
+                                                                                               fontSize: 14,
+                                                                                               // color: Colors.grey,
+                                                                                             ),
+                                                                                             overflow: TextOverflow.ellipsis,
+                                                                                             maxLines: 1,
+                                                                                           ),
+                                                                                           SizedBox(height: 4),
+                                                                                           Row(
+                                                                                             children: [
+                                                                                               Text(
+                                                                                                 bookRating.toStringAsFixed(1),
+                                                                                                 style: TextStyle(
+                                                                                                   fontSize: 14,
+                                                                                                   fontWeight: FontWeight.bold,
+                                                                                                 ),
+                                                                                               ),
+                                                                                               Icon(
+                                                                                                 Icons.star,
+                                                                                                 color: Colors.amber,
+                                                                                                 size: 16,
+                                                                                               ),
+                                                                                             ],
+                                                                                           ),
+                                                                                         ],
+                                                                                       ),
+                                                                                     ),
+                                                                                   ],
+                                                                                 ),
+                                                                               ),
+                                                                             ),
+                                                                           ),
+                                                                           SizedBox(width: 8),
+                                                                         ],
+                                                                       );
+                                                                     },
+                                                                   );
+                                                                 }).toList(),
+                                                           ),
+                                                         ),
+                                                       ),
+                                                     ],
+                                                   ),
+                                                 )
+                                               ],
+                                             );
+                                           },
+                                         );
+                                       },
+                                       childCount: snapshot.data.docs.length,
+                                     ),
+                                   ),
+                                 ],
+                               );
+                             },
+                           ),
+                         ],
+                       ),
+                     )
                     ],
                   ),
                 ),

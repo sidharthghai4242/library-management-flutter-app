@@ -28,8 +28,8 @@ class _HomePageState extends State<NavPage> {
   final List<Widget> _screens = [
     HomeScreen(),
     SearchPage(),
+    ActivityPage(),
     MyBooks(),
-    // ActivityPage(),
     ProfilePage()
   ];
 
@@ -90,11 +90,12 @@ class _HomePageState extends State<NavPage> {
                   color: Colors.black,
                   activeColor: Colors.white,
                   tabBackgroundColor: Colors.black,
-                  gap: 8,
+                  gap: 5,
                   padding: EdgeInsets.all(10),
                   tabs: [
                     GButton(icon: Icons.home, text: 'Home'),
                     GButton(icon: Icons.search, text: 'Search'),
+                    GButton(icon: Icons.auto_graph_outlined,text:'My Activity'),
                     GButton(icon: Icons.book, text: 'My Books'),
                     GButton(icon: Icons.person, text: 'My Profile'),
                   ],

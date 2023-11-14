@@ -37,100 +37,116 @@ class _GoogleSignInPageState extends State<GoogleSignInPage> {
   @override
   Widget build(BuildContext context) {
     return gsign? (Center(child:CircularProgressIndicator())):Scaffold(
-      appBar: AppBar(
-        // title: Text('Sign-In Example'),
-      ),
-      body: Center(
-        child: SingleChildScrollView(
-          padding: EdgeInsets.all(16),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Text(
-                'Welcome to RLR App',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
+      body:Container(
+        color: Color(0xFF111111),
+        child:  Center(
+          child: SingleChildScrollView(
+            padding: EdgeInsets.all(16),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Container(
+                  height: 180,
+                  child: Image.asset('assets/rlrblack.jpg'),
                 ),
-              ),
-              SizedBox(height: 30),
-              Text(
-                'Sign in with Email:',
-                style: TextStyle(
-                  fontSize: 18,
-                  // color: Colors.grey,
+                Text(
+                  'Sign in with Email:',
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.white,
+                  ),
                 ),
-              ),
-              SizedBox(height: 10),
-              TextFormField(
-                controller: emailController, // Add controller here
-                keyboardType: TextInputType.emailAddress,
-                decoration: InputDecoration(
-                  labelText: 'Email',
-                  border: OutlineInputBorder(),
+                SizedBox(height: 10),
+                TextFormField(
+                  controller: emailController,
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: InputDecoration(
+                    labelText: 'Email',
+                    labelStyle: TextStyle(color: Colors.white), // Set the label text color here
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white), // Set the border color here
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white), // Set the border color here
+                    ),
+                  ),
                 ),
-              ),
-              SizedBox(height: 10),
-              TextFormField(
-                controller: passwordController, // Add controller here
-                obscureText: true,
-                decoration: InputDecoration(
-                  labelText: 'Password',
-                  border: OutlineInputBorder(),
+                SizedBox(height: 10),
+                TextFormField(
+                  controller: passwordController,
+                  obscureText: true,
+                  decoration: InputDecoration(
+                    labelText: 'Password',
+                    labelStyle: TextStyle(color: Colors.white), // Set the label text color here
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white), // Set the border color here
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white), // Set the border color here
+                    ),
+                  ),
                 ),
-              ),
-              SizedBox(height: 10),
-              ElevatedButton(
-                onPressed: () {
-                  // Call the _handleEmailSignIn method with the context
-                  _handleEmailSignIn(context);
-                },
-                child: Text('Log-In with Email'),
-              ),
-              SizedBox(height: 10),
-              ElevatedButton(
-                onPressed: () {
-                  // Navigate to the sign-up screen
-                  Navigator.pushNamed(context, '/signup');
-                },
-                child: Text('Sign-up'),
-              ),
-              SizedBox(height: 30),
-              Text(
-                'Or Sign in with:',
-                style: TextStyle(
-                  fontSize: 18,
-                  color: Colors.grey,
+                SizedBox(height: 10),
+                ElevatedButton(
+                  onPressed: () {
+                    // Call the _handleEmailSignIn method with the context
+                    _handleEmailSignIn(context);
+                  },
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all<Color>(Colors.white), // Set button background color
+                    foregroundColor: MaterialStateProperty.all<Color>(Colors.black), // Set text color
+                  ),
+                  child: Text('Log-In with Email',style: TextStyle(fontWeight: FontWeight.bold),),
                 ),
-              ),
-              SizedBox(height: 10),
-              SignInButton(
-                Buttons.Google,
-                onPressed: () async {
-                  User? user = await AuthService().signInWithGoogle(context);
-                  if(user != null){
-                    debugPrint('User: $user');
-                    setState(() {
-                      gsign=true;
-                    });
-                    await context.read<DbProvider>().getUserFromFirestore(user: user, bContent: context);
-                    Navigator.of(context).pushReplacementNamed('/nav');
-                  }else{
+                SizedBox(height: 10),
+                ElevatedButton(
+                  onPressed: () {
+                    // Navigate to the sign-up screen
+                    Navigator.pushNamed(context, '/signup');
+                  },
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all<Color>(Colors.white), // Set button background color
+                    foregroundColor: MaterialStateProperty.all<Color>(Colors.black), // Set text color
+                  ),
+                  child: Text('Sign-up',style: TextStyle(fontWeight: FontWeight.bold),),
+                ),
+                SizedBox(height: 30),
+                Text(
+                  'Or Sign in with:',
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.grey,
+                  ),
+                ),
+                SizedBox(height: 10),
+                SignInButton(
+                  Buttons.Google,
+                  onPressed: () async {
+                    User? user = await AuthService().signInWithGoogle(context);
+                    if(user != null){
+                      debugPrint('User: $user');
+                      setState(() {
+                        gsign=true;
+                      });
+                      await context.read<DbProvider>().getUserFromFirestore(user: user, bContent: context);
+                      Navigator.of(context).pushReplacementNamed('/nav');
+                    }else{
 
-                  }
-                },
-              ),
-              SizedBox(height: 10), // Add some spacing between the buttons
-              SignInButton(
-                Buttons.Facebook,
-                onPressed: () {
-                  // Call the _handleFacebookSignIn method with the context
-                },
-              ),
-            ],
+                    }
+                  },
+                ),
+                SizedBox(height: 10), // Add some spacing between the buttons
+                SignInButton(
+                  Buttons.Facebook,
+                  onPressed: () {
+                    // Call the _handleFacebookSignIn method with the context
+                  },
+                ),
+              ],
+            ),
           ),
         ),
-      ),
+      )
     );
   }
 }

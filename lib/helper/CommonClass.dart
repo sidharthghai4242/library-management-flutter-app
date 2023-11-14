@@ -539,7 +539,7 @@ class CommonClass {
                       newUser.age = int.parse(age.text.toString());
                       newUser.address = address.text.toString();
                       newUser.authId = firebaseUser!.uid;
-                      newUser.userId = FirebaseFirestore.instance.collection(Constants.userCollection).doc().id;
+                      newUser.authId = FirebaseFirestore.instance.collection(Constants.userCollection).doc().id;
                       userModel = newUser;
                       await context.read<DbProvider>().saveUserInFirestore(context: context, userModel: newUser);
                       Navigator.pop(context, userModel);
@@ -549,7 +549,7 @@ class CommonClass {
                       userModel.email = emailController.text.toString();
                       userModel.age = int.parse(age.text.toString());
                       userModel.address = address.text.toString();
-                      userModel.userId = user!.userId;
+                      userModel.authId = user!.authId;
                       await context.read<DbProvider>().saveUserInFirestore(context: context, userModel: userModel);
                       CommonClass.showSnackBar(context, "Profile Updated Successfully");
                       Navigator.pop(context, userModel);

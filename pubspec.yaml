@@ -78,10 +78,14 @@ dependencies:
   flutter_share: ^2.0.0
   share_plus: ^6.0.1
   intl: ^0.18.1
+
   firebase_storage: ^11.2.8
   http: ^1.1.0
   flutter_plugin_android_lifecycle: ^2.0.16
   firebase_dynamic_links: ^5.3.7
+  fl_chart: ^0.64.0
+  skeletonizer: ^0.8.0
+  syncfusion_flutter_charts: ^23.1.44
 
 dev_dependencies:
   flutter_test:
@@ -125,6 +129,8 @@ flutter:
     - assets/membership.webp
     - assets/membershiphomeempty.webp
     - assets/rlrwhite.jpg
+    - assets/crown.png
+    - assets/blackcrown.png
     - assets/rlrblack.jpg
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
