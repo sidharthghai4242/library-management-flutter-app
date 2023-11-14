@@ -149,14 +149,6 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
   }
 
   showCategoriesPopup(BuildContext context, List<DocumentSnapshot> data) {
-    Color primaryColor = MediaQuery.of(context).platformBrightness == Brightness.dark
-        ? primaryColorDark
-        : primaryColorLight;
-
-    Color secondarycolor = MediaQuery.of(context).platformBrightness == Brightness.dark
-        ? secondaryColorDark
-        : secondaryColorLight;
-
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -274,31 +266,22 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
   @override
   Widget build(BuildContext context) {
     userModel = context.watch<DbProvider>().userModel;
-    Color primaryColor = MediaQuery.of(context).platformBrightness == Brightness.dark
-        ? Color(0xFF111111)
-        : Colors.white;
+
     Color secondaryColor = MediaQuery.of(context).platformBrightness == Brightness.dark
         ? Colors.white
-        : Color(0xFF111111);
+        : Colors.white;
 
     Color tertiarycolor = MediaQuery.of(context).platformBrightness == Brightness.dark
         ? Colors.grey
-        : Color(0xFF111111);
-    Color neutralcolor = MediaQuery.of(context).platformBrightness == Brightness.dark
-        ? neutralColorDark
-        : neutralColorLight;
+        : Colors.grey;
+
     Color buttoncolor = MediaQuery.of(context).platformBrightness == Brightness.dark
         ? Colors.white
-        : Colors.black;
-    Color dividercolor = MediaQuery.of(context).platformBrightness == Brightness.dark
-        ? Colors.white30
-        : Colors.black;
+        : Colors.white;
     Color bordercolor = MediaQuery.of(context).platformBrightness == Brightness.dark
         ? Colors.white30
-        : Colors.black;
-    Color barcolor = MediaQuery.of(context).platformBrightness == Brightness.dark
-        ? Color(0xFF363062)
-        : Colors.black;
+        :Colors.white30;
+
 
     return Scaffold(
       body: Column(
@@ -321,7 +304,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
                       child: Image.asset(
                         MediaQuery.of(context).platformBrightness == Brightness.dark
                             ? 'assets/rlrblack.jpg'
-                            : 'assets/rlrwhite.jpg',
+                            : 'assets/rlrblack.jpg',
                       ),
                     ),
                     // Enhancing the Membership Container
@@ -356,23 +339,14 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
 
                                    fontWeight: FontWeight.bold, // Added bold font
                                  ), colors: [
-                                 // if(MediaQuery.of(context).platformBrightness == Brightness.dark)...[
                                    Color(0xFFEDEADE),Color(0xFFFFF5EE)
-                                 // ]else...[
-                                 //   Colors.black,Colors.black87
-                                 // ]
                                ],
                                ),
                                GradientText(
                                  "Membership",
                                  style: TextStyle(
                                  ), colors: [
-                                 // if(MediaQuery.of(context).platformBrightness == Brightness.dark)...[
                                    Color(0xFFE1C16E),Color(0xFFfffdd0) ,Color(0xFFE1C16E),
-                                 // ]else...[
-                                 //   Colors.black,Colors.black87
-                                 // ]
-
                                ],
                                ),
                              ],

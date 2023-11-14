@@ -6,6 +6,8 @@ import 'package:simple_gradient_text/simple_gradient_text.dart';
 import '../provider/DbProvider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../widgets/complaintregistered.dart';
+
 class HelpDesk extends StatelessWidget {
   const HelpDesk({Key? key}) : super(key: key);
 
@@ -14,8 +16,8 @@ class HelpDesk extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Help Desk'),
-        backgroundColor: Theme.of(context).primaryColor, // Use primaryColor as background color
-        iconTheme: IconThemeData(color: Colors.pink), // Icon color
+        backgroundColor: Colors.black, // Use primaryColor as background color
+        iconTheme: IconThemeData(color: Colors.white), // Icon color
         shadowColor: Theme.of(context).brightness == Brightness.dark
             ? Colors.white // Use white shadow color for dark theme
             : Colors.black, // Use black shadow color for light theme
@@ -104,6 +106,9 @@ class _HelpDeskBodyState extends State<HelpDeskBody> {
         // You can process the message or send it to the help desk here.
         _showMessage('Message submitted');
         print('Submitted message: $message');
+        Navigator.of(context).pushReplacement(MaterialPageRoute(
+          builder: (context) => ComplaintRegistered(), // Replace 'YourMainWidget' with your main widget
+        ));
       } else {
         print('User ID is not available');
       }
@@ -132,7 +137,7 @@ class _HelpDeskBodyState extends State<HelpDeskBody> {
     return Scaffold(
       key: _scaffoldKey,
       body: Container(
-        color: brightness == Brightness.dark ? Colors.black : Colors.white, // Toggle body color
+        color: brightness == Brightness.dark ? Colors.black : Colors.black, // Toggle body color
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -146,9 +151,9 @@ class _HelpDeskBodyState extends State<HelpDeskBody> {
                   color: brightness == Brightness.dark ? Colors.white : Colors.black,
                 ), colors: [
                 if(MediaQuery.of(context).platformBrightness == Brightness.dark)...[
-                  Color(0xFFFFD700), Colors.amber, Colors.orange
+                  Colors.white, Colors.white, Colors.white
                 ]else...[
-                  Colors.black,Colors.black87,Colors.black54,
+                  Colors.white,Colors.white,Colors.white,
                 ]
               ],
               ),
@@ -163,9 +168,9 @@ class _HelpDeskBodyState extends State<HelpDeskBody> {
                         begin: Alignment.bottomLeft,
                         colors: [
                           if(MediaQuery.of(context).platformBrightness == Brightness.dark)...[
-                            Color(0xFFFFD700), Colors.amber, Colors.orange
+                            Colors.white, Colors.white, Colors.white
                           ]else...[
-                            Colors.black,Colors.black87,Colors.black54,
+                            Colors.white,Colors.white,Colors.white,
                           ]
                         ]),
                     width: 3,
@@ -198,7 +203,7 @@ class _HelpDeskBodyState extends State<HelpDeskBody> {
                   child: ElevatedButton(
                     onPressed: isSubmitting ? null : handleSubmit,
                     style: ElevatedButton.styleFrom(
-                      primary: Colors.pink,
+                      primary: Colors.white,
                       onPrimary: Colors.white,
                       elevation: 5,
                       padding: EdgeInsets.symmetric(vertical: 16),
@@ -211,6 +216,7 @@ class _HelpDeskBodyState extends State<HelpDeskBody> {
                       'Submitting',
                       style: TextStyle(
                         fontSize: 18,
+                        color: Colors.black,
                         fontWeight: FontWeight.bold,
                       ),
                     )
@@ -218,6 +224,7 @@ class _HelpDeskBodyState extends State<HelpDeskBody> {
                       'Submit',
                       style: TextStyle(
                         fontSize: 18,
+                        color: Colors.black,
                         fontWeight: FontWeight.bold,
                       ),
                     ),

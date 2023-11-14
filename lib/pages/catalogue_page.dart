@@ -58,7 +58,7 @@ class _CataloguePageState extends State<CataloguePage> {
           stream: fetchBooksByName(widget.id),
           builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> booksSnapshot) {
             if (booksSnapshot.connectionState == ConnectionState.waiting) {
-              return CircularProgressIndicator();
+              return Center(child: CircularProgressIndicator(),);
             }
 
             if (!booksSnapshot.hasData || booksSnapshot.data == null) {
