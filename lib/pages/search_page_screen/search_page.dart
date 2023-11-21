@@ -1,10 +1,8 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:rlr/pages/general_book_page_screens/book_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
 
 class SearchPage extends StatefulWidget {
   const SearchPage({Key? key}) : super(key: key);
@@ -101,9 +99,7 @@ class _SearchPageState extends State<SearchPage> {
                             if (ratingSnapshot.connectionState == ConnectionState.waiting) {
                               return Text("Loading"); // Show loading indicator
                             }
-
                             final topRatedBooks = ratingSnapshot.data!.docs;
-
                             return ListView.builder(
                               itemCount: topRatedBooks.length + 1, // Add 1 for the "Top Searches" text
                               itemBuilder: (context, index) {

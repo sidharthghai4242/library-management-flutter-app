@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -199,25 +200,25 @@ class _ProfilePageState extends State<ProfilePage> {
                                    ),
                                  ),
                                  SizedBox(height:3,),
-                                 InkWell(
-                                   child: Row(
-                                     children: [
-                                       Text(
-                                         'View activity',
-                                         style: TextStyle(
-                                           color: Colors.white,
-                                           fontSize: 15.0,
-                                           fontWeight: FontWeight.normal,
-                                         ),
-                                       ),
-                                       Icon(
-                                         Icons.arrow_right,
-                                         size: 18.0,
-                                         color: Colors.white,
-                                       ),
-                                     ],
-                                   ),
-                                 )
+                                 // InkWell(
+                                 //   child: Row(
+                                 //     children: [
+                                 //       Text(
+                                 //         'View activity',
+                                 //         style: TextStyle(
+                                 //           color: Colors.white,
+                                 //           fontSize: 15.0,
+                                 //           fontWeight: FontWeight.normal,
+                                 //         ),
+                                 //       ),
+                                 //       Icon(
+                                 //         Icons.arrow_right,
+                                 //         size: 18.0,
+                                 //         color: Colors.white,
+                                 //       ),
+                                 //     ],
+                                 //   ),
+                                 // )
                                ],
                              )
                            ],
@@ -399,25 +400,6 @@ class _ProfilePageState extends State<ProfilePage> {
                                     ),
                                   ),
                                   SizedBox(height:3,),
-                                  InkWell(
-                                    child: Row(
-                                      children: [
-                                        Text(
-                                          'View activity',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 15.0,
-                                            fontWeight: FontWeight.normal,
-                                          ),
-                                        ),
-                                        Icon(
-                                          Icons.arrow_right,
-                                          size: 18.0,
-                                          color: Colors.white,
-                                        ),
-                                      ],
-                                    ),
-                                  )
                                 ],
                               )
                             ],
@@ -484,7 +466,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                     Navigator.pushNamed(context, '/membership');
                                   },
                                   child:  Container(
-                                      width: 95,
+                                      width: (kIsWeb ? 105:95),
                                       height:40,
                                       padding:  EdgeInsets.all(8),
                                       decoration: BoxDecoration(
@@ -492,9 +474,6 @@ class _ProfilePageState extends State<ProfilePage> {
                                         gradient: LinearGradient(
                                             colors:  [Color(0xFFE1C16E),Color(0xFFfffdd0) ,Color(0xFF966919)]
                                         ),
-                                        // border: Border.all(
-                                        //     color: Colors.black
-                                        // )
                                       ),
                                       child: Column(
                                         crossAxisAlignment: CrossAxisAlignment.center,

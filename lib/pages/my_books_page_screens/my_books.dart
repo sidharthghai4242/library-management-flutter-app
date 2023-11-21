@@ -18,6 +18,11 @@ class _MyBooksState extends State<MyBooks> {
 
   @override
   Widget build(BuildContext context) {
+    double screenwidth = MediaQuery.of(context).size.width;
+    double widthOfBookBox= screenwidth;
+    if (widthOfBookBox > 400) {
+      widthOfBookBox = 500;
+    }
     String date="";
     userModel = context.watch<DbProvider>().userModel;
     print("-----------------------------------------------------");
@@ -26,76 +31,32 @@ class _MyBooksState extends State<MyBooks> {
       body: Container(
         height: MediaQuery.of(context).size.height-76.260 ,
         color: Color(0xFF111111),
-        child: StreamBuilder(
-          stream: FirebaseFirestore.instance
-              .collection('users')
-              .doc(userModel?.authId)
-              .collection('issuedBooks')
-              .where('returnDate', isNull: true)
-              .snapshots(),
-            builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-            Map<String, Map<String, DateTime>> bookDateMap = {};
-
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(
-                child: Text(""),
-              );
-            }
-            if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-              return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'No books have been issued 😢',
-                      style: TextStyle(fontSize: 18,color: Colors.white),
-                    ),
-                    SizedBox(height: 20),
-                    // Add your crying emoji asset or icon here
-                  ],
-                ),
-              );
-            }
-
-            // Populate the bookDateMap with bookId as key and date information as value
-            snapshot.data!.docs.forEach((doc) {
-              Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-              String bookId = data['bookId'] as String;
-              Timestamp returnTimestamp = data['dueDate'] as Timestamp;
-              Timestamp issueTimestamp = data['issueDate'] as Timestamp;
-
-              // Convert Timestamp to DateTime
-              DateTime issueDate = issueTimestamp.toDate();
-              print("---------------------------------------------------");
-              print(issueDate.toString());
-              DateTime dueDate = returnTimestamp.toDate();
-              date=dueDate.toString();
-              bookDateMap[bookId] = {
-                'issueDate': issueDate,
-                'dueDate': dueDate,
-              };
-            });
-
-            // Fetch books based on the bookIds
-            return StreamBuilder(
+        child: Center(
+          child: Container(
+            width:widthOfBookBox,
+            child: StreamBuilder(
               stream: FirebaseFirestore.instance
-                  .collection('Books')
-                  .where('bookId', whereIn: bookDateMap.keys.toList()) // Filter by bookIds
+                  .collection('users')
+                  .doc(userModel?.authId)
+                  .collection('issuedBooks')
+                  .where('returnDate', isNull: true)
                   .snapshots(),
-              builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> bookSnapshot) {
-                if (bookSnapshot.connectionState == ConnectionState.waiting) {
+              builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                Map<String, Map<String, DateTime>> bookDateMap = {};
+
+                if (snapshot.connectionState == ConnectionState.waiting) {
                   return Center(
-                    child: Text("Loading Awesomeness",style: TextStyle(fontWeight: FontWeight.bold),),
+                    child: Text(""),
                   );
                 }
-                if (!bookSnapshot.hasData || bookSnapshot.data!.docs.isEmpty) {
+                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
                   return Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          'No books found 😢',
-                          style: TextStyle(fontSize: 18),
+                          'No books have been issued 😢',
+                          style: TextStyle(fontSize: 18,color: Colors.white),
                         ),
                         SizedBox(height: 20),
                         // Add your crying emoji asset or icon here
@@ -104,45 +65,94 @@ class _MyBooksState extends State<MyBooks> {
                   );
                 }
 
-                return ListView.builder(
-                  itemCount: bookSnapshot.data!.docs.length,
-                  itemBuilder: (context, index) {
-                    DocumentSnapshot bookDocument = bookSnapshot.data!.docs[index];
-                    Map<String, dynamic> bookData = bookDocument.data() as Map<String, dynamic>;
-                    String bookTitle = bookData['title'];
-                    String author = bookData['author'];
-                    String bookId = bookData['bookId'];
-                    String url = bookData['url'];
-                    String catalogueId=bookData['type']['catalogueId'];
+                // Populate the bookDateMap with bookId as key and date information as value
+                snapshot.data!.docs.forEach((doc) {
+                  Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+                  String bookId = data['bookId'] as String;
+                  Timestamp returnTimestamp = data['dueDate'] as Timestamp;
+                  Timestamp issueTimestamp = data['issueDate'] as Timestamp;
 
+                  // Convert Timestamp to DateTime
+                  DateTime issueDate = issueTimestamp.toDate();
+                  print("---------------------------------------------------");
+                  print(issueDate.toString());
+                  DateTime dueDate = returnTimestamp.toDate();
+                  date=dueDate.toString();
+                  bookDateMap[bookId] = {
+                    'issueDate': issueDate,
+                    'dueDate': dueDate,
+                  };
+                });
 
-                    // Retrieve the date information for the current book
-                    Map<String, DateTime>? dateInfo = bookDateMap[bookId];
-
-                    // Extract issueDate and dueDate, or set defaults if not found
-                    DateTime issueDate = dateInfo?['issueDate'] ?? DateTime.now();
-                    DateTime dueDate = dateInfo?['dueDate'] ?? DateTime.now();
-
-
-                    return Column(
-                      children: [
-                        BookCard(
-                          bookId: bookId,
-                          bookTitle: bookTitle,
-                          author: author,
-                          url: url,
-                          catalogueId: catalogueId,
-                          issueDate: issueDate,
-                          dueDate: dueDate,
+                // Fetch books based on the bookIds
+                return StreamBuilder(
+                  stream: FirebaseFirestore.instance
+                      .collection('Books')
+                      .where('bookId', whereIn: bookDateMap.keys.toList()) // Filter by bookIds
+                      .snapshots(),
+                  builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> bookSnapshot) {
+                    if (bookSnapshot.connectionState == ConnectionState.waiting) {
+                      return Center(
+                        child: Text("Loading Awesomeness",style: TextStyle(fontWeight: FontWeight.bold),),
+                      );
+                    }
+                    if (!bookSnapshot.hasData || bookSnapshot.data!.docs.isEmpty) {
+                      return Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'No books found 😢',
+                              style: TextStyle(fontSize: 18),
+                            ),
+                            SizedBox(height: 20),
+                            // Add your crying emoji asset or icon here
+                          ],
                         ),
-                        // Divider()
-                      ],
+                      );
+                    }
+
+                    return ListView.builder(
+                      itemCount: bookSnapshot.data!.docs.length,
+                      itemBuilder: (context, index) {
+                        DocumentSnapshot bookDocument = bookSnapshot.data!.docs[index];
+                        Map<String, dynamic> bookData = bookDocument.data() as Map<String, dynamic>;
+                        String bookTitle = bookData['title'];
+                        String author = bookData['author'];
+                        String bookId = bookData['bookId'];
+                        String url = bookData['url'];
+                        String catalogueId=bookData['type']['catalogueId'];
+
+
+                        // Retrieve the date information for the current book
+                        Map<String, DateTime>? dateInfo = bookDateMap[bookId];
+
+                        // Extract issueDate and dueDate, or set defaults if not found
+                        DateTime issueDate = dateInfo?['issueDate'] ?? DateTime.now();
+                        DateTime dueDate = dateInfo?['dueDate'] ?? DateTime.now();
+
+
+                        return Column(
+                          children: [
+                            BookCard(
+                              bookId: bookId,
+                              bookTitle: bookTitle,
+                              author: author,
+                              url: url,
+                              catalogueId: catalogueId,
+                              issueDate: issueDate,
+                              dueDate: dueDate,
+                            ),
+                            // Divider()
+                          ],
+                        );
+                      },
                     );
                   },
                 );
               },
-            );
-          },
+            ),
+          ),
         ),
       ),
     );
@@ -237,7 +247,6 @@ class _BookCardState extends State<BookCard> {
                     SizedBox(height: 8), // Add spacing between issue date and return date
                     Text('Due Date: ${formatteddueDate}'),
                     SizedBox(height: 8), // Add spacing between return date and button
-
                   ],
                 ),
               ),

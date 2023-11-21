@@ -145,7 +145,7 @@ class _ActivityPageState extends State<ActivityPage> {
                             child: Column(
                               children: [
                                 Container(
-                                  height: MediaQuery.of(context).size.height-154.260 ,
+                                  height: MediaQuery.of(context).size.height-158.260 ,
                                   child: ListView.builder(
                                     itemCount: bookSnapshot.data!.docs.length,
                                     itemBuilder: (context, index) {
