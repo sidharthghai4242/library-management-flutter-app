@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:rlr/pages/activity_page.dart';
 import 'package:rlr/pages/my_books.dart';
-import 'package:rlr/pages/profile_page.dart';
+import 'package:rlr/pages/profile_page_screens/profile_page.dart';
 import 'package:rlr/pages/home_screen.dart';
 import 'package:rlr/pages/search_page.dart';
 import 'package:flutter/cupertino.dart';
@@ -63,6 +63,7 @@ class _HomePageState extends State<NavPage> {
             color: primaryColor,
           ),
           child: Container(
+            height:76.26,
             decoration: BoxDecoration(
               boxShadow: [
                 BoxShadow(
@@ -96,7 +97,7 @@ class _HomePageState extends State<NavPage> {
                     GButton(icon: Icons.home, text: 'Home'),
                     GButton(icon: Icons.search, text: 'Search'),
                     GButton(icon: Icons.auto_graph_outlined,text:'My Activity'),
-                    GButton(icon: Icons.book, text: 'My Books'),
+                    GButton(icon: Icons.book, text: 'Issued Books'),
                     GButton(icon: Icons.person, text: 'My Profile'),
                   ],
                   selectedIndex: _currentIndex,

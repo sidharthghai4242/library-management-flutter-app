@@ -421,7 +421,10 @@ class _BookPageState extends State<BookPage> {
                                       }),
                                     ),
                                     SizedBox(width: 5,),
-                                    Text(userRating.floor().toDouble().toString(),style: TextStyle(fontSize: 16),),
+                                    Text(
+                                      "${userRating.toDouble().toStringAsFixed(1)}",
+                                      style: TextStyle(fontSize: 16),
+                                    ),
                                     Spacer(),
                                     Text(readByCount.toString()+' review/s',style: TextStyle(fontSize: 14,fontWeight: FontWeight.bold),),
                                     SizedBox(width: 10,)
@@ -495,87 +498,129 @@ class _BookPageState extends State<BookPage> {
                             children: [
                               IconButton(
                                 icon: Icon(Icons.bookmark_added_outlined), // Change to the "Read" icon
-                                onPressed: () {
-                                  showDialog(
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                      return isRatingUpdateInProgress
-                                          ? CircularProgressIndicator() // Show loading indicator
-                                          : AlertDialog(
-                                        title: Text("Read it? Then please rate it"),
-                                        content: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: <Widget>[
-                                            RatingBar.builder(
-                                              initialRating: storedRating, // Use the storedRating variable
-                                              minRating: 1,
-                                              direction: Axis.horizontal,
-                                              allowHalfRating: false,
-                                              itemCount: 5,
-                                              itemSize: 35.0,
-                                              itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
-                                              itemBuilder: (context, _) => Icon(
-                                                Icons.star,
-                                                color: Colors.amber,
+                                onPressed: () async {
+                                  final currentUser = FirebaseAuth.instance.currentUser;
+                                  if (currentUser == null) {
+                                    // Handle case where user is not logged in
+                                    return;
+                                  }
+
+                                  final userDocRef = FirebaseFirestore.instance.collection('users').doc(userModel!.authId);
+                                  final issuedBooksSnapshot = await userDocRef.collection('issuedBooks').get();
+
+                                  bool bookIssued = false;
+
+                                  // Check if the widget.bookId exists in the issuedBooks subcollection
+                                  for (final doc in issuedBooksSnapshot.docs) {
+                                    if (doc.get('bookId') == widget.bookId) {
+                                      bookIssued = true;
+                                      break;
+                                    }
+                                  }
+
+                                  if (bookIssued) {
+                                    // Book is issued, show the AlertDialog for providing a review
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return isRatingUpdateInProgress
+                                            ? CircularProgressIndicator() // Show loading indicator
+                                            : AlertDialog(
+                                          title: Text("Read it? Then please rate it"),
+                                          content: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: <Widget>[
+                                              RatingBar.builder(
+                                                initialRating: storedRating, // Use the storedRating variable
+                                                minRating: 1,
+                                                direction: Axis.horizontal,
+                                                allowHalfRating: false,
+                                                itemCount: 5,
+                                                itemSize: 35.0,
+                                                itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
+                                                itemBuilder: (context, _) => Icon(
+                                                  Icons.star,
+                                                  color: Colors.amber,
+                                                ),
+                                                onRatingUpdate: (newRating) {
+                                                  // Only update the storedRating variable when the user interacts with the rating builder
+                                                  setState(() {
+                                                    storedRating = newRating;
+                                                  });
+                                                },
                                               ),
-                                              onRatingUpdate: (newRating) {
-                                                // Only update the storedRating variable when the user interacts with the rating builder
-                                                setState(() {
-                                                  storedRating = newRating;
-                                                });
-                                              },
-                                            ),
-                                            SizedBox(height: 16.0), // Add spacing
-                                            TextFormField(
-                                              controller: review,
-                                              maxLines: 5,
-                                              maxLength: 150, // Set the maximum character limit
-                                              decoration: InputDecoration(
-                                                contentPadding: EdgeInsets.all(8.0),
-                                                hintText: "Enter your Review",
-                                                border: OutlineInputBorder(), // Add border
-                                                focusedBorder: OutlineInputBorder(
-                                                  borderSide: BorderSide(color: Colors.blue), // Border color when focused
-                                                ), // Display character count
+                                              SizedBox(height: 16.0), // Add spacing
+                                              TextFormField(
+                                                controller: review,
+                                                maxLines: 5,
+                                                maxLength: 150, // Set the maximum character limit
+                                                decoration: InputDecoration(
+                                                  contentPadding: EdgeInsets.all(8.0),
+                                                  hintText: "Enter your Review",
+                                                  border: OutlineInputBorder(), // Add border
+                                                  focusedBorder: OutlineInputBorder(
+                                                    borderSide: BorderSide(color: Colors.blue), // Border color when focused
+                                                  ), // Display character count
+                                                ),
                                               ),
-                                            ),
-                                            SizedBox(height: 16.0), // Add spacing
-                                            ElevatedButton(
-                                              onPressed: () async {
-                                                if (isRatingUpdateInProgress) {
-                                                  return; // Prevent rating update while in progress
-                                                }
+                                              SizedBox(height: 16.0), // Add spacing
+                                              ElevatedButton(
+                                                onPressed: () async {
+                                                  if (isRatingUpdateInProgress) {
+                                                    return; // Prevent rating update while in progress
+                                                  }
 
-                                                // Set the flag to indicate that the rating update is in progress
-                                                setState(() {
-                                                  isRatingUpdateInProgress = true;
-                                                });
+                                                  // Set the flag to indicate that the rating update is in progress
+                                                  setState(() {
+                                                    isRatingUpdateInProgress = true;
+                                                  });
 
-                                                // Handle the submit action here
-                                                Navigator.of(context).pop(); // Close the dialog
+                                                  // Handle the submit action here
+                                                  Navigator.of(context).pop(); // Close the dialog
 
-                                                // Use the captured bookId to update the rating and review in Firestore
-                                                await updateRatingAndReadByInFirestore(
-                                                  storedRating, // Use the storedRating value
-                                                  widget.bookId,
-                                                  userModel?.authId as String,
-                                                  review.text.trim(),
-                                                );
+                                                  // Use the captured bookId to update the rating and review in Firestore
+                                                  await updateRatingAndReadByInFirestore(
+                                                    storedRating, // Use the storedRating value
+                                                    widget.bookId,
+                                                    userModel?.authId as String,
+                                                    review.text.trim(),
+                                                  );
 
-                                                // Set the flag to indicate that the rating update is complete
-                                                setState(() {
-                                                  isRatingUpdateInProgress = false;
-                                                });
+                                                  // Set the flag to indicate that the rating update is complete
+                                                  setState(() {
+                                                    isRatingUpdateInProgress = false;
+                                                  });
+                                                },
+                                                child: Text("Submit"),
+                                              ),
+                                            ],
+                                          ),
+                                        );
+                                      },
+                                    );
+                                  } else {
+                                    // Book is not issued, show an AlertDialog requesting to issue the book first
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          title: Center(child:Text("Book Not Issued")),
+                                          content:Text("Please issue the book from library before providing a review."),
+                                          actions: <Widget>[
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.of(context).pop();
                                               },
-                                              child: Text("Submit"),
+                                              child: Text('OK'),
                                             ),
                                           ],
-                                        ),
-                                      );
-                                    },
-                                  );
+                                        );
+                                      },
+                                    );
+                                  }
                                 },
                               ),
+
                               Row(children: [
                                 SizedBox(width: 4,),
                                 Text("Review"),

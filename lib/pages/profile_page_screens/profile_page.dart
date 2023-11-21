@@ -11,7 +11,7 @@ import 'package:rlr/pages/edit_profile.dart';
 import 'package:rlr/provider/DbProvider.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
-import '../provider/ThemeProvider.dart';
+import '../../provider/ThemeProvider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:http/http.dart' as http;
@@ -36,17 +36,19 @@ class _ProfilePageState extends State<ProfilePage> {
   String? profileImage;
   Future<void> signOut() async {
     // Check if the user is signed in with Google
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
     final googleUser = await _googleSignIn.signInSilently();
     if (googleUser != null) {
       await _googleSignIn.signOut();
       // Sign out from Google
       await FirebaseAuth.instance.signOut();
-      Navigator.pushReplacementNamed(context, '/phone');// Sign out from Google
+      Navigator.pushReplacementNamed(context, '/google');// Sign out from Google
     }
 
     // Sign out from Firebase
     await _firebaseAuth.signOut();
-    Navigator.pushReplacementNamed(context, '/phone');
+    Navigator.pushReplacementNamed(context, '/google');
   }
 
   @override
@@ -82,12 +84,6 @@ class _ProfilePageState extends State<ProfilePage> {
       if (storageTaskSnapshot.state == TaskState.success) {
         // Image uploaded successfully, now get the URL
         String imageUrl = await ref.getDownloadURL();
-
-        // Update Firestore with the image URL for the current user (You need to have userModel defined)
-        // await FirebaseFirestore.instance.collection('users').doc(userModel?.userId).update({
-        //   'profileImage': imageUrl,
-        // });
-
         // Save the picked image path to SharedPreferences
         SharedPreferences prefs = await SharedPreferences.getInstance();
         prefs.setString('pickedImage', imageFile.path);
@@ -106,11 +102,12 @@ class _ProfilePageState extends State<ProfilePage> {
     return loggingOut? Center(child:  CircularProgressIndicator(),) :  Scaffold(
       body:SingleChildScrollView(
         child: Container(
+          height: MediaQuery.of(context).size.height *1,
            color: Color(0xFF111111),
           padding: const EdgeInsets.all(8.0),
           child: Column(
             children: [
-              SizedBox(height: 50,),
+              SizedBox(height: 40,),
               if(userModel!.subscription.name.isEmpty)...[
                Container(
                  padding: EdgeInsets.all(8),
@@ -190,12 +187,15 @@ class _ProfilePageState extends State<ProfilePage> {
                                  ],
                                  ),
                                  SizedBox(height:3,),
-                                 Text(
-                                   userModel?.email ?? '',
-                                   style: TextStyle(
-                                     color: Colors.white,
-                                     fontSize: 15.0,
-                                     fontWeight: FontWeight.normal,
+                                 Container(
+                                   width: 205,
+                                   child: Text(
+                                     userModel?.email ?? '',
+                                     style: TextStyle(
+                                       color: Colors.white,
+                                       fontSize: 15.0,
+                                       fontWeight: FontWeight.normal,
+                                     ),
                                    ),
                                  ),
                                  SizedBox(height:3,),

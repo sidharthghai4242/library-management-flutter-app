@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -149,9 +150,17 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
   }
 
   showCategoriesPopup(BuildContext context, List<DocumentSnapshot> data) {
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
+        // double heightofbookbox = MediaQuery.of(context).size.height*0.43;
+        // double heightofimageinbookbox= heightofbookbox*0.6;
+        double screenwidth = MediaQuery.of(context).size.width;
+        double widthOfBookBox= screenwidth * 0.8;
+        if (widthOfBookBox > 300) {
+          widthOfBookBox = 400;
+        }
         return Stack(
           alignment: Alignment.center,
           children: [
@@ -165,6 +174,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
                 borderRadius: BorderRadius.circular(10.0),
               ),
               child: Container(
+                width:  widthOfBookBox,
                 padding: EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10.0),
@@ -266,7 +276,6 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
   @override
   Widget build(BuildContext context) {
     userModel = context.watch<DbProvider>().userModel;
-
     Color secondaryColor = MediaQuery.of(context).platformBrightness == Brightness.dark
         ? Colors.white
         : Colors.white;
@@ -282,7 +291,16 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
         ? Colors.white30
         :Colors.white30;
 
+    // (kIsWeb ? screenwidth *0.9:MediaQuery.of(context).size.height*0.43)
 
+
+    double screenwidth = MediaQuery.of(context).size.width;
+    double widthOfBookBox= screenwidth * 0.42;
+    if (widthOfBookBox > 300) {
+      widthOfBookBox = 200;
+    }
+    double heightofbookbox = (kIsWeb ? screenwidth *0.25:MediaQuery.of(context).size.height*0.43);
+    double heightofimageinbookbox= (kIsWeb ? heightofbookbox*0.68:heightofbookbox*0.6);
     return Scaffold(
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -292,7 +310,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
               color:Color(0xFF111111)
             ),
             // color: primaryColor,
-            height: 674,
+            height: MediaQuery.of(context).size.height-76.260 ,
             child: ListView(
               physics: BouncingScrollPhysics(),
               children: <Widget>[
@@ -300,7 +318,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
                   children: [
                     // Enhancing the Image Container
                     Container(
-                      height: 65,
+                      height: 67,
                       child: Image.asset(
                         MediaQuery.of(context).platformBrightness == Brightness.dark
                             ? 'assets/rlrblack.jpg'
@@ -471,7 +489,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
                                                 ),
                                                 child: Text(
                                                   snapshot.data.docs[index]['name'].toString(),
-                                                  style: TextStyle(color: Color(0xFF111111)),
+                                                  style: TextStyle(color: Color(0xFF111111),fontWeight: FontWeight.bold),
                                                 ),
                                               ),
                                               SizedBox(width: 10),
@@ -509,7 +527,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
                         },
                       ),
                       Container(
-                        height: 170,
+                        height: heightofbookbox*0.6,
                         child:
                             StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
                           stream:
@@ -533,15 +551,17 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
                                 .toList();
                             print(titles);
                             return Container(
-                              height: 90,
-                              width: 450,
+                              height: heightofbookbox*0.6,
+                              width: MediaQuery.of(context).size.width,
+                              padding:EdgeInsets.all(2),
                               child: CarouselSlider(
                                 options: CarouselOptions(
-                                  height: 190.0,
+                                  height: heightofbookbox*0.6,
                                   autoPlay: true,
                                   enlargeCenterPage: true, // Set to true if you want the current image to be larger
                                   viewportFraction: 1.0, // Set to 1.0 to occupy the full width of the screen
                                 ),
+                                // kkk
                                 items: titles?.map((i) {
                                   return Builder(
                                     builder: (BuildContext context) {
@@ -559,10 +579,6 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
                                             borderRadius: BorderRadius.circular(18), // Adjust the value as needed
                                             child: Container(
                                               decoration: BoxDecoration(
-                                                // border: Border.all(
-                                                //   // color: bordercolor,
-                                                //   width: 2,
-                                                // ),
                                               ),
                                               width: MediaQuery.of(context).size.width,
                                               child: Image.network('$i', fit: BoxFit.cover),
@@ -809,7 +825,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
                                                        SizedBox(height: 5,),
                                                        Container(
                                                          color: Colors.transparent,
-                                                         height: 320,
+                                                         height: heightofbookbox+3,
                                                          padding: EdgeInsets.only(
                                                              top: 4,bottom: 4
                                                          ),
@@ -861,8 +877,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
                                                                              child: Material(
                                                                                child:
                                                                                Container(
-                                                                                 height:
-                                                                                 340,
+                                                                                 height: heightofbookbox ,
                                                                                  padding:
                                                                                  EdgeInsets.all(
                                                                                      8),
@@ -878,7 +893,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
                                                                                    ),
                                                                                  ),
                                                                                  width:
-                                                                                 150,
+                                                                                 widthOfBookBox,
                                                                                  child:
                                                                                  Column(
                                                                                    mainAxisAlignment:
@@ -886,7 +901,8 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
                                                                                    children: [
                                                                                      Container(
                                                                                        height:
-                                                                                       190,
+                                                                                       heightofimageinbookbox,
+                                                                                       width:widthOfBookBox*0.9,
                                                                                        child:
                                                                                        InkWell(
                                                                                          onTap: () {
@@ -906,8 +922,9 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
                                                                                            borderRadius: BorderRadius.circular(15),
                                                                                            child: Image.network(
                                                                                              url,
+                                                                                             fit:BoxFit.cover,
                                                                                              errorBuilder: (context, error, stackTrace) {
-                                                                                               return const Text('Unable to load image from server');
+                                                                                               return const Center(child:Text('Unable to load image from server'));
                                                                                              },
                                                                                            ),
                                                                                          ),
@@ -915,6 +932,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
                                                                                      ),
                                                                                      SizedBox(height: 6,),
                                                                                      Container(
+                                                                                       width:widthOfBookBox,
                                                                                        padding:
                                                                                        EdgeInsets.only(
                                                                                            top: 4

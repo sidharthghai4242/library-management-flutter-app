@@ -57,35 +57,51 @@ class _GoogleSignInPageState extends State<GoogleSignInPage> {
                   ),
                 ),
                 SizedBox(height: 10),
-                TextFormField(
-                  controller: emailController,
-                  keyboardType: TextInputType.emailAddress,
-                  decoration: InputDecoration(
-                    labelText: 'Email',
-                    labelStyle: TextStyle(color: Colors.white), // Set the label text color here
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.white), // Set the border color here
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.white), // Set the border color here
+                Container(
+                  width: 400,
+                  child:TextFormField(
+                    controller: emailController,
+                    keyboardType: TextInputType.emailAddress,
+                    decoration: InputDecoration(
+                      labelText: 'Email',
+                      labelStyle: TextStyle(color: Colors.white), // Set the label text color here
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white),
+                        borderRadius: BorderRadius.circular(100),// Set the border color here
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(100),
+                        borderSide: BorderSide(color: Colors.white), // Set the border color here
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(100),
+                      ),
                     ),
                   ),
                 ),
                 SizedBox(height: 10),
-                TextFormField(
-                  controller: passwordController,
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    labelText: 'Password',
-                    labelStyle: TextStyle(color: Colors.white), // Set the label text color here
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.white), // Set the border color here
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.white), // Set the border color here
-                    ),
-                  ),
-                ),
+               Container(
+                 width: 400,
+                 child:  TextFormField(
+                   controller: passwordController,
+                   obscureText: true,
+                   decoration: InputDecoration(
+                     labelText: 'Password',
+                     labelStyle: TextStyle(color: Colors.white), // Set the label text color here
+                     focusedBorder: OutlineInputBorder(
+                       borderSide: BorderSide(color: Colors.white),
+                       borderRadius: BorderRadius.circular(100),// Set the border color here
+                     ),
+                     enabledBorder: OutlineInputBorder(
+                       borderRadius: BorderRadius.circular(100),
+                       borderSide: BorderSide(color: Colors.white), // Set the border color here
+                     ),
+                     border: OutlineInputBorder(
+                       borderRadius: BorderRadius.circular(100),
+                     ),
+                   ),
+                 ),
+               ),
                 SizedBox(height: 10),
                 ElevatedButton(
                   onPressed: () {
@@ -131,17 +147,10 @@ class _GoogleSignInPageState extends State<GoogleSignInPage> {
                       await context.read<DbProvider>().getUserFromFirestore(user: user, bContent: context);
                       Navigator.of(context).pushReplacementNamed('/nav');
                     }else{
-
                     }
                   },
                 ),
-                SizedBox(height: 10), // Add some spacing between the buttons
-                SignInButton(
-                  Buttons.Facebook,
-                  onPressed: () {
-                    // Call the _handleFacebookSignIn method with the context
-                  },
-                ),
+
               ],
             ),
           ),

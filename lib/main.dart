@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:rlr/pages/activity_page.dart';
 import 'package:rlr/pages/all_books.dart';
 import 'package:rlr/pages/authentication/phone_screen.dart';
@@ -7,7 +8,7 @@ import 'package:rlr/pages/help_desk_page.dart';
 import 'package:rlr/pages/home_screen.dart';
 import 'package:rlr/pages/my_books.dart';
 import 'package:rlr/pages/notifications_page.dart';
-import 'package:rlr/pages/profile_page.dart';
+import 'package:rlr/pages/profile_page_screens/profile_page.dart';
 import 'package:rlr/pages/splash_screen.dart';
 import 'package:rlr/pages/wishlist.dart';
 import 'package:rlr/provider/DbProvider.dart';
@@ -25,7 +26,21 @@ import 'pages/authentication/signin_with_email.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  if (kIsWeb) {
+    await Firebase.initializeApp(
+        options: FirebaseOptions(
+            apiKey: "AIzaSyA9EB2ULvQv9a8Z-xjoRtGSY5VLjeSYTNA",
+            authDomain: "read-ludhiana-read.firebaseapp.com",
+            projectId: "read-ludhiana-read",
+            storageBucket: "read-ludhiana-read.appspot.com",
+            messagingSenderId: "889512449351",
+            appId: "1:889512449351:web:60dc9920a181ba72452862",
+            measurementId: "G-RMTJ0YLYYD",
+        )
+    );
+  } else {
+    await Firebase.initializeApp();
+  }
 
   runApp(
     MultiProvider(
@@ -50,7 +65,6 @@ void main() async {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -77,7 +91,6 @@ class MyApp extends StatelessWidget {
         '/signup':(context)=>SignUpPage(),
         '/helpdesk':(context)=>HelpDesk(),
         '/wishlist': (context) => WishList(),
-
       },
     );
   }
@@ -112,16 +125,6 @@ class _MyHomePageState extends State<MyHomePage> {
           debugPrint("after getting user data");
           Navigator.pushReplacementNamed(context, '/nav');
     }
-    // FirebaseAuth.instance.authStateChanges().listen((user) async {
-    //   if (user == null) {
-    //     //
-    //     Navigator.pushReplacementNamed(context, '/phone');
-    //   } else {
-    //     await context.read<DbProvider>().getUserFromFirestore(user: user, bContent: bContext);
-    //     initialScreen = const NavPage();
-    //   }
-    //   setState(() {});
-    // });
   }
 
   @override

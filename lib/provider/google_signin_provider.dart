@@ -49,7 +49,9 @@ import 'DbProvider.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
+  final GoogleSignIn _googleSignIn = GoogleSignIn(
+    clientId: "889512449351-vu4um32e6m0ic5c6f565ucaq10ojcgs8.apps.googleusercontent.com",
+  );
   final CollectionReference _usersCollection = FirebaseFirestore.instance.collection('users');
 
   Future<User?> signInWithGoogle(BuildContext context) async {

@@ -45,22 +45,14 @@ class _SearchPageState extends State<SearchPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(-1.0), // Set the desired height
-        child: AppBar(
-          backgroundColor: Colors.transparent, // Make the app bar transparent
-          elevation: 0, // Remove the shadow
-          // title: Text("Transparent App Bar"),
-        ),
-      ),
-        // Color(0xFF111111)
       body:
       Container(
-        height: 700,
+        height: MediaQuery.of(context).size.height-76.260 ,
         color:Color(0xFF111111) ,
         child: SingleChildScrollView(
           child: Column(
             children: [
+              SizedBox(height:40),
               Padding(
                 padding: const EdgeInsets.all(15.0),
 
@@ -70,16 +62,18 @@ class _SearchPageState extends State<SearchPage> {
                   decoration: InputDecoration(
                     labelStyle: TextStyle(color: Colors.white), // Set the label text color here
                     focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.white), // Set the border color here
+                      borderSide: BorderSide(color: Colors.white),
+                      borderRadius: BorderRadius.circular(100),// Set the border color here
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(100),
                       borderSide: BorderSide(color: Colors.white), // Set the border color here
                     ),
-                    prefixIcon: Icon(CupertinoIcons.search),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(100),
                     ),
+                    prefixIcon: Icon(CupertinoIcons.search),
+
                     prefixIconColor: Color(0xFFFFFFFF),
                     labelText: "Search Here",
                   ),
@@ -94,8 +88,10 @@ class _SearchPageState extends State<SearchPage> {
                   child: Column(
                     children: [
                       Container(
-                        padding: EdgeInsets.all(10),
-                        height: 492,
+                        padding: EdgeInsets.only(
+                          left:10,right:10,bottom:10,top:5
+                        ),
+                        height: MediaQuery.of(context).size.height-176.260 ,
                         child: StreamBuilder<QuerySnapshot>(
                           stream: FirebaseFirestore.instance
                               .collection("ratings")
@@ -224,6 +220,7 @@ class _SearchPageState extends State<SearchPage> {
                                                       ),
                                                       SizedBox(height: 5,),
                                                       Row(
+                                                        // ff
                                                         mainAxisAlignment: MainAxisAlignment.end,
                                                         children: [
                                                           SizedBox(width: 90),
@@ -232,7 +229,7 @@ class _SearchPageState extends State<SearchPage> {
                                                             color: Colors.amber,
                                                           ),
                                                           Text(
-                                                            "${(ratingDoc.data() as Map<String, dynamic>)['rating']}",
+                                                            "${((ratingDoc.data() as Map<String, dynamic>)['rating'] as double).toStringAsFixed(1)}",
                                                             style: TextStyle(fontSize: 16.0, color: Colors.white),
                                                           ),
                                                           SizedBox(width: 10,)
@@ -261,7 +258,10 @@ class _SearchPageState extends State<SearchPage> {
               ],
               if(searchcontroller.text.isNotEmpty)...[
                 Container(
-                  height: 492,
+                  padding: EdgeInsets.only(
+                      left:10,right:10,bottom:10,top:5
+                  ),
+                  height: MediaQuery.of(context).size.height-176.260 ,
                   child: ListView.builder(
                     itemCount: searchResult.length,
                     itemBuilder: (context, index) {

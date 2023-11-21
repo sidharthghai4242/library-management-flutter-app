@@ -7,22 +7,22 @@ import 'package:provider/provider.dart';
 import 'package:rlr/models/UserModel.dart';
 import 'package:rlr/provider/DbProvider.dart';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:provider/provider.dart';
+// import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'package:flutter/material.dart';
+// import 'package:flutter/cupertino.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:flutter_spinkit/flutter_spinkit.dart';
+// import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:rlr/models/UserModel.dart';
+// import 'package:rlr/models/UserModel.dart';
 import 'dart:io';
-import 'package:rlr/pages/edit_profile.dart';
-import 'package:rlr/provider/DbProvider.dart';
+// import 'package:rlr/pages/edit_profile.dart';
+// import 'package:rlr/provider/DbProvider.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import '../provider/ThemeProvider.dart';
+// import '../provider/ThemeProvider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:http/http.dart' as http;
+// import 'package:http/http.dart' as http;
 
 class EditProfilePage extends StatefulWidget {
   UserModel? userModel;
@@ -148,25 +148,41 @@ class _EditProfilePageState extends State<EditProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Color(0xFF111111),
-        elevation: 0.0,
-        title: const Text(
-          "Edit Profile",
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 22.0,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
       body:SingleChildScrollView(
         child: Container(
-          height: 700,
+          height: MediaQuery.of(context).size.height ,
           color: Color(0xFF111111),
           padding: const EdgeInsets.all(10.0),
           child: Column(
             children: [
+              SizedBox(height: 50,),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  SizedBox(width: 5,),
+                  Stack(
+                    children: [
+                      Container(
+                        height: 40,
+                        width: 40,
+                        decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.7),
+                            borderRadius: BorderRadius.circular(60)
+                        ),
+                      ),
+                      Positioned(
+                          top: 7,
+                          left: 6,
+                          child: InkWell(
+                            onTap: (){
+                              Navigator.pop(context);
+                            },
+                            child: Icon(Icons.arrow_back_ios_new,color: Colors.black87,),
+                          ))
+                    ],
+                  ),
+                ],
+              ),
               Stack(
                 children: [
                   Stack(
@@ -211,15 +227,16 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         labelText: "Full Name",
                         prefixIcon: Icon(CupertinoIcons.person),
                         border: OutlineInputBorder(
-                          // borderRadius: BorderRadius.circular(100),
+                          borderRadius: BorderRadius.circular(100),
                         ),
                         labelStyle: TextStyle(color: Colors.white), // Set the label text color here
                         focusedBorder: OutlineInputBorder(
-                          // borderRadius: BorderRadius.circular(100),
+                          borderRadius: BorderRadius.circular(100),
                           borderSide: BorderSide(color: Colors.white), // Set the border color here
                         ),
                         enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.white), // Set the border color here
+                          borderSide: BorderSide(color: Colors.white),
+                          borderRadius: BorderRadius.circular(100),// Set the border color here
                         ),
                         prefixIconColor: Colors.white,
                       ),
@@ -245,7 +262,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           borderSide: BorderSide(color: Colors.white), // Set the border color here
                         ),
                         enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.white), // Set the border color here
+                          borderSide: BorderSide(color: Colors.white),
+                          borderRadius: BorderRadius.circular(100),// Set the border color here
                         ),
                         prefixIconColor: Colors.white,
                       ),
@@ -280,7 +298,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           borderSide: BorderSide(color: Colors.white), // Set the border color here
                         ),
                         enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.white), // Set the border color here
+                          borderSide: BorderSide(color: Colors.white),
+                          borderRadius: BorderRadius.circular(100),// Set the border color here
                         ),
                         prefixIconColor: Colors.white,
                       ),
@@ -307,11 +326,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         ),
                         labelStyle: TextStyle(color: Colors.white), // Set the label text color here
                         focusedBorder: OutlineInputBorder(
-                          // borderRadius: BorderRadius.circular(100),
+                          borderRadius: BorderRadius.circular(100),
                           borderSide: BorderSide(color: Colors.white), // Set the border color here
                         ),
                         enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.white), // Set the border color here
+                          borderSide: BorderSide(color: Colors.white),
+                          borderRadius: BorderRadius.circular(100),// Set the border color here
                         ),
                         prefixIconColor: Colors.white,
                       ),
@@ -337,7 +357,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           borderSide: BorderSide(color: Colors.white), // Set the border color here
                         ),
                         enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.white), // Set the border color here
+                          borderSide: BorderSide(color: Colors.white),
+                          borderRadius: BorderRadius.circular(100),// Set the border color here
                         ),
                         prefixIconColor: Colors.white,
                       ),

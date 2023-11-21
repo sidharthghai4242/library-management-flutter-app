@@ -270,10 +270,10 @@ class CommonClass {
       builder: (context, setState) {
         Color containerColor = MediaQuery.of(context).platformBrightness == Brightness.dark
             ? Colors.black
-            : Colors.white;
-        Color TextColor = MediaQuery.of(context).platformBrightness == Brightness.dark
-            ? Colors.pink
             : Colors.black;
+        // Color Colors.white = MediaQuery.of(context).platformBrightness == Brightness.dark
+        //     ? Colors.pink
+        //     : Colors.black;
         return Container(
           height: MediaQuery.of(context).size.height,
           padding: const EdgeInsets.all(12.0),
@@ -302,11 +302,11 @@ class CommonClass {
                         style: GoogleFonts.openSans(
                             fontSize: 28,
                             fontWeight: FontWeight.bold,
-                            color: Colors.pink
+                            color: Colors.white
                         ),
                       ),
                       Text(
-                        "Please enter your 'Information'",
+                        "Please complete your profile",
                         textAlign: TextAlign.center,
                         style: GoogleFonts.openSans(
                             fontSize: 16,
@@ -340,7 +340,7 @@ class CommonClass {
               const SizedBox(height: 24,),
               Text(
                 "${isEditable ? 'Enter your' : ''} Username:",
-                style: TextStyle(color: TextColor,fontWeight: FontWeight.bold),
+                style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold),
               ),
               Container(
                 margin: const EdgeInsets.only(top: 10, bottom: 16),
@@ -354,14 +354,21 @@ class CommonClass {
                   ),
                   decoration: InputDecoration(
                     counterText: "",
-                    border: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.grey.shade500, width: 1),
-                        borderRadius: BorderRadius.circular(8)
-                    ),
-                    focusColor: UIConstants.colorPrimary.withOpacity(0.8),
+                    // border: OutlineInputBorder(
+                    //     borderSide: BorderSide(color: Colors.grey.shade500, width: 1),
+                    //     borderRadius: BorderRadius.circular(8)
+                    // ),
+                    focusColor: Colors.white,
                     focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: UIConstants.colorPrimary.withOpacity(0.8), width: 1),
-                        borderRadius: BorderRadius.circular(8)
+                      borderSide: BorderSide(color: Colors.white),
+                      borderRadius: BorderRadius.circular(100),// Set the border color here
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(100),
+                      borderSide: BorderSide(color: Colors.white), // Set the border color here
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(100),
                     ),
                     hintStyle: GoogleFonts.roboto(),
                     contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -370,7 +377,7 @@ class CommonClass {
               ),
               Text(
                 "${isEditable ? 'Enter your' : ''} age:",
-                style: TextStyle(color: TextColor,fontWeight: FontWeight.bold),
+                style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold),
               ),
               Container(
                 margin: const EdgeInsets.only(top: 10, bottom: 16),
@@ -380,17 +387,21 @@ class CommonClass {
                   keyboardType: TextInputType.number,
                   style: GoogleFonts.roboto(
                     fontWeight: FontWeight.w700,
+                    color: Colors.white
                   ),
                   decoration: InputDecoration(
                     counterText: "",
-                    border: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.grey.shade500, width: 1),
-                        borderRadius: BorderRadius.circular(8)
-                    ),
-                    focusColor: UIConstants.colorPrimary.withOpacity(0.8),
+                    focusColor: Colors.white,
                     focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: UIConstants.colorPrimary.withOpacity(0.8), width: 1),
-                        borderRadius: BorderRadius.circular(8)
+                      borderSide: BorderSide(color: Colors.white),
+                      borderRadius: BorderRadius.circular(100),// Set the border color here
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(100),
+                      borderSide: BorderSide(color: Colors.white), // Set the border color here
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(100),
                     ),
                     hintStyle: GoogleFonts.roboto(),
                     contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -399,7 +410,7 @@ class CommonClass {
               ),
               Text(
                 "${isEditable ? 'Enter your' : ''} phone:",
-                style: TextStyle(color: TextColor,fontWeight: FontWeight.bold),
+                style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold),
               ),
               Container(
                 margin: const EdgeInsets.only(top: 10, bottom: 16),
@@ -409,17 +420,25 @@ class CommonClass {
                   keyboardType: TextInputType.name,
                   style: GoogleFonts.roboto(
                     fontWeight: FontWeight.w700,
+                      color: Colors.white
                   ),
                   decoration: InputDecoration(
                     counterText: "",
-                    border: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.grey.shade500, width: 1),
-                        borderRadius: BorderRadius.circular(8)
-                    ),
-                    focusColor: UIConstants.colorPrimary.withOpacity(0.8),
+                    // border: OutlineInputBorder(
+                    //     borderSide: BorderSide(color: Colors.grey.shade500, width: 1),
+                    //     borderRadius: BorderRadius.circular(8)
+                    // ),
+                    focusColor: Colors.white,
                     focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: UIConstants.colorPrimary.withOpacity(0.8), width: 1),
-                        borderRadius: BorderRadius.circular(8)
+                      borderSide: BorderSide(color: Colors.white),
+                      borderRadius: BorderRadius.circular(100),// Set the border color here
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(100),
+                      borderSide: BorderSide(color: Colors.white), // Set the border color here
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(100),
                     ),
                     hintStyle: GoogleFonts.roboto(),
                     contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -429,7 +448,7 @@ class CommonClass {
               // User EMail
               Text(
                 "${isEditable ? 'Enter your' : ''} email:",
-                style: TextStyle(color: TextColor,fontWeight: FontWeight.bold),
+                style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold),
               ),
             Container(
               margin: const EdgeInsets.only(top: 10, bottom: 16),
@@ -439,17 +458,25 @@ class CommonClass {
                 keyboardType: TextInputType.emailAddress,
                 style: GoogleFonts.roboto(
                   fontWeight: FontWeight.w700,
+                    color: Colors.white
                 ),
                 decoration: InputDecoration(
                   counterText: "",
-                  border: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.grey.shade500, width: 1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  focusColor: UIConstants.colorPrimary.withOpacity(0.8),
+                  // border: OutlineInputBorder(
+                  //   borderSide: BorderSide(color: Colors.grey.shade500, width: 1),
+                  //   borderRadius: BorderRadius.circular(8),
+                  // ),
+                  focusColor: Colors.white,
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: UIConstants.colorPrimary.withOpacity(0.8), width: 1),
-                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide(color: Colors.white),
+                    borderRadius: BorderRadius.circular(100),// Set the border color here
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(100),
+                    borderSide: BorderSide(color: Colors.white), // Set the border color here
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(100),
                   ),
                   hintStyle: GoogleFonts.roboto(),
                   contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -464,7 +491,7 @@ class CommonClass {
 
               Text(
                 "${isEditable ? 'Enter your' : ''} address:",
-                style: TextStyle(color: TextColor,fontWeight: FontWeight.bold),
+                style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold),
               ),
               Container(
                 margin: const EdgeInsets.only(top: 10, bottom: 16),
@@ -474,18 +501,26 @@ class CommonClass {
                   keyboardType: TextInputType.text,
                   style: GoogleFonts.roboto(
                     fontWeight: FontWeight.w700,
+                      color: Colors.white
                   ),
-                  maxLines: 4,
+                  maxLines: 3,
                   decoration: InputDecoration(
                     counterText: "",
-                    border: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.grey.shade500, width: 1),
-                        borderRadius: BorderRadius.circular(8)
-                    ),
-                    focusColor: UIConstants.colorPrimary.withOpacity(0.8),
+                    // border: OutlineInputBorder(
+                    //     borderSide: BorderSide(color: Colors.grey.shade500, width: 1),
+                    //     borderRadius: BorderRadius.circular(8)
+                    // ),
+                    focusColor: Colors.white,
                     focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: UIConstants.colorPrimary.withOpacity(0.8), width: 1),
-                        borderRadius: BorderRadius.circular(8)
+                      borderSide: BorderSide(color: Colors.white),
+                      borderRadius: BorderRadius.circular(100),// Set the border color here
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(100),
+                      borderSide: BorderSide(color: Colors.white), // Set the border color here
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(100),
                     ),
                     hintStyle: GoogleFonts.roboto(),
                     contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -561,7 +596,7 @@ class CommonClass {
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   width: MediaQuery.of(context).size.width,
                   decoration: BoxDecoration(
-                      color: Colors.pink,
+                      color: Colors.white,
                       borderRadius: BorderRadius.circular(8)
                   ),
                   child: Row(
@@ -573,8 +608,9 @@ class CommonClass {
                         textAlign: TextAlign.center,
                         style: GoogleFonts.openSans(
                             fontSize: 16,
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600
+                            color: Colors.black,
+
+                            fontWeight: FontWeight.bold
                         ),
                       ),
                       // const SizedBox(width: 4),

@@ -24,6 +24,7 @@ class _MyBooksState extends State<MyBooks> {
     print(userModel?.authId);
     return Scaffold(
       body: Container(
+        height: MediaQuery.of(context).size.height-76.260 ,
         color: Color(0xFF111111),
         child: StreamBuilder(
           stream: FirebaseFirestore.instance
