@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
-import 'package:rlr/pages/activity_page.dart';
-import 'package:rlr/pages/my_books.dart';
+import 'package:rlr/pages/activity_page_screens/activity_page.dart';
+import 'package:rlr/pages/my_books_page_screens/my_books.dart';
 import 'package:rlr/pages/profile_page_screens/profile_page.dart';
-import 'package:rlr/pages/home_screen.dart';
-import 'package:rlr/pages/search_page.dart';
+import 'package:rlr/pages/home_screen_pages/home_screen.dart';
+import 'package:rlr/pages/search_page_screen/search_page.dart';
 import 'package:flutter/cupertino.dart';
 
 

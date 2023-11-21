@@ -4,10 +4,10 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:rlr/models/UserModel.dart';
 
-import '../provider/DbProvider.dart';
-import '../widgets/bargraphwidget.dart';
-import 'book_page.dart';
-import 'my_books.dart';
+import '../../provider/DbProvider.dart';
+import '../../widgets/bargraphwidget.dart';
+import '../general_book_page_screens/book_page.dart';
+import '../my_books_page_screens/my_books.dart';
 class ActivityPage extends StatefulWidget {
   const ActivityPage({Key? key}) : super(key: key);
 

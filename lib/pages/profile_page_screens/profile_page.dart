@@ -7,7 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:rlr/models/UserModel.dart';
 import 'dart:io';
-import 'package:rlr/pages/edit_profile.dart';
+import 'package:rlr/pages/profile_page_screens/edit_profile.dart';
 import 'package:rlr/provider/DbProvider.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';

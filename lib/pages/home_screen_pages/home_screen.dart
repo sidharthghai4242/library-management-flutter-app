@@ -7,15 +7,15 @@ import 'package:gradient_borders/box_borders/gradient_box_border.dart';
 import 'package:icon_decoration/icon_decoration.dart';
 import 'package:provider/provider.dart';
 import 'package:rlr/models/UserModel.dart';
-import 'package:rlr/pages/all_books.dart';
-import 'package:rlr/pages/book_page.dart';
-import 'package:rlr/pages/catalogue_page.dart';
+import 'package:rlr/pages/home_screen_pages/all_books.dart';
+import 'package:rlr/pages/general_book_page_screens/book_page.dart';
+import 'package:rlr/pages/home_screen_pages/catalogue_page.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
 import 'dart:async';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../provider/DbProvider.dart';
+import '../../provider/DbProvider.dart';
 
 
 class HomeScreen extends StatefulWidget {

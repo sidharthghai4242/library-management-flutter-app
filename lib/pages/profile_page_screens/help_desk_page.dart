@@ -3,10 +3,10 @@ import 'package:gradient_borders/box_borders/gradient_box_border.dart';
 import 'package:provider/provider.dart';
 import 'package:rlr/models/UserModel.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
-import '../provider/DbProvider.dart';
+import '../../provider/DbProvider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '../widgets/complaintregistered.dart';
+import '../../widgets/complaintregistered.dart';
 
 class HelpDesk extends StatelessWidget {
   const HelpDesk({Key? key}) : super(key: key);

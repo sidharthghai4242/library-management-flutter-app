@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rlr/models/UserModel.dart';
 
-import '../provider/DbProvider.dart';
+import '../../provider/DbProvider.dart';
 class Membership extends StatefulWidget {
   const Membership({super.key});
 

@@ -174,11 +174,11 @@
 //   }
 // }
 import 'package:flutter/material.dart';
-import 'package:rlr/pages/book_page.dart';
+import 'package:rlr/pages/general_book_page_screens/book_page.dart';
 import 'package:provider/provider.dart';
 import 'package:rlr/provider/wishlist_provider.dart';
-import '../models/UserModel.dart';
-import '../provider/DbProvider.dart';
+import '../../models/UserModel.dart';
+import '../../provider/DbProvider.dart';
 
 class WishList extends StatefulWidget {
   @override

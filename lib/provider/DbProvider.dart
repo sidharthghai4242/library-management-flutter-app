@@ -5,7 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import '../pages/book_page.dart';
+import '../pages/general_book_page_screens/book_page.dart';
 
 class DbProvider extends ChangeNotifier {
   FirebaseFirestore? _firestore;

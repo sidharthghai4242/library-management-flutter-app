@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 import 'package:rlr/models/UserModel.dart';
-import 'package:rlr/pages/book_page.dart';
-import '../provider/DbProvider.dart';
+import 'package:rlr/pages/general_book_page_screens/book_page.dart';
+import '../../provider/DbProvider.dart';
 import 'package:intl/intl.dart';
 
 class MyBooks extends StatefulWidget {

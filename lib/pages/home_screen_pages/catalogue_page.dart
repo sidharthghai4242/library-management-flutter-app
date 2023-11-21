@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:rlr/pages/book_page.dart';
+import 'package:rlr/pages/general_book_page_screens/book_page.dart';
 
 class CataloguePage extends StatefulWidget {
   final String name;
