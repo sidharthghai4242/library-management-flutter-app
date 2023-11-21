@@ -55,7 +55,6 @@ class _SearchPageState extends State<SearchPage> {
               SizedBox(height:40),
               Padding(
                 padding: const EdgeInsets.all(15.0),
-
                 child: TextFormField(
                   controller: searchcontroller,
                   style: TextStyle(color: Colors.white),

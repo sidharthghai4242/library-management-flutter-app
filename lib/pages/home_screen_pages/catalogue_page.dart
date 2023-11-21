@@ -41,7 +41,7 @@ class _CataloguePageState extends State<CataloguePage> {
     double screenwidth = MediaQuery.of(context).size.width;
     double gridwidth=(kIsWeb? screenwidth*0.56: screenwidth);
     double heightofbookbox = (kIsWeb ? screenwidth *0.27:MediaQuery.of(context).size.height*0.43);
-    double heightofimageinbookbox= (kIsWeb ? heightofbookbox*0.68:heightofbookbox*0.6);
+    double heightofimageinbookbox= (kIsWeb ? heightofbookbox*0.66:heightofbookbox*0.6);
     double widthOfBookBox= screenwidth * 0.42;
     if (widthOfBookBox > 300) {
       widthOfBookBox = 200;

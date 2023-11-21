@@ -300,7 +300,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
       widthOfBookBox = 200;
     }
     double heightofbookbox = (kIsWeb ? screenwidth *0.25:MediaQuery.of(context).size.height*0.43);
-    double heightofimageinbookbox= (kIsWeb ? heightofbookbox*0.68:heightofbookbox*0.6);
+    double heightofimageinbookbox= (kIsWeb ? heightofbookbox*0.67:heightofbookbox*0.6);
     return Scaffold(
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -329,8 +329,8 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
                    if(userModel!.subscription.name.isNotEmpty)...[
                      Container(
                        padding: EdgeInsets.all(6),
-                       height: 50,
-                       width: 110,
+                       height: 55,
+                       width: 120,
                        decoration: BoxDecoration(
                          // border: Border.all(
                          //   color: Colors.amber,
@@ -354,7 +354,6 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
                                GradientText(
                                  userModel!.subscription.name,
                                  style: TextStyle(
-
                                    fontWeight: FontWeight.bold, // Added bold font
                                  ), colors: [
                                    Color(0xFFEDEADE),Color(0xFFFFF5EE)
@@ -374,7 +373,6 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
                      ),
                    ],
                     Spacer(), // This pushes the icons to the end of the row
-                    // Enhancing the Heart Icon
                     InkWell(
                       onTap: () {
                         Navigator.pushNamed(context, '/wishlist');
