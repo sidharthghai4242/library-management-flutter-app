@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:rlr/pages/general_book_page_screens/book_page.dart';
@@ -42,6 +43,13 @@ class _SearchPageState extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
+    double screenwidth = MediaQuery.of(context).size.width;
+    double widthOfBookBox= screenwidth * 0.42;
+    if (widthOfBookBox > 300) {
+      widthOfBookBox = 200;
+    }
+    double heightofbookbox = (kIsWeb ? screenwidth *0.25:MediaQuery.of(context).size.height*0.43);
+    double heightofimageinbookbox= (kIsWeb ? heightofbookbox*0.67:heightofbookbox*0.6);
     return Scaffold(
       body:
       Container(
@@ -169,9 +177,8 @@ class _SearchPageState extends State<SearchPage> {
                                             padding: EdgeInsets.all(8.0),
                                             child: Row(
                                               children: [
-
                                                 Container(
-                                                  height:100,
+                                                  height:heightofimageinbookbox*0.8,
                                                   decoration: BoxDecoration(
                                                     borderRadius: BorderRadius.circular(10), // Adjust the radius value as needed
                                                     border: Border.all(

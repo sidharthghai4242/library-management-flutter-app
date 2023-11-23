@@ -200,25 +200,6 @@ class _ProfilePageState extends State<ProfilePage> {
                                    ),
                                  ),
                                  SizedBox(height:3,),
-                                 // InkWell(
-                                 //   child: Row(
-                                 //     children: [
-                                 //       Text(
-                                 //         'View activity',
-                                 //         style: TextStyle(
-                                 //           color: Colors.white,
-                                 //           fontSize: 15.0,
-                                 //           fontWeight: FontWeight.normal,
-                                 //         ),
-                                 //       ),
-                                 //       Icon(
-                                 //         Icons.arrow_right,
-                                 //         size: 18.0,
-                                 //         color: Colors.white,
-                                 //       ),
-                                 //     ],
-                                 //   ),
-                                 // )
                                ],
                              )
                            ],
@@ -658,6 +639,9 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                       const Divider(color: Colors.grey,indent: 20,endIndent: 17,),
                       ListTile(
+                        onTap: (){
+                          Navigator.pushNamed(context, '/aboutus');
+                        },
                         leading: Container(
                           width: 40,
                           height: 40,

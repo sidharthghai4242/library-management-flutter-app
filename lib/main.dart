@@ -3,6 +3,7 @@ import 'package:rlr/pages/activity_page_screens/activity_page.dart';
 import 'package:rlr/pages/home_screen_pages/all_books.dart';
 import 'package:rlr/pages/authentication/phone_screen.dart';
 import 'package:rlr/pages/authentication/sign_up_widget.dart';
+import 'package:rlr/pages/profile_page_screens/about_us_page.dart';
 import 'package:rlr/pages/profile_page_screens/edit_profile.dart';
 import 'package:rlr/pages/profile_page_screens/help_desk_page.dart';
 import 'package:rlr/pages/home_screen_pages/home_screen.dart';
@@ -91,6 +92,7 @@ class MyApp extends StatelessWidget {
         '/signup':(context)=>SignUpPage(),
         '/helpdesk':(context)=>HelpDesk(),
         '/wishlist': (context) => WishList(),
+        '/aboutus':(context)=> Aboutus()
       },
     );
   }

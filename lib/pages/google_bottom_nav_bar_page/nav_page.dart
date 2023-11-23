@@ -73,7 +73,7 @@ class _HomePageState extends State<NavPage> {
                   offset: Offset(0, 3), // Offset
                 ),
               ],
-              color: Colors.white70,
+              color: Colors.white,
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(10),
                 topRight: Radius.circular(10),

@@ -24,6 +24,7 @@ class _ActivityPageState extends State<ActivityPage> {
   }
   @override
   Widget build(BuildContext context) {
+
     String date="";
     userModel = context.watch<DbProvider>().userModel;
     String formattedJoinDate = userModel?.createdOn != null
@@ -129,17 +130,11 @@ class _ActivityPageState extends State<ActivityPage> {
                       child: Column(
                         children: [
                           SizedBox(height: 50),
-                          // Card(
-                          //     color: Colors.white,
-                          //     child: Container(
-                          //       height: 200,
-                          //       child: BarGraph(),
-                          //     )
-                          // ),
                           SizedBox(height: 5),
                           Text(
                             'Issue and Return Activity :- ',
                             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold,color: Colors.white),
+                            textAlign: TextAlign.center,
                           ),
                           Expanded(
                             child: Column(
@@ -266,6 +261,11 @@ class Bookscard extends StatefulWidget {
 class _BookscardState extends State<Bookscard> {
   @override
   Widget build(BuildContext context) {
+    double screenwidth = MediaQuery.of(context).size.width;
+    double widthOfBookBox= screenwidth;
+    if (widthOfBookBox > 400) {
+      widthOfBookBox = 500;
+    }
     String formattedIssueDate = DateFormat('dd/MM/yyyy').format(widget.issueDate);
     String formatteddueDate = DateFormat('dd/MM/yyyy').format(widget.dueDate);
     return GestureDetector(
@@ -281,8 +281,10 @@ class _BookscardState extends State<Bookscard> {
         ));
       },
       child: Container(
-        width: 500,
+        width:  screenwidth ,
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Stack(
               children: [
@@ -340,7 +342,7 @@ class _BookscardState extends State<Bookscard> {
                 borderRadius: BorderRadius.circular(15.0),
               ),
               child: Container(
-                width: 268,
+                width: widthOfBookBox*0.75,
                 padding: EdgeInsets.all(12),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,

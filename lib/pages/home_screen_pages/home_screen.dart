@@ -377,31 +377,10 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
                       onTap: () {
                         Navigator.pushNamed(context, '/wishlist');
                       },
-                      child: DecoratedIcon(
-                        icon: Icon(
-                          CupertinoIcons.heart,
-                          size: 32,
-                        ),
-                        decoration: IconDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topLeft,
-                            colors: [
-                              if (MediaQuery.of(context).platformBrightness == Brightness.dark)
-                                ...[
-                                  Color(0xFF880000),
-                                  Color(0xFFFF0000),
-                                  Colors.white,
-                                ]
-                              else
-                                ...[
-                                  Color(0xFF880000),
-                                  Color(0xFFFF0000),
-                                  Colors.white,
-                                ]
-                            ],
-                          ),
-                          // Rounded icon decoration
-                        ),
+                      child: Icon(
+                        CupertinoIcons.heart,
+                        size: 32,
+                        color: Colors.white,
                       ),
                     ),
                     SizedBox(width: 15), // Increased spacing for better alignment
@@ -410,32 +389,10 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
                       onTap: () {
                         Navigator.pushNamed(context, '/notifications');
                       },
-                      child: DecoratedIcon(
-                        icon: Icon(
-                          CupertinoIcons.bell,
-                          size: 32,
-                        ),
-                        decoration: IconDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              if (MediaQuery.of(context).platformBrightness == Brightness.dark)
-                                ...[
-                                  Colors.yellow,
-                                  Color(0xFFFFBF00),
-                                  Color(0xFFFFD700),
-                                  Colors.yellowAccent,
-                                ]
-                              else
-                                ...[
-                                  Colors.yellow,
-                                  Color(0xFFFFBF00),
-                                  Color(0xFFFFD700),
-                                  Colors.yellowAccent,
-                                ]
-                            ],
-                          ),
-                         // Rounded icon decoration
-                        ),
+                      child: Icon(
+                        color:Colors.white,
+                        CupertinoIcons.bell,
+                        size: 32,
                       ),
                     ),
                     SizedBox(width: 15), // Increased spacing for better alignment
