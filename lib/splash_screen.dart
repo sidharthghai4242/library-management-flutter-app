@@ -27,15 +27,6 @@ class SplashScreen extends StatelessWidget {
                     color: Colors.white
                 ),
               ),
-              Text(
-                "Nothing is pleasanter than exploring a library.",
-                textAlign: TextAlign.center,
-                style: GoogleFonts.openSans(
-                    fontSize: 16,
-                    color: Colors.grey.shade600,
-                    fontWeight: FontWeight.w600
-                ),
-              ),
             ],
           ),
         ),

@@ -75,7 +75,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       home: const MyHomePage(),
       routes: {
-        '/phone':(context)=>PhoneScreen(),
+        // '/phone':(context)=>PhoneScreen(),
         '/membership':(context)=>Membership(),
         '/google':(context)=>const GoogleSignInPage(),
         '/search': (context) => const SearchPage(),

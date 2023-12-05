@@ -325,7 +325,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                             fit: BoxFit.cover, // This property makes the image cover the entire box
                                           )
                                               : Image.network(
-                                            'https://w7.pngwing.com/pngs/1008/377/png-transparent-computer-icons-avatar-user-profile-avatar-heroes-black-hair-computer.png',
+                                            'https://cdn.vectorstock.com/i/1000x1000/30/97/flat-business-man-user-profile-avatar-icon-vector-4333097.webp',
                                             fit: BoxFit.cover, // Set the fit property for the network image as well
                                           ),
                                         ),
@@ -342,11 +342,11 @@ class _ProfilePageState extends State<ProfilePage> {
                                             height: 35,
                                             decoration: BoxDecoration(
                                               borderRadius: BorderRadius.circular(100),
-                                              color: Color(0xFFBA1A1A),
+                                              color: Color(0xFFFFE5B4),
                                             ),
                                             child: Icon(
                                               CupertinoIcons.camera,
-                                              color: Color(0xFFFFDBD1),
+                                              color: Colors.black,
                                               size: 20,
                                             ),
                                           ),

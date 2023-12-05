@@ -173,6 +173,7 @@
 //     );
 //   }
 // }
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:rlr/pages/general_book_page_screens/book_page.dart';
 import 'package:provider/provider.dart';
@@ -223,39 +224,51 @@ class _WishListState extends State<WishList> {
 
   @override
   Widget build(BuildContext context) {
+    double screenwidth = MediaQuery.of(context).size.width;
+    double widthOfBookBox= screenwidth;
+    if (widthOfBookBox > 400) {
+      widthOfBookBox = 500;
+    }
     userModel = context.watch<DbProvider>().userModel;
     wishListProvider = Provider.of<WishListProvider>(context);
     wishListProvider.getWishListData(userModel!.authId);
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xFFD6D46D), // Changed "color" to "backgroundColor"
+        backgroundColor: Color(0xFF111111), // Changed "color" to "backgroundColor"
         title: Text(
           "WishList",
           style: TextStyle(fontSize: 18),
         ),
       ),
-      body: ListView.builder(
-        itemCount: wishListProvider.getWishList.length,
-        itemBuilder: (context, index) {
-          BookPage data = wishListProvider.getWishList[index];
-          return Column(
-            children: [
-              SizedBox(
-                height: 10,
+      body: Container(
+        color:Color(0xFF111111) ,
+        child: ListView.builder(
+          itemCount: wishListProvider.getWishList.length,
+          itemBuilder: (context, index) {
+            BookPage data = wishListProvider.getWishList[index];
+            // wishListProvider.getWishList.length
+            return Center(
+              child:Column(
+                children: [
+                  SizedBox(
+                    height: 10,
+                  ),
+                  SingleItem(
+                    url: data.url,
+                    title: data.title,
+                    bookId: data.bookId,
+                    author: data.author,
+                    CatalogueId: data.id,
+                    onDelete: () {
+                      showAlertDialog(context, data);
+                    },
+                  ),
+                ],
               ),
-              SingleItem(
-                url: data.url,
-                title: data.title,
-                bookId: data.bookId,
-                author: data.author,
-                onDelete: () {
-                  showAlertDialog(context, data);
-                },
-              ),
-            ],
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }
@@ -266,6 +279,7 @@ class SingleItem extends StatelessWidget {
   final String? title;
   final String url;
   final String bookId;
+  final String CatalogueId;
   final VoidCallback onDelete;
 
   SingleItem({
@@ -273,11 +287,16 @@ class SingleItem extends StatelessWidget {
     this.title,
     required this.url,
     required this.bookId,
-    required this.onDelete,
+    required this.onDelete, required this.CatalogueId,
   });
 
   @override
   Widget build(BuildContext context) {
+    double screenwidth = MediaQuery.of(context).size.width;
+    double widthOfBookBox= screenwidth;
+    if (widthOfBookBox > 400) {
+      widthOfBookBox = 350;
+    }
     return GestureDetector(
       onTap: () {
         Navigator.of(context).pushReplacement(MaterialPageRoute(
@@ -285,15 +304,16 @@ class SingleItem extends StatelessWidget {
             author: author,
             title: title,
             url: url,
-            id: bookId,
+            id: CatalogueId,
             bookId: bookId,
           ),
         ));
       },
-      child: Card(
-        elevation: 0,
+      child: Container(
+        width: widthOfBookBox,
         margin: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-        shape: RoundedRectangleBorder(
+        decoration: BoxDecoration(
+          color: Colors.white,
           borderRadius: BorderRadius.circular(15.0),
         ),
         child: Container(
@@ -305,42 +325,58 @@ class SingleItem extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8), // Reduced border radius
                 child: Image.network(
                   url,
-                  width: 80,  // Reduced image width
-                  height: 120, // Reduced image height
+                  width: 120,  // Reduced image width
+                  height: 190, // Reduced image height
                   fit: BoxFit.cover,
                 ),
               ),
               SizedBox(width: 8), // Reduced spacing
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(height: 8),
-                    Text(
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: 8),
+                  Container(
+                    width: 150,
+                    child: Text(
                       title!,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize: 14, // Reduced font size
+                        fontSize: 16, // Reduced font size
                       ),
                     ),
-                    SizedBox(height: 4), // Reduced spacing
-                    Text(
-                      'Author: $author',
-                      style: TextStyle(
-                        color: Colors.grey,
-                      ),
+                  ),
+                  SizedBox(height: 4), // Reduced spacing
+                  Text(
+                    'Author: $author',
+                    style: TextStyle(
+                      color: Colors.grey,
                     ),
-                    SizedBox(height: 4), // Reduced spacing
-                  ],
-                ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  SizedBox(height: 75),
+                  Row(
+                    children: [
+                      SizedBox(width: 100,),
+                      TextButton(
+                        onPressed: onDelete,
+                        child: Icon(
+                          Icons.delete,
+                          color: Colors.black,
+                        ),
+                      ),// Reduced spacing
+                    ],
+                  )
+                ],
               ),
-              TextButton(
-                onPressed: onDelete,
-                child: Icon(
-                  Icons.delete,
-                  color: Colors.blueGrey,
-                ),
-              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  SizedBox(height: 130,),
+
+                ],
+              )
             ],
           ),
         ),

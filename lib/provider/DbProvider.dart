@@ -52,6 +52,7 @@ class DbProvider extends ChangeNotifier {
           title: element.get("wishlistName"),
           url: element.get("wishlistImage"),
           author: element.get("wishlistAuthor"),
+          id:element.get("wishlistCatalogueId")
         );
         newList.add(productModel);
       },

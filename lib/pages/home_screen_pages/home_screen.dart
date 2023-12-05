@@ -301,6 +301,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
     }
     double heightofbookbox = (kIsWeb ? screenwidth *0.25:MediaQuery.of(context).size.height*0.43);
     double heightofimageinbookbox= (kIsWeb ? heightofbookbox*0.67:heightofbookbox*0.6);
+    double heightofbannerbox=(kIsWeb?heightofbookbox:heightofbookbox*0.6);
     return Scaffold(
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -359,13 +360,23 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
                                    Color(0xFFEDEADE),Color(0xFFFFF5EE)
                                ],
                                ),
-                               GradientText(
-                                 "Membership",
-                                 style: TextStyle(
-                                 ), colors: [
+                               if(kIsWeb)...[
+                                 GradientText(
+                                   "Member",
+                                   style: TextStyle(
+                                   ), colors: [
                                    Color(0xFFE1C16E),Color(0xFFfffdd0) ,Color(0xFFE1C16E),
-                               ],
-                               ),
+                                 ],
+                                 ),
+                               ]else...[
+                                 GradientText(
+                                   "Membership",
+                                   style: TextStyle(
+                                   ), colors: [
+                                   Color(0xFFE1C16E),Color(0xFFfffdd0) ,Color(0xFFE1C16E),
+                                 ],
+                                 ),
+                               ]
                              ],
                            )
                          ],
@@ -482,7 +493,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
                         },
                       ),
                       Container(
-                        height: heightofbookbox*0.6,
+                        height: heightofbannerbox,
                         child:
                             StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
                           stream:
@@ -506,12 +517,12 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
                                 .toList();
                             print(titles);
                             return Container(
-                              height: heightofbookbox*0.6,
+                              height: heightofbannerbox,
                               width: MediaQuery.of(context).size.width,
                               padding:EdgeInsets.all(2),
                               child: CarouselSlider(
                                 options: CarouselOptions(
-                                  height: heightofbookbox*0.6,
+                                  height: heightofbannerbox,
                                   autoPlay: true,
                                   enlargeCenterPage: true, // Set to true if you want the current image to be larger
                                   viewportFraction: 1.0, // Set to 1.0 to occupy the full width of the screen

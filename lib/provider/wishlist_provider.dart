@@ -8,6 +8,7 @@ class WishListProvider with ChangeNotifier {
     String? wishlistName,
     String? wishlistImage,
     String? wishlistAuthor,
+    String? wishlistCatalogueId,
     String? authId,
   }) {
     FirebaseFirestore.instance
@@ -20,6 +21,8 @@ class WishListProvider with ChangeNotifier {
       "wishlistName": wishlistName,
       "wishlistImage": wishlistImage,
       "wishlistAuthor": wishlistAuthor,
+      "wishlistCatalogueId":wishlistCatalogueId,
+      "wishlistedOn": Timestamp.now(),
       "wishlist": true,
     });
   }
@@ -33,6 +36,7 @@ class WishListProvider with ChangeNotifier {
         .collection("users")
         .doc(authId)
         .collection("wishList")
+        .orderBy("wishlistedOn", descending: true)
         .get();
     value.docs.forEach(
           (element) {
@@ -41,6 +45,7 @@ class WishListProvider with ChangeNotifier {
           title: element.get("wishlistName"),
           url: element.get("wishlistImage"),
           author: element.get("wishlistAuthor"),
+          id: element.get("wishlistCatalogueId"),
         );
         newList.add(productModel);
       },

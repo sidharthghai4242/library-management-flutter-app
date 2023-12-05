@@ -16,13 +16,13 @@ class BookPage extends StatefulWidget {
   final String? author;
   final String? title;
   final String url;
-  final String? id;
+  final String id;
   final String bookId;
 
   const BookPage({
     this.author,
     this.title,
-    this.id,
+    required this.id,
     required this.url,
     required this.bookId,
   });
@@ -472,6 +472,7 @@ class _BookPageState extends State<BookPage> {
                                         wishlistImage: widget.url,
                                         wishlistName: widget.title,
                                         wishlistAuthor: widget.author,
+                                        wishlistCatalogueId: widget.id,
                                         authId:userModel?.authId as String
                                     );
                                   }else{

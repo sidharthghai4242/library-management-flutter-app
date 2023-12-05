@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -17,14 +18,104 @@ class ActivityPage extends StatefulWidget {
 
 class _ActivityPageState extends State<ActivityPage> {
   UserModel? userModel;
-
+  int? booksIssued;
+  int total_issued_books=0;
+  int books_currently_with_you=0;
   @override
   void initState() {
     super.initState();
+    fetchData();
+  }
+  Future<void> calculateIssuedBooksStats(String? userId) async {
+    try {
+      // Get the total number of documents in the 'issuedBooks' subcollection
+      QuerySnapshot<Map<String, dynamic>> totalIssuedBooksSnapshot =
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .collection('issuedBooks')
+          .get();
+
+      // Calculate the total number of issued books
+      int totalIssuedBooks = totalIssuedBooksSnapshot.size;
+
+      // Get the number of documents where the 'returnDate' field is null
+      QuerySnapshot<Map<String, dynamic>> booksCurrentlyWithUserSnapshot =
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .collection('issuedBooks')
+          .where('returnDate', isNull: true)
+          .get();
+
+      // Calculate the number of books currently with the user
+      int booksCurrentlyWithUser = booksCurrentlyWithUserSnapshot.size;
+
+      // Update the variables
+      total_issued_books = totalIssuedBooks;
+      books_currently_with_you = booksCurrentlyWithUser;
+
+      // Print the calculated values (for testing, you can remove this in production)
+      print('Total Issued Books: $totalIssuedBooks');
+      print('Books Currently With You: $booksCurrentlyWithUser');
+    } catch (e) {
+      print('Error calculating issued books stats: $e');
+    }
+  }
+
+  Future<int?> getBooksIssuedForCurrentMonth() async {
+    try {
+      // Get current year and month
+      DateTime now = DateTime.now();
+      String yearMonth = '${now.year}${now.month.toString().padLeft(2, '0')}';
+      print("yearMonth: "+yearMonth);
+      // Reference to the Firestore document
+      String? userId = userModel?.authId; // Replace with your user ID
+      DocumentSnapshot userStatsDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .collection('userStats')
+          .doc(yearMonth)
+          .get();
+
+      if (userStatsDoc.exists) {
+        // Explicitly cast data to Map<String, dynamic>
+        Map<String, dynamic>? data = userStatsDoc.data() as Map<String, dynamic>?;
+
+        if (data != null && data.containsKey('booksIssued')) {
+          // Retrieve the booksIssued field
+          booksIssued = data['booksIssued'] as int?;
+          return booksIssued;
+        } else {
+          print('booksIssued field is missing in the document for $yearMonth');
+          return null;
+        }
+      } else {
+        // Document doesn't exist for the current year and month
+        print('Document does not exist for $yearMonth');
+        booksIssued = 0;
+        return booksIssued;
+      }
+    } catch (e) {
+      print('Error fetching document: $e');
+      return null;
+    }
+  }
+  Future<void> fetchData() async {
+    await getBooksIssuedForCurrentMonth();
+    await calculateIssuedBooksStats(userModel?.authId);
+    setState(() {}); // Trigger UI update after fetching data
   }
   @override
   Widget build(BuildContext context) {
-
+    double screenwidth = MediaQuery.of(context).size.width;
+    double widthOfBookBox= screenwidth;
+    if (widthOfBookBox > 400) {
+      widthOfBookBox = 400;
+    }
+    // getBooksIssuedForCurrentMonth();
+    // calculateIssuedBooksStats(userModel?.authId);
+    print(booksIssued.toString()+"current issued books");
     String date="";
     userModel = context.watch<DbProvider>().userModel;
     String formattedJoinDate = userModel?.createdOn != null
@@ -124,69 +215,160 @@ class _ActivityPageState extends State<ActivityPage> {
                 }
 
                 // Check if bookSnapshot has data and display the ListView along with the "Book Activity" text
-                return SingleChildScrollView(
-                    child: Container(
-                      height: MediaQuery.of(context).size.height-76.260 ,
+                return Container(
+                  height: MediaQuery.of(context).size.height ,
+                  child: SingleChildScrollView(
+                    child: Center(
                       child: Column(
                         children: [
                           SizedBox(height: 50),
                           SizedBox(height: 5),
                           Text(
-                            'Issue and Return Activity :- ',
+                            'Issue and Return Activity',
                             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold,color: Colors.white),
                             textAlign: TextAlign.center,
                           ),
-                          Expanded(
-                            child: Column(
-                              children: [
-                                Container(
-                                  height: MediaQuery.of(context).size.height-158.260 ,
-                                  child: ListView.builder(
-                                    itemCount: bookSnapshot.data!.docs.length,
-                                    itemBuilder: (context, index) {
-                                      DocumentSnapshot bookDocument = bookSnapshot.data!.docs[index];
-                                      Map<String, dynamic> bookData =
-                                      bookDocument.data() as Map<String, dynamic>;
-                                      String bookTitle = bookData['title'];
-                                      String author = bookData['author'];
-                                      String bookId = bookData['bookId'];
-                                      String url = bookData['url'];
-                                      String catalogueId = bookData['type']['catalogueId'];
+                          SizedBox(height: 10),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                padding: EdgeInsets.all(10),
+                                child: Row(
+                                  children: [
+                                    if(userModel!.subscription.name.isNotEmpty)...[
+                                      Container(
+                                        padding: EdgeInsets.all(16),
+                                        height: 200,
+                                        width: widthOfBookBox*0.93,
+                                        decoration: BoxDecoration(
+                                            color: Colors.black,
+                                            borderRadius: BorderRadius.circular(30),
+                                            border: Border.all(
+                                                width: 1,
+                                                color: Color(0xFFA37E49)
+                                            )
+                                        ),
+                                        child: Column(
+                                          children: [
+                                            Row(
+                                              children: [
+                                                SizedBox(width: 10,),
+                                                Column(
+                                                  mainAxisAlignment: MainAxisAlignment.start,
+                                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                                  children: [
+                                                    Text(userModel!.subscription.maxBooks.toString(),style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 30),),
+                                                    SizedBox(height: 5,),
+                                                    Text(
+                                                      "Max. books that can\nbe issued",style: TextStyle(color: Colors.white,fontSize: 10),textAlign: TextAlign.center,
+                                                    )
+                                                  ],
+                                                ),
+                                                Spacer(),
+                                                Column(
+                                                  mainAxisAlignment: MainAxisAlignment.start,
+                                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                                  children: [
+                                                    Text(booksIssued.toString(),style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 30),),
+                                                    SizedBox(height: 5,),
+                                                    Text(
+                                                      "Books issued this month",style: TextStyle(color: Colors.white,fontSize: 10),textAlign: TextAlign.center,
+                                                    )
+                                                  ],
+                                                ),
+                                                SizedBox(width: 10,),
+                                              ],
+                                            ),
+                                            SizedBox(height: 20,),
+                                            Row(
+                                              children: [
+                                                SizedBox(width: 10,),
+                                                Column(
+                                                  mainAxisAlignment: MainAxisAlignment.start,
+                                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                                  children: [
+                                                    Text(total_issued_books.toString(),style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 30),),
+                                                    SizedBox(height: 5,),
+                                                    Text(
+                                                      "Total books issued by\nyou till date",style: TextStyle(color: Colors.white,fontSize: 10),textAlign: TextAlign.center,
+                                                    )
+                                                  ],
+                                                ),
+                                                Spacer(),
+                                                Column(
+                                                  mainAxisAlignment: MainAxisAlignment.start,
+                                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                                  children: [
+                                                    Text(books_currently_with_you.toString(),style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 30),),
+                                                    SizedBox(height: 5,),
+                                                    Text(
+                                                      "Books currently with you",style: TextStyle(color: Colors.white,fontSize: 10),textAlign: TextAlign.center,
+                                                    )
+                                                  ],
+                                                ),
+                                                SizedBox(width: 10,),
+                                              ],
+                                            ),
+                                          ],
+                                        )
+                                      )
+                                    ],
+                                  ],
+                                ),
+                              )
+                            ],
+                          ),
+                          Column(
+                            children: [
+                              Container(
+                                height: MediaQuery.of(context).size.height-384.260 ,
+                                child: ListView.builder(
+                                  itemCount: bookSnapshot.data!.docs.length,
+                                  itemBuilder: (context, index) {
+                                    DocumentSnapshot bookDocument = bookSnapshot.data!.docs[index];
+                                    Map<String, dynamic> bookData =
+                                    bookDocument.data() as Map<String, dynamic>;
+                                    String bookTitle = bookData['title'];
+                                    String author = bookData['author'];
+                                    String bookId = bookData['bookId'];
+                                    String url = bookData['url'];
+                                    String catalogueId = bookData['type']['catalogueId'];
 
-                                      // Retrieve the date information for the current book
-                                      Map<String, dynamic>? dateInfo = bookDateMap[bookId];
+                                    // Retrieve the date information for the current book
+                                    Map<String, dynamic>? dateInfo = bookDateMap[bookId];
 
-                                      // Extract issueDate and dueDate, or set defaults if not found
-                                      DateTime issueDate =
-                                          dateInfo?['issueDate'] ?? DateTime.now();
-                                      DateTime dueDate = dateInfo?['dueDate'] ?? DateTime.now();
-                                      String returnDate =
-                                          dateInfo?['returnDate'] ?? "Book not returned yet";
+                                    // Extract issueDate and dueDate, or set defaults if not found
+                                    DateTime issueDate =
+                                        dateInfo?['issueDate'] ?? DateTime.now();
+                                    DateTime dueDate = dateInfo?['dueDate'] ?? DateTime.now();
+                                    String returnDate =
+                                        dateInfo?['returnDate'] ?? "Book not returned yet";
 
-                                      return Column(
-                                        children: [
-                                          Bookscard(
-                                            bookId: bookId,
-                                            bookTitle: bookTitle,
-                                            author: author,
-                                            url: url,
-                                            catalogueId: catalogueId,
-                                            issueDate: issueDate,
-                                            dueDate: dueDate,
-                                            returnDate: returnDate,
-                                          ),
-                                          // Divider()
-                                        ],
-                                      );
-                                    },
-                                  ),
-                                )
-                              ],
-                            ),
+                                    return Column(
+                                      children: [
+                                        Bookscard(
+                                          bookId: bookId,
+                                          bookTitle: bookTitle,
+                                          author: author,
+                                          url: url,
+                                          catalogueId: catalogueId,
+                                          issueDate: issueDate,
+                                          dueDate: dueDate,
+                                          returnDate: returnDate,
+                                        ),
+                                        // Divider()
+                                      ],
+                                    );
+                                  },
+                                ),
+                              )
+                            ],
                           ),
                         ],
                       ),
-                    )
+                    ),
+                  ),
                 );
               },
             );
@@ -264,7 +446,7 @@ class _BookscardState extends State<Bookscard> {
     double screenwidth = MediaQuery.of(context).size.width;
     double widthOfBookBox= screenwidth;
     if (widthOfBookBox > 400) {
-      widthOfBookBox = 500;
+      widthOfBookBox = 400;
     }
     String formattedIssueDate = DateFormat('dd/MM/yyyy').format(widget.issueDate);
     String formatteddueDate = DateFormat('dd/MM/yyyy').format(widget.dueDate);
@@ -281,7 +463,7 @@ class _BookscardState extends State<Bookscard> {
         ));
       },
       child: Container(
-        width:  screenwidth ,
+        width:  widthOfBookBox ,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
